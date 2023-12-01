@@ -2,14 +2,14 @@
 ##
 ## Written by Willi Kappler, License: MIT
 ##
-## This module just reexports items from other modules.
+## This module contains the base data structure for an individual.
 ##
 ## This nim library allows you to write programs using evolutionary algorithms.
 ##
 
 type
     NAIndividual* = ref object of RootObj
-        fitness: float64
+        fitness*: float64
 
 method naMutate(self: var NAIndividual) {.base.} =
     quit("You must override this method: naMutate")
@@ -17,4 +17,6 @@ method naMutate(self: var NAIndividual) {.base.} =
 method naCalculateFitness(self: var NAIndividual) {.base.} =
     quit("You must override this method: naCalculateFitness")
 
+method naClone(self: NAIndividual): NAIndividual {.base.} =
+    quit("You must override this method: naClone")
 
