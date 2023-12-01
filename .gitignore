@@ -1,3 +1,10 @@
 nimcache/
 nimblecache/
 htmldocs/
+testresults/
+tests/*
+!tests/*.nim
+!tests/*.nims
+!tests/*.ini
+*.old
+
