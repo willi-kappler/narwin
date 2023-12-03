@@ -19,11 +19,12 @@ task checkAll, "run 'nim check' on all source files":
     exec "nim check narvin.nim"
 
     cd "narvin/"
-    exec "nim check xxx.nim"
+    exec "nim check na_individual.nim"
+    exec "nim check na_population.nim"
 
-    cd "private/"
+    #cd "private/"
     # Check private modules:
-    exec "nim check xxx.nim"
+    #exec "nim check xxx.nim"
 
 task cleanTests, "Clean log files and binaries in tests/ folder":
     cd "tests/"

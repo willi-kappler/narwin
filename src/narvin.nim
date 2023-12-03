@@ -7,3 +7,7 @@
 ## This nim library allows you to write programs using evolutinary algorithms.
 ##
 
+import narvin/na_individual
+import narvin/na_population
+
+

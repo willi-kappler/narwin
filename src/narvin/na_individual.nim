@@ -11,12 +11,12 @@ type
     NAIndividual* = ref object of RootObj
         fitness*: float64
 
-method naMutate(self: var NAIndividual) {.base.} =
+method naMutate*(self: var NAIndividual) {.base.} =
     quit("You must override this method: naMutate")
 
-method naCalculateFitness(self: var NAIndividual) {.base.} =
+method naCalculateFitness*(self: var NAIndividual) {.base.} =
     quit("You must override this method: naCalculateFitness")
 
-method naClone(self: NAIndividual): NAIndividual {.base.} =
+method naClone*(self: NAIndividual): NAIndividual {.base.} =
     quit("You must override this method: naClone")
 
