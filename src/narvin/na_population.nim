@@ -51,8 +51,6 @@ proc naInitPopulation*(individual: NAIndividual,
 
     sort(result.population, result.cmpProc)
 
-    result
-
 proc naRun*(self: var NAPopulation) =
     let offset = self.populationSize
 

@@ -4,7 +4,7 @@
 ##
 ## This module just reexports items from other modules.
 ##
-## This nim library allows you to write programs using evolutinary algorithms.
+## This Nim library allows you to write programs using evolutinary algorithms.
 ##
 
 import narvin/na_individual

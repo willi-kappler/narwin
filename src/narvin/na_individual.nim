@@ -4,7 +4,7 @@
 ##
 ## This module contains the base data structure for an individual.
 ##
-## This nim library allows you to write programs using evolutionary algorithms.
+## This Nim library allows you to write programs using evolutionary algorithms.
 ##
 
 type
