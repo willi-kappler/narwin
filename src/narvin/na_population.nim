@@ -13,9 +13,6 @@ from std/algorithm import sort
 # Local imports
 import na_individual
 
-proc naDefaultCmp*(x, y: NAIndividual): int =
-    cmp(x.fitness, y.fitness)
-
 type
     NAPopulation* = object
         population: seq[NAIndividual]
@@ -23,15 +20,15 @@ type
         numOfMutations: uint32
         numOfIterations: uint32
         acceptNewBest: bool
-        cmpProc: proc (x, y: NAIndividual): int {.closure.}
 
-proc naInitPopulation*(individual: NAIndividual,
+proc naInitPopulation*(
+        individual: NAIndividual,
         populationSize: uint32 = 10,
         numOfMutations: uint32 = 10,
         numOfIterations: uint32 = 1000,
         acceptNewBest: bool = true): NAPopulation =
 
-    assert populationSize >= 3
+    assert populationSize >= 5
     assert numOfMutations > 0
     assert numOfIterations > 0
 
@@ -40,19 +37,17 @@ proc naInitPopulation*(individual: NAIndividual,
     result.numOfIterations = numOfIterations
     result.acceptNewBest = acceptNewBest
     result.population = newSeq[NAIndividual](2 * populationSize)
-    result.cmpProc = naDefaultCmp
 
     # Initialize the population with random individuals:
     for i in 0..<populationSize:
-        var newIndividual = individual.naClone()
-        newIndividual.naMutate()
-        newIndividual.naCalculateFitness()
-        result.population[i] = newIndividual
+        result.population[i] = individual.naNewRandomIndividual()
 
-    sort(result.population, result.cmpProc)
+    result.population.sort do (a: NAIndividual, b: NAIndividual) -> int:
+        return cmp(a.fitness, b.fitness)
 
 proc naRun*(self: var NAPopulation) =
     let offset = self.populationSize
+    let last = self.population.high
 
     for i in 0..<self.numOfIterations:
         # Save all individuals of the current population.
@@ -69,10 +64,17 @@ proc naRun*(self: var NAPopulation) =
             # Calculate the new fitness for the mutated individual:
             self.population[j].naCalculateFitness()
 
+        # The last individual will be totally random.
+        # This helps a bit to escape a local mnimum.
+        self.population[last].naRandomize()
+        self.population[last].naCalculateFitness()
+
         # Sort the whole population (new and old) by fitness:
         # All individuals that are not fit enough will be moved to position
         # above self.populationSize and will be overwritten in the next iteration.
-        sort(self.population, self.cmpProc)
+        self.population.sort do (a: NAIndividual, b: NAIndividual) -> int:
+            return cmp(a.fitness, b.fitness)
+
 
 proc naGetBestIndividual*(self: NAPopulation): NAIndividual =
     self.population[0]

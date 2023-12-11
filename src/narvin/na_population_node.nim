@@ -8,7 +8,7 @@
 ##
 
 # External imports
-import numcrunch
+import num_crunch
 
 # Local imports
 import na_individual

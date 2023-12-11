@@ -7,7 +7,7 @@ srcDir        = "src"
 
 # Dependencies
 requires "nim >= 2.0.0"
-requires "numcrunch >= 0.1.0"
+requires "num_crunch >= 0.1.0"
 #requires ""
 
 # Tasks
@@ -21,6 +21,8 @@ task checkAll, "run 'nim check' on all source files":
     cd "narvin/"
     exec "nim check na_individual.nim"
     exec "nim check na_population.nim"
+    exec "nim check na_population_node.nim"
+    exec "nim check na_population_server.nim"
 
     #cd "private/"
     # Check private modules:

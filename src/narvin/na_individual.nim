@@ -14,9 +14,17 @@ type
 method naMutate*(self: var NAIndividual) {.base.} =
     quit("You must override this method: naMutate")
 
+method naRandomize*(self: var NAIndividual) {.base.} =
+    quit("You must override this method: naRandomize")
+
 method naCalculateFitness*(self: var NAIndividual) {.base.} =
     quit("You must override this method: naCalculateFitness")
 
 method naClone*(self: NAIndividual): NAIndividual {.base.} =
     quit("You must override this method: naClone")
+
+proc naNewRandomIndividual*(self: NAIndividual): NAIndividual =
+    var newIndividual = self.naClone()
+    newIndividual.naRandomize()
+    newIndividual.naCalculateFitness()
 
