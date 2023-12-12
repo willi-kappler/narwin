@@ -15,17 +15,12 @@ from std/math import hypot
 from std/random import rand, shuffle
 from std/strutils import split, parseFloat
 
-# External imports
-import num_crunch
-
-# Local imports
-import ../../src/narvin
-
 type
-    TSPIndividual* = ref object of NAIndividual
+    TSPIndividual* = object
         data: seq[(float64, float64)]
+        fitness: float64
 
-method naMutate*(self: var TSPIndividual) =
+proc naMutate*(self: var TSPIndividual) =
     # Very simple and dumb mutation:
     # just swap two positions
 
@@ -35,10 +30,10 @@ method naMutate*(self: var TSPIndividual) =
 
     swap(self.data[i], self.data[j])
 
-method naRandomize*(self: var TSPIndividual) =
+proc naRandomize*(self: var TSPIndividual) =
     shuffle(self.data)
 
-method naCalculateFitness*(self: var TSPIndividual) =
+proc naCalculateFitness*(self: var TSPIndividual) =
     var length: float64 = 0.0
     let last = self.data.high
 
@@ -55,17 +50,16 @@ method naCalculateFitness*(self: var TSPIndividual) =
 
     self.fitness = length
 
-method naClone*(self: TSPIndividual): NAIndividual =
+proc naClone*(self: TSPIndividual): TSPIndividual =
     return TSPIndividual(data: self.data)
 
-method naToBytes*(self: TSPIndividual): seq[byte] {.base.} =
-    ncToBytes(self)
+proc naNewRandomIndividual*(self: TSPIndividual): TSPIndividual =
+    result = self.naClone()
+    result.naRandomize()
+    result.naCalculateFitness()
 
-method naFromBytes*(self: TSPIndividual, data: seq[byte]): NAIndividual {.base.} =
-    ncFromBytes(data, TSPIndividual)
-
-method naToJSON*(self: TSPIndividual): JsonNode {.base.} =
-    %self
+proc naGetFitness*(self: TSPIndividual): float64 =
+    self.fitness
 
 proc loadTSP*(fileName: string): TSPIndividual =
     result = TSPIndividual(data: @[])

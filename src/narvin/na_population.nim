@@ -10,28 +10,27 @@
 # Nim std imports
 from std/algorithm import sort
 
-# Local imports
-import na_individual
-
 type
-    NAPopulation* = object
-        population: seq[NAIndividual]
+    NAPopulation*[T] = object
+        population: seq[T]
         populationSize: uint32
         numOfMutations: uint32
         numOfIterations: uint32
         acceptNewBest: bool
 
-proc naSort(self: var NAPopulation) =
-    self.population.sort do (a: NAIndividual, b: NAIndividual) -> int:
-        return cmp(a.fitness, b.fitness)
+proc naSort[T](self: var NAPopulation[T]) =
+    self.population.sort do (a: T, b: T) -> int:
+        let fa = a.naGetFitness()
+        let fb = b.naGetFitness()
+        return cmp(fa, fb)
 
-proc naInitPopulation*(
-        individual: NAIndividual,
+proc naInitPopulation*[T](
+        individual: T,
         populationSize: uint32 = 10,
         numOfMutations: uint32 = 10,
         numOfIterations: uint32 = 1000,
         acceptNewBest: bool = true
-        ): NAPopulation =
+        ): NAPopulation[T] =
 
     assert populationSize >= 5
     assert numOfMutations > 0
@@ -41,7 +40,7 @@ proc naInitPopulation*(
     result.numOfMutations = numOfMutations
     result.numOfIterations = numOfIterations
     result.acceptNewBest = acceptNewBest
-    result.population = newSeq[NAIndividual](2 * populationSize)
+    result.population = newSeq[T](2 * populationSize)
 
     result.population[0] = individual.naClone()
     # Initialize the population with random individuals:
@@ -50,7 +49,7 @@ proc naInitPopulation*(
 
     result.naSort()
 
-proc naRun*(self: var NAPopulation) =
+proc naRun*[T](self: var NAPopulation[T]) =
     let offset = self.populationSize
     let last = self.population.high
 
@@ -80,17 +79,11 @@ proc naRun*(self: var NAPopulation) =
         self.naSort()
 
 
-proc naGetBestIndividual*(self: NAPopulation): NAIndividual =
+proc naGetBestIndividual*[T](self: NAPopulation[T]): T =
     self.population[0]
 
-proc naGetBestIndividualBytes*(self: NAPopulation): seq[byte] =
-    self.naGetBestIndividual().naToBytes()
-
-proc naSetNewBestIndividual*(self: var NAPopulation, individual: NAIndividual) =
+proc naSetNewBestIndividual*[T](self: var NAPopulation, individual: T) =
     if self.acceptNewBest:
         self.population[self.populationSize - 1] = individual
 
-proc naSetNewBestIndividualBytes*(self: var NAPopulation, inputData: seq[byte]) =
-    let individual = self.population[0].naFromBytes(inputData)
-    self.naSetNewBestIndividual(individual)
 

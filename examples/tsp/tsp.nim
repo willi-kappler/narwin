@@ -55,7 +55,7 @@ when isMainModule:
         ncInitLogger(logger, 2)
 
         ncInfo("Starting server")
-        let dataProcessor = naInitPopulationServerDP(tsp, "best_result.json")
+        let dataProcessor = naInitPopulationServerDP[TSPIndividual](tsp, "best_result.json")
         ncInitServer(dataProcessor, config)
         ncRunServer()
     else:

@@ -9,12 +9,10 @@
 
 import num_crunch
 
-import narvin/na_individual
 import narvin/na_population
 import narvin/na_population_node
 import narvin/na_population_server
 
-export na_individual
 export na_population
 export na_population_node
 export na_population_server

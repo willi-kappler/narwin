@@ -11,7 +11,7 @@
 from std/json import JsonNode
 
 # External imports
-import num_crunch
+#import num_crunch
 
 type
     NAIndividual* = ref object of RootObj

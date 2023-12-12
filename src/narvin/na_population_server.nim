@@ -18,69 +18,71 @@ from std/random import rand
 # External imports
 import num_crunch
 
-# Local imports
-import na_individual
-
 type
-    NAPopulationServerDP* = ref object of NCServerDataProcessor
-        population: seq[NAIndividual]
+    NAPopulationServerDP*[T] = ref object of NCServerDataProcessor
+        population: seq[T]
         targetFitness: float64
         resultFilename: string
 
 method ncIsFinished(self: var NAPopulationServerDP): bool =
-    return self.population[0].fitness <= self.targetFitness
+    let fitness = self.population[0].naGetFitness()
+    return fitness <= self.targetFitness
 
-method ncGetInitData(self: var NAPopulationServerDP): seq[byte] =
+method ncGetInitData(self: var NAPopulationServerDP[T]): seq[byte] =
     @[]
 
-method ncGetNewData(self: var NAPopulationServerDP, n: NCNodeID): seq[byte] =
+method ncGetNewData(self: var NAPopulationServerDP[T], n: NCNodeID): seq[byte] =
     # Pick a random individual from the current population of best
     # individuals and return it to the node.
     # (avoid to get stuck in a local minimum)
     let last = self.population.high
     let i = rand(last)
-    return self.population[i].naToBytes()
+    return ncToBytes(self.population[i])
 
-method ncCollectData(self: var NAPopulationServerDP, n: NCNodeID, data: seq[byte]) =
+method ncCollectData(self: var NAPopulationServerDP[T], n: NCNodeID, data: seq[byte]) =
     let last = self.population.high
-    let individual = self.population[0].naFromBytes(data)
-    let fitness = individual.fitness
+    let individual = ncFromBytes(data, T)
+    let fitness = individual.naGetFitness()
+    let leastFitness = self.population[last].naGetFitness()
+    let bestFitness = self.population[0].naGetFitness()
 
     # Overwrite (kill) the least fit individual with the new best
     # individual from the node population:
-    if fitness < self.population[last].fitness:
-        if fitness != self.population[0].fitness:
+    if fitness < leastFitness:
+        if fitness != bestFitness:
             self.population[last] = individual
 
             ncInfo(fmt("New individual added to the population, fitness: {fitness}"))
-            ncInfo(fmt("Current best fitness: {self.population[0].fitness}"))
+            ncInfo(fmt("Current best fitness: {bestFitness}"))
 
             # Sort population by fitness:
-            self.population.sort do (a: NAIndividual, b: NAIndividual) -> int:
-                return cmp(a.fitness, b.fitness)
+            self.population.sort do (a: T, b: T) -> int:
+                let fa = a.naGetFitness()
+                let fb = b.naGetFitness()
+                return cmp(fa, fb)
 
-method ncMaybeDeadNode(self: var NAPopulationServerDP, n: NCNodeID) =
+method ncMaybeDeadNode(self: var NAPopulationServerDP[T], n: NCNodeID) =
     discard
 
-method ncSaveData(self: var NAPopulationServerDP) =
+method ncSaveData(self: var NAPopulationServerDP[T]) =
     let outFile = open(self.resultFilename, mode = fmWrite)
     # Get the optimal solution:
     # And turn it into a JSON object:
-    let converted = self.population[0].naToJSON()
+    let converted = %self.population[0]
     # Write it out into a file:
     outFile.write($converted)
     outFile.close()
 
-proc naInitPopulationServerDP*(
-        individual: NAIndividual,
+proc naInitPopulationServerDP*[T](
+        individual: T,
         resultFilename: string,
         targetFitness: float64 = 0.0,
         populationSize: uint32 = 10
-        ): NAPopulationServerDP =
+        ): NAPopulationServerDP[T] =
 
     assert populationSize >= 5
 
-    result = NAPopulationServerDP(population: newSeq[NAIndividual](populationSize))
+    result = NAPopulationServerDP[T](population: newSeq[T](populationSize))
 
     result.targetFitness = targetFitness
     result.resultFilename = resultFilename

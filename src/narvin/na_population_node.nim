@@ -11,22 +11,23 @@
 import num_crunch
 
 # Local imports
-import na_individual
 import na_population
 
 type
-    NAPopulationNodeDP = ref object of NCNodeDataProcessor
-        population: NAPopulation
+    NAPopulationNodeDP[T] = ref object of NCNodeDataProcessor
+        population: NAPopulation[T]
 
-method ncProcessData(self: var NAPopulationNodeDP, inputData: seq[byte]): seq[byte] =
+method ncProcessData(self: var NAPopulationNodeDP[T], inputData: seq[byte]): seq[byte] =
     ncDebug("ncProcessData()", 2)
 
-    self.population.naSetNewBestIndividualBytes(inputData)
+    let individual = ncFromBytes(inputData, T)
+    self.population.naSetNewBestIndividual(individual)
 
     self.population.naRun()
 
-    return self.population.naGetBestIndividualBytes()
+    let bestIndividual = self.population.naGetBestIndividual()
+    return ncToBytes(bestIndividual)
 
-proc naInitPopulationNodeDP*(individual: NAIndividual): NAPopulationNodeDP =
-    return NAPopulationNodeDP(population: naInitPopulation(individual))
+proc naInitPopulationNodeDP*[T](individual: T): NAPopulationNodeDP[T] =
+    return NAPopulationNodeDP[T](population: naInitPopulation(individual))
 
