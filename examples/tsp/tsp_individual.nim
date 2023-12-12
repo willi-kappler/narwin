@@ -8,10 +8,17 @@
 ##
 
 
+# Nim std imports
+import std/json
+
 from std/math import hypot
 from std/random import rand, shuffle
 from std/strutils import split, parseFloat
 
+# External imports
+import num_crunch
+
+# Local imports
 import ../../src/narvin
 
 type
@@ -49,7 +56,16 @@ method naCalculateFitness*(self: var TSPIndividual) =
     self.fitness = length
 
 method naClone*(self: TSPIndividual): NAIndividual =
-    TSPIndividual(data: self.data)
+    return TSPIndividual(data: self.data)
+
+method naToBytes*(self: TSPIndividual): seq[byte] {.base.} =
+    ncToBytes(self)
+
+method naFromBytes*(self: TSPIndividual, data: seq[byte]): NAIndividual {.base.} =
+    ncFromBytes(data, TSPIndividual)
+
+method naToJSON*(self: TSPIndividual): JsonNode {.base.} =
+    %self
 
 proc loadTSP*(fileName: string): TSPIndividual =
     result = TSPIndividual(data: @[])
@@ -62,8 +78,6 @@ proc loadTSP*(fileName: string): TSPIndividual =
         let x = parseFloat(values[0])
         let y = parseFloat(values[1])
         result.data.add((x, y))
-
-    result.naCalculateFitness()
 
     f.close()
 

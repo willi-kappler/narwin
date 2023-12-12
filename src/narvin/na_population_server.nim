@@ -39,11 +39,11 @@ method ncGetNewData(self: var NAPopulationServerDP, n: NCNodeID): seq[byte] =
     # (avoid to get stuck in a local minimum)
     let last = self.population.high
     let i = rand(last)
-    return ncToBytes(self.population[i])
+    return self.population[i].naToBytes()
 
 method ncCollectData(self: var NAPopulationServerDP, n: NCNodeID, data: seq[byte]) =
     let last = self.population.high
-    let individual = ncFromBytes(data, NAIndividual)
+    let individual = self.population[0].naFromBytes(data)
     let fitness = individual.fitness
 
     # Overwrite (kill) the least fit individual with the new best
@@ -65,9 +65,8 @@ method ncMaybeDeadNode(self: var NAPopulationServerDP, n: NCNodeID) =
 method ncSaveData(self: var NAPopulationServerDP) =
     let outFile = open(self.resultFilename, mode = fmWrite)
     # Get the optimal solution:
-    let bestIndividual = self.population[0]
     # And turn it into a JSON object:
-    let converted = %bestIndividual
+    let converted = self.population[0].naToJSON()
     # Write it out into a file:
     outFile.write($converted)
     outFile.close()
@@ -87,6 +86,7 @@ proc naInitPopulationServerDP*(
     result.resultFilename = resultFilename
 
     result.population[0] = individual.naClone()
+    result.population[0].naCalculateFitness()
     for i in 1..<populationSize:
         result.population[i] = individual.naNewRandomIndividual()
 

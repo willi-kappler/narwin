@@ -7,6 +7,12 @@
 ## This Nim library allows you to write programs using evolutionary algorithms.
 ##
 
+# Nim std imports
+from std/json import JsonNode
+
+# External imports
+import num_crunch
+
 type
     NAIndividual* = ref object of RootObj
         fitness*: float64
@@ -22,6 +28,15 @@ method naCalculateFitness*(self: var NAIndividual) {.base.} =
 
 method naClone*(self: NAIndividual): NAIndividual {.base.} =
     quit("You must override this method: naClone")
+
+method naToBytes*(self: NAIndividual): seq[byte] {.base.} =
+    quit("You must override this method: naToBytes")
+
+method naFromBytes*(self: NAIndividual, data: seq[byte]): NAIndividual {.base.} =
+    quit("You must override this method: naFromBytes")
+
+method naToJSON*(self: NAIndividual): JsonNode {.base.} =
+    quit("You must override this method: naToJSON")
 
 proc naNewRandomIndividual*(self: NAIndividual): NAIndividual =
     result = self.naClone()

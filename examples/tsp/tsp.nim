@@ -48,7 +48,7 @@ when isMainModule:
         of cmdArgument:
             showHelpAndQuit()
 
-    let tsp: TSPIndividual = loadTSP("city_positions1.txt")
+    let tsp = loadTSP("city_positions1.txt")
 
     if runServer:
         let logger = newFileLogger("tsp_server.log", fmtStr=verboseFmtStr)

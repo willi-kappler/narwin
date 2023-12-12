@@ -83,8 +83,14 @@ proc naRun*(self: var NAPopulation) =
 proc naGetBestIndividual*(self: NAPopulation): NAIndividual =
     self.population[0]
 
+proc naGetBestIndividualBytes*(self: NAPopulation): seq[byte] =
+    self.naGetBestIndividual().naToBytes()
+
 proc naSetNewBestIndividual*(self: var NAPopulation, individual: NAIndividual) =
     if self.acceptNewBest:
         self.population[self.populationSize - 1] = individual
 
+proc naSetNewBestIndividualBytes*(self: var NAPopulation, inputData: seq[byte]) =
+    let individual = self.population[0].naFromBytes(inputData)
+    self.naSetNewBestIndividual(individual)
 

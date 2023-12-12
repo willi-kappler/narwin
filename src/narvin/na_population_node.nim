@@ -21,14 +21,11 @@ type
 method ncProcessData(self: var NAPopulationNodeDP, inputData: seq[byte]): seq[byte] =
     ncDebug("ncProcessData()", 2)
 
-    let bestIndividual = ncFromBytes(inputData, NAIndividual)
-
-    self.population.naSetNewBestIndividual(bestIndividual)
+    self.population.naSetNewBestIndividualBytes(inputData)
 
     self.population.naRun()
 
-    let data = ncToBytes(self.population.naGetBestIndividual())
-    return data
+    return self.population.naGetBestIndividualBytes()
 
 proc naInitPopulationNodeDP*(individual: NAIndividual): NAPopulationNodeDP =
     return NAPopulationNodeDP(population: naInitPopulation(individual))
