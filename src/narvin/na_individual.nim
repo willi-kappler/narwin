@@ -24,7 +24,7 @@ method naClone*(self: NAIndividual): NAIndividual {.base.} =
     quit("You must override this method: naClone")
 
 proc naNewRandomIndividual*(self: NAIndividual): NAIndividual =
-    var newIndividual = self.naClone()
-    newIndividual.naRandomize()
-    newIndividual.naCalculateFitness()
+    result = self.naClone()
+    result.naRandomize()
+    result.naCalculateFitness()
 

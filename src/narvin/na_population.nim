@@ -21,12 +21,17 @@ type
         numOfIterations: uint32
         acceptNewBest: bool
 
+proc naSort(self: var NAPopulation) =
+    self.population.sort do (a: NAIndividual, b: NAIndividual) -> int:
+        return cmp(a.fitness, b.fitness)
+
 proc naInitPopulation*(
         individual: NAIndividual,
         populationSize: uint32 = 10,
         numOfMutations: uint32 = 10,
         numOfIterations: uint32 = 1000,
-        acceptNewBest: bool = true): NAPopulation =
+        acceptNewBest: bool = true
+        ): NAPopulation =
 
     assert populationSize >= 5
     assert numOfMutations > 0
@@ -38,12 +43,12 @@ proc naInitPopulation*(
     result.acceptNewBest = acceptNewBest
     result.population = newSeq[NAIndividual](2 * populationSize)
 
+    result.population[0] = individual.naClone()
     # Initialize the population with random individuals:
-    for i in 0..<populationSize:
+    for i in 1..<(2 * populationSize):
         result.population[i] = individual.naNewRandomIndividual()
 
-    result.population.sort do (a: NAIndividual, b: NAIndividual) -> int:
-        return cmp(a.fitness, b.fitness)
+    result.naSort()
 
 proc naRun*(self: var NAPopulation) =
     let offset = self.populationSize
@@ -72,8 +77,7 @@ proc naRun*(self: var NAPopulation) =
         # Sort the whole population (new and old) by fitness:
         # All individuals that are not fit enough will be moved to position
         # above self.populationSize and will be overwritten in the next iteration.
-        self.population.sort do (a: NAIndividual, b: NAIndividual) -> int:
-            return cmp(a.fitness, b.fitness)
+        self.naSort()
 
 
 proc naGetBestIndividual*(self: NAPopulation): NAIndividual =

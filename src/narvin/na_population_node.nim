@@ -2,7 +2,7 @@
 ##
 ## Written by Willi Kappler, License: MIT
 ##
-## This module just reexports items from other modules.
+## This module contains the implementation of the node code from num_crunch.
 ##
 ## This Nim library allows you to write programs using evolutinary algorithms.
 ##
@@ -30,6 +30,6 @@ method ncProcessData(self: var NAPopulationNodeDP, inputData: seq[byte]): seq[by
     let data = ncToBytes(self.population.naGetBestIndividual())
     return data
 
-proc initPopulationNodeDP*(individual: NAIndividual): NAPopulationNodeDP =
-    result.population = naInitPopulation(individual)
+proc naInitPopulationNodeDP*(individual: NAIndividual): NAPopulationNodeDP =
+    return NAPopulationNodeDP(population: naInitPopulation(individual))
 

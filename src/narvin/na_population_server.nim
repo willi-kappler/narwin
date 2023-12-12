@@ -1,8 +1,19 @@
+# This module is part of narvin: https://github.com/willi-kappler/narvin
+##
+## Written by Willi Kappler, License: MIT
+##
+## This module contains the implementation of the server code from num_crunch.
+##
+## This Nim library allows you to write programs using evolutinary algorithms.
+##
+
 # Nim std imports
-import std/options
+#import std/options
+import std/json
 
 from std/strformat import fmt
 from std/algorithm import sort
+from std/random import rand
 
 # External imports
 import num_crunch
@@ -20,53 +31,62 @@ method ncIsFinished(self: var NAPopulationServerDP): bool =
     return self.population[0].fitness <= self.targetFitness
 
 method ncGetInitData(self: var NAPopulationServerDP): seq[byte] =
-    discard
+    @[]
 
 method ncGetNewData(self: var NAPopulationServerDP, n: NCNodeID): seq[byte] =
-    return ncToBytes(self.population[0])
+    # Pick a random individual from the current population of best
+    # individuals and return it to the node.
+    # (avoid to get stuck in a local minimum)
+    let last = self.population.high
+    let i = rand(last)
+    return ncToBytes(self.population[i])
 
 method ncCollectData(self: var NAPopulationServerDP, n: NCNodeID, data: seq[byte]) =
     let last = self.population.high
     let individual = ncFromBytes(data, NAIndividual)
+    let fitness = individual.fitness
+
     # Overwrite (kill) the least fit individual with the new best
     # individual from the node population:
-    self.population[last] = individual
+    if fitness < self.population[last].fitness:
+        if fitness != self.population[0].fitness:
+            self.population[last] = individual
 
-    # Sort population by fitness:
-    self.population.sort do (a: NAIndividual, b: NAIndividual) -> int:
-        return cmp(a.fitness, b.fitness)
+            ncInfo(fmt("New individual added to the population, fitness: {fitness}"))
+            ncInfo(fmt("Current best fitness: {self.population[0].fitness}"))
+
+            # Sort population by fitness:
+            self.population.sort do (a: NAIndividual, b: NAIndividual) -> int:
+                return cmp(a.fitness, b.fitness)
 
 method ncMaybeDeadNode(self: var NAPopulationServerDP, n: NCNodeID) =
     discard
 
 method ncSaveData(self: var NAPopulationServerDP) =
     let outFile = open(self.resultFilename, mode = fmWrite)
-    # TODO: Write file
+    # Get the optimal solution:
+    let bestIndividual = self.population[0]
+    # And turn it into a JSON object:
+    let converted = %bestIndividual
+    # Write it out into a file:
+    outFile.write($converted)
     outFile.close()
 
-
-    #let imgFile = open("mandel_image.ppm", mode = fmWrite)
-
-    #imgFile.write("P3\n")
-    #imgFile.write(fmt("{imgWidth} {imgHeight}\n"))
-    #imgFile.write("255\n")
-
-    #imgFile.write("\n")
-
-    #imgFile.close()
-
-proc initPopulationServerDP*(
+proc naInitPopulationServerDP*(
         individual: NAIndividual,
-        targetFitness: float64,
-        populationSize: uint32 = 10,
-        resultFilename: string): NAPopulationServerDP =
+        resultFilename: string,
+        targetFitness: float64 = 0.0,
+        populationSize: uint32 = 10
+        ): NAPopulationServerDP =
 
     assert populationSize >= 5
 
-    result.population = newSeq[NAIndividual](populationSize)
+    result = NAPopulationServerDP(population: newSeq[NAIndividual](populationSize))
+
     result.targetFitness = targetFitness
     result.resultFilename = resultFilename
 
-    for i in 0..<populationSize:
+    result.population[0] = individual.naClone()
+    for i in 1..<populationSize:
         result.population[i] = individual.naNewRandomIndividual()
 
