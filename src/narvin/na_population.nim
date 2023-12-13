@@ -32,11 +32,11 @@ proc naSort(self: var NAPopulation) =
 
 proc naInitPopulation*(
         individual: NAIndividual,
-        populationSize: uint32 = 10,
-        numOfMutations: uint32 = 10,
-        numOfIterations: uint32 = 1000,
-        acceptNewBest: bool = true,
-        resetPopulation: bool = false
+        populationSize: uint32,
+        numOfMutations: uint32,
+        numOfIterations: uint32,
+        acceptNewBest: bool,
+        resetPopulation: bool
         ): NAPopulation =
 
     assert populationSize >= 5
@@ -48,7 +48,12 @@ proc naInitPopulation*(
     result.populationSize = populationSize
     result.numOfMutations = numOfMutations
     result.numOfIterations = numOfIterations
-    result.acceptNewBest = acceptNewBest
+
+    if resetPopulation:
+        result.acceptNewBest = false
+    else:
+        result.acceptNewBest = acceptNewBest
+
     result.resetPopulation = resetPopulation
 
     result.population[0] = individual.naClone()
@@ -60,8 +65,12 @@ proc naInitPopulation*(
     result.naSort()
 
 proc naRun*(self: var NAPopulation) =
+    ncDebug("NAPopulation: naRun()")
     let offset = self.populationSize
     let last = self.population.high
+
+    ncDebug(fmt("first fitness: {self.population[0].fitness}"))
+    ncDebug(fmt("last fitness: {self.population[offset-1].fitness}"))
 
     if self.resetPopulation:
         ncDebug("Reset the whole population to random values")
