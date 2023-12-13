@@ -17,8 +17,8 @@ task checkAll, "run 'nim check' on all source files":
     exec "nim check tsp.nim"
 
 task runTSP, "Runs the TSP example":
-    #exec "nim c tsp.nim"
-    exec "nim c -d:release tsp.nim"
+    exec "nim c tsp.nim"
+    #exec "nim c -d:release tsp.nim"
     exec "./tsp --server &"
     exec "sleep 5"
 

@@ -49,15 +49,18 @@ method ncCollectData(self: var NAPopulationServerDP, n: NCNodeID, data: seq[byte
     # Overwrite (kill) the least fit individual with the new best
     # individual from the node population:
     if fitness < self.population[last].fitness:
-        if fitness != self.population[0].fitness:
-            self.population[last] = individual
+        for indy in self.population:
+            if fitness == indy.fitness:
+                return
 
-            ncInfo(fmt("New individual added to the population, fitness: {fitness}"))
-            ncInfo(fmt("Current best fitness: {self.population[0].fitness}"))
+        self.population[last] = individual
 
-            # Sort population by fitness:
-            self.population.sort do (a: NAIndividual, b: NAIndividual) -> int:
-                return cmp(a.fitness, b.fitness)
+        ncInfo(fmt("New individual added to the population, fitness: {fitness}"))
+        ncInfo(fmt("Current best fitness: {self.population[0].fitness}"))
+
+        # Sort population by fitness:
+        self.population.sort do (a: NAIndividual, b: NAIndividual) -> int:
+            return cmp(a.fitness, b.fitness)
 
 method ncMaybeDeadNode(self: var NAPopulationServerDP, n: NCNodeID) =
     discard

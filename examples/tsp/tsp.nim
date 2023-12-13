@@ -48,6 +48,8 @@ when isMainModule:
         of cmdArgument:
             showHelpAndQuit()
 
+    # Best fitness with this data: 334.8078539789234
+    # Possible good limit: 360.0
     let tsp = loadTSP("city_positions1.txt")
 
     if runServer:
@@ -55,7 +57,11 @@ when isMainModule:
         ncInitLogger(logger, 2)
 
         ncInfo("Starting server")
-        let dataProcessor = naInitPopulationServerDP(tsp, "best_result.json")
+        let dataProcessor = naInitPopulationServerDP(
+            tsp,
+            "best_result.json",
+            targetFitness = 360.0
+        )
         ncInitServer(dataProcessor, config)
         ncRunServer()
     else:
@@ -75,7 +81,11 @@ when isMainModule:
         ncInitLogger(logger, 2)
 
         ncInfo("Starting Node")
-        let dataProcessor = naInitPopulationNodeDP(tsp, numOfIterations = 1000000, populationSize = 20)
+        let dataProcessor = naInitPopulationNodeDP(
+            tsp,
+            numOfIterations = 100000,
+            populationSize = 100
+        )
         ncInitNode(dataProcessor, config)
         ncRunNode()
 

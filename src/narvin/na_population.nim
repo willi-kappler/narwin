@@ -99,6 +99,9 @@ proc naSetNewBestIndividual*(self: var NAPopulation, individual: NAIndividual) =
     if self.acceptNewBest:
         self.population[self.populationSize - 1] = individual
 
+        let fitness = individual.fitness
+        ncDebug(fmt("Accept individual from server with fitness: {fitness}"))
+
 proc naSetNewBestIndividualBytes*(self: var NAPopulation, inputData: seq[byte]) =
     let individual = self.population[0].naFromBytes(inputData)
     self.naSetNewBestIndividual(individual)
