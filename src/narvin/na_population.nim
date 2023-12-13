@@ -93,7 +93,7 @@ proc naRun*(self: var NAPopulation) =
             self.population[j].naCalculateFitness()
 
         # The last individual will be totally random.
-        # This helps a bit to escape a local mnimum.
+        # This helps a bit to escape a local minimum.
         self.population[last].naRandomize()
         self.population[last].naCalculateFitness()
 
@@ -114,7 +114,8 @@ proc naGetBestIndividualBytes*(self: NAPopulation): seq[byte] =
 
 proc naSetNewBestIndividual*(self: var NAPopulation, individual: NAIndividual) =
     if self.acceptNewBest:
-        self.population[self.populationSize - 1] = individual
+        # Do not use the last position since that will be randomized.
+        self.population[self.populationSize - 2] = individual
 
         let fitness = individual.fitness
         ncDebug(fmt("Accept individual from server with fitness: {fitness}"))

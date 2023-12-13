@@ -73,7 +73,7 @@ when isMainModule:
             showHelpAndQuit()
 
     # Best fitness with this data: 325.1787170723113
-    # Possible good limit: 360.0
+    # Possible good limit: 330.0
     let tsp = loadTSP("city_positions1.txt")
 
     if runServer:
