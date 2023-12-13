@@ -33,7 +33,7 @@ method ncIsFinished(self: var NAPopulationServerDP): bool =
 method ncGetInitData(self: var NAPopulationServerDP): seq[byte] =
     @[]
 
-method ncGetNewData(self: var NAPopulationServerDP, n: NCNodeID): seq[byte] =
+method ncGetNewData(self: var NAPopulationServerDP, n: NCNodeID): seq[byte] {.gcsafe.} =
     # Pick a random individual from the current population of best
     # individuals and return it to the node.
     # (avoid to get stuck in a local minimum)
@@ -41,7 +41,7 @@ method ncGetNewData(self: var NAPopulationServerDP, n: NCNodeID): seq[byte] =
     let i = rand(last)
     return self.population[i].naToBytes()
 
-method ncCollectData(self: var NAPopulationServerDP, n: NCNodeID, data: seq[byte]) =
+method ncCollectData(self: var NAPopulationServerDP, n: NCNodeID, data: seq[byte]) {.gcsafe.} =
     let last = self.population.high
     let individual = self.population[0].naFromBytes(data)
     let fitness = individual.fitness
@@ -62,7 +62,7 @@ method ncCollectData(self: var NAPopulationServerDP, n: NCNodeID, data: seq[byte
 method ncMaybeDeadNode(self: var NAPopulationServerDP, n: NCNodeID) =
     discard
 
-method ncSaveData(self: var NAPopulationServerDP) =
+method ncSaveData(self: var NAPopulationServerDP) {.gcsafe.} =
     let outFile = open(self.resultFilename, mode = fmWrite)
     # Get the optimal solution:
     # And turn it into a JSON object:

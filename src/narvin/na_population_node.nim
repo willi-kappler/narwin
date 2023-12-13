@@ -27,6 +27,17 @@ method ncProcessData(self: var NAPopulationNodeDP, inputData: seq[byte]): seq[by
 
     return self.population.naGetBestIndividualBytes()
 
-proc naInitPopulationNodeDP*(individual: NAIndividual): NAPopulationNodeDP =
-    return NAPopulationNodeDP(population: naInitPopulation(individual))
+proc naInitPopulationNodeDP*(
+        individual: NAIndividual,
+        populationSize: uint32 = 10,
+        numOfMutations: uint32 = 10,
+        numOfIterations: uint32 = 1000
+        ): NAPopulationNodeDP =
+    return NAPopulationNodeDP(
+        population: naInitPopulation(
+            individual,
+            populationSize,
+            numOfMutations,
+            numOfIterations
+        ))
 

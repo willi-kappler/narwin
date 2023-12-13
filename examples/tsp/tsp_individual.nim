@@ -10,6 +10,7 @@
 
 # Nim std imports
 import std/json
+import std/jsonutils
 
 from std/math import hypot
 from std/random import rand, shuffle
@@ -56,16 +57,17 @@ method naCalculateFitness*(self: var TSPIndividual) =
     self.fitness = length
 
 method naClone*(self: TSPIndividual): NAIndividual =
-    return TSPIndividual(data: self.data)
+    result = TSPIndividual(data: self.data)
+    result.fitness = self.fitness
 
-method naToBytes*(self: TSPIndividual): seq[byte] {.base.} =
+method naToBytes*(self: TSPIndividual): seq[byte] =
     ncToBytes(self)
 
-method naFromBytes*(self: TSPIndividual, data: seq[byte]): NAIndividual {.base.} =
+method naFromBytes*(self: TSPIndividual, data: seq[byte]): NAIndividual =
     ncFromBytes(data, TSPIndividual)
 
-method naToJSON*(self: TSPIndividual): JsonNode {.base.} =
-    %self
+method naToJSON*(self: TSPIndividual): JsonNode =
+    self.toJson()
 
 proc loadTSP*(fileName: string): TSPIndividual =
     result = TSPIndividual(data: @[])

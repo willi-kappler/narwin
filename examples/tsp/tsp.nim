@@ -75,7 +75,7 @@ when isMainModule:
         ncInitLogger(logger, 2)
 
         ncInfo("Starting Node")
-        let dataProcessor = naInitPopulationNodeDP(tsp)
+        let dataProcessor = naInitPopulationNodeDP(tsp, numOfIterations = 1000000, populationSize = 20)
         ncInitNode(dataProcessor, config)
         ncRunNode()
 

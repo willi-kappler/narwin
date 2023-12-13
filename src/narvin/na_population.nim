@@ -9,12 +9,16 @@
 
 # Nim std imports
 from std/algorithm import sort
+from std/strformat import fmt
+
+# External imports
+import num_crunch
 
 # Local imports
 import na_individual
 
 type
-    NAPopulation* = object
+    NAPopulation* = ref object of RootObj
         population: seq[NAIndividual]
         populationSize: uint32
         numOfMutations: uint32
@@ -37,13 +41,15 @@ proc naInitPopulation*(
     assert numOfMutations > 0
     assert numOfIterations > 0
 
+    result = NAPopulation(population: newSeq[NAIndividual](2 * populationSize))
+
     result.populationSize = populationSize
     result.numOfMutations = numOfMutations
     result.numOfIterations = numOfIterations
     result.acceptNewBest = acceptNewBest
-    result.population = newSeq[NAIndividual](2 * populationSize)
 
     result.population[0] = individual.naClone()
+    result.population[0].naCalculateFitness()
     # Initialize the population with random individuals:
     for i in 1..<(2 * populationSize):
         result.population[i] = individual.naNewRandomIndividual()
@@ -78,6 +84,9 @@ proc naRun*(self: var NAPopulation) =
         # All individuals that are not fit enough will be moved to position
         # above self.populationSize and will be overwritten in the next iteration.
         self.naSort()
+
+    let fitness = self.population[0].fitness
+    ncDebug(fmt("Best fitness in this run: {fitness}"))
 
 
 proc naGetBestIndividual*(self: NAPopulation): NAIndividual =
