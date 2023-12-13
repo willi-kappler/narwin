@@ -31,13 +31,17 @@ proc naInitPopulationNodeDP*(
         individual: NAIndividual,
         populationSize: uint32 = 10,
         numOfMutations: uint32 = 10,
-        numOfIterations: uint32 = 1000
+        numOfIterations: uint32 = 1000,
+        acceptNewBest: bool = true,
+        resetPopulation: bool = false
         ): NAPopulationNodeDP =
     return NAPopulationNodeDP(
         population: naInitPopulation(
             individual,
             populationSize,
             numOfMutations,
-            numOfIterations
+            numOfIterations,
+            acceptNewBest,
+            resetPopulation
         ))
 

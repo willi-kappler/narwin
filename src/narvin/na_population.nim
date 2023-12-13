@@ -24,6 +24,7 @@ type
         numOfMutations: uint32
         numOfIterations: uint32
         acceptNewBest: bool
+        resetPopulation: bool
 
 proc naSort(self: var NAPopulation) =
     self.population.sort do (a: NAIndividual, b: NAIndividual) -> int:
@@ -34,7 +35,8 @@ proc naInitPopulation*(
         populationSize: uint32 = 10,
         numOfMutations: uint32 = 10,
         numOfIterations: uint32 = 1000,
-        acceptNewBest: bool = true
+        acceptNewBest: bool = true,
+        resetPopulation: bool = false
         ): NAPopulation =
 
     assert populationSize >= 5
@@ -47,6 +49,7 @@ proc naInitPopulation*(
     result.numOfMutations = numOfMutations
     result.numOfIterations = numOfIterations
     result.acceptNewBest = acceptNewBest
+    result.resetPopulation = resetPopulation
 
     result.population[0] = individual.naClone()
     result.population[0].naCalculateFitness()
@@ -59,6 +62,11 @@ proc naInitPopulation*(
 proc naRun*(self: var NAPopulation) =
     let offset = self.populationSize
     let last = self.population.high
+
+    if self.resetPopulation:
+        ncDebug("Reset the whole population to random values")
+        for i in 0..<self.populationSize:
+            self.population[i].naRandomize()
 
     for i in 0..<self.numOfIterations:
         # Save all individuals of the current population.
