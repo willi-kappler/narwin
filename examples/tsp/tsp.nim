@@ -48,7 +48,7 @@ when isMainModule:
         of cmdArgument:
             showHelpAndQuit()
 
-    # Best fitness with this data: 334.8078539789234
+    # Best fitness with this data: 325.1787170723113
     # Possible good limit: 360.0
     let tsp = loadTSP("city_positions1.txt")
 
