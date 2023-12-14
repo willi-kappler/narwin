@@ -2,7 +2,7 @@
 ##
 ## Written by Willi Kappler, License: MIT
 ##
-## This file contains the TSP (traveling salesman problem) example for narvin.
+## This file contains the Queens example for narvin.
 ##
 ## This Nim library allows you to write programs using evolutinary algorithms.
 ##
@@ -20,7 +20,7 @@ from os import getAppFilename, splitPath, fileExists
 # Local imports
 import ../../src/narvin
 
-import tsp_individual
+import queens_individual
 
 proc showHelpAndQuit() =
     let path = getAppFilename()
@@ -72,17 +72,15 @@ when isMainModule:
         of cmdArgument:
             showHelpAndQuit()
 
-    # Best fitness with this data: 325.1787170723113
-    # Possible good limit: 330.0
-    let tsp = loadTSP("city_positions1.txt")
+    let queens = newBoard()
 
     if runServer:
-        let logger = newFileLogger("tsp_server.log", fmtStr=verboseFmtStr)
+        let logger = newFileLogger("queens_server.log", fmtStr=verboseFmtStr)
         ncInitLogger(logger, 2)
 
         ncInfo("Starting server")
         let dataProcessor = naInitPopulationServerDP(
-            tsp,
+            queens,
             "best_result.json",
             targetFitness
         )
@@ -93,7 +91,7 @@ when isMainModule:
         var logFilename = ""
 
         while true:
-            logFilename = fmt("tsp_node{nameCounter}.log")
+            logFilename = fmt("queens_node{nameCounter}.log")
 
             if fileExists(logFilename):
                 nameCounter += 1
@@ -106,7 +104,7 @@ when isMainModule:
 
         ncInfo("Starting Node")
         let dataProcessor = naInitPopulationNodeDP(
-            tsp,
+            queens,
             populationSize,
             numOfMutations,
             numOfIterations,

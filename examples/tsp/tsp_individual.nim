@@ -10,25 +10,59 @@
 
 # Nim std imports
 import std/json
+import std/jsonutils
 
 from std/math import hypot
 from std/random import rand, shuffle
 from std/strutils import split, parseFloat
+from std/strformat import fmt
 
 type
     TSPIndividual* = object
         data: seq[(float64, float64)]
         fitness: float64
 
-proc naMutate*(self: var TSPIndividual) =
-    # Very simple and dumb mutation:
-    # just swap two positions
-
+method naMutate*(self: var TSPIndividual) =
     let last = self.data.high
-    let i = rand(last)
-    let j = rand(last)
+    var i = rand(last)
+    var j = rand(last)
 
-    swap(self.data[i], self.data[j])
+    # Ensure that i != j
+    while i == j:
+        j = rand(last)
+
+    # Choose a random mutation operation
+    let operation = rand(2)
+
+    case operation
+    of 0:
+        # Very simple and dumb mutation:
+        # just swap two positions
+
+        swap(self.data[i], self.data[j])
+    of 1:
+        # Rotate left
+
+        if i > j:
+            swap(i, j)
+
+        let tmp = self.data[i]
+        for k in i..<j:
+            self.data[k] = self.data[k+1]
+        self.data[j] = tmp
+    of 2:
+        # Rotate right
+
+        if i > j:
+            swap(i, j)
+
+        let tmp = self.data[j]
+        for k in i..<j:
+            let l = i + j - k - 1
+            self.data[l+1] = self.data[l]
+        self.data[i] = tmp
+    else:
+        raise newException(ValueError, fmt("Unknown mutation operation: {operation}"))
 
 proc naRandomize*(self: var TSPIndividual) =
     shuffle(self.data)
@@ -50,16 +84,18 @@ proc naCalculateFitness*(self: var TSPIndividual) =
 
     self.fitness = length
 
-proc naClone*(self: TSPIndividual): TSPIndividual =
-    return TSPIndividual(data: self.data)
+method naClone*(self: TSPIndividual): NAIndividual =
+    result = TSPIndividual(data: self.data)
+    result.fitness = self.fitness
 
-proc naNewRandomIndividual*(self: TSPIndividual): TSPIndividual =
-    result = self.naClone()
-    result.naRandomize()
-    result.naCalculateFitness()
+method naToBytes*(self: TSPIndividual): seq[byte] =
+    ncToBytes(self)
 
-proc naGetFitness*(self: TSPIndividual): float64 =
-    self.fitness
+method naFromBytes*(self: TSPIndividual, data: seq[byte]): NAIndividual =
+    ncFromBytes(data, TSPIndividual)
+
+method naToJSON*(self: TSPIndividual): JsonNode =
+    self.toJson()
 
 proc loadTSP*(fileName: string): TSPIndividual =
     result = TSPIndividual(data: @[])
