@@ -10,6 +10,8 @@
 # Nim std imports
 from std/algorithm import sort
 from std/strformat import fmt
+from std/random import randomize
+
 
 # External imports
 import num_crunch
@@ -43,6 +45,9 @@ proc naInitPopulation*(
     assert numOfMutations > 0
     assert numOfIterations > 0
 
+    # Init random number generator
+    randomize()
+
     result = NAPopulation(population: newSeq[NAIndividual](2 * populationSize))
 
     result.populationSize = populationSize
@@ -71,6 +76,7 @@ proc naRun*(self: var NAPopulation) =
 
     ncDebug(fmt("first fitness: {self.population[0].fitness}"))
     ncDebug(fmt("last fitness: {self.population[offset-1].fitness}"))
+    ncDebug(fmt("last-1 fitness: {self.population[offset-2].fitness}"))
 
     if self.resetPopulation:
         ncDebug("Reset the whole population to random values")
