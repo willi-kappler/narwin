@@ -18,9 +18,12 @@ from std/random import rand
 # External imports
 import num_crunch
 
+# Local imports
+import na_individual
+
 type
-    NAPopulationServerDP*[T] = ref object of NCServerDataProcessor
-        population: seq[T]
+    NAPopulationServerDP* = ref object of NCServerDataProcessor
+        population: seq[NAIndividual]
         targetFitness: float64
         resultFilename: string
         newFitnessCounter: uint32
@@ -35,10 +38,9 @@ proc naSaveData(fileName: string, individual: NAIndividual) =
     outFile.close()
 
 method ncIsFinished(self: var NAPopulationServerDP): bool =
-    let fitness = self.population[0].naGetFitness()
-    return fitness <= self.targetFitness
+    return self.population[0].fitness <= self.targetFitness
 
-method ncGetInitData(self: var NAPopulationServerDP[T]): seq[byte] =
+method ncGetInitData(self: var NAPopulationServerDP): seq[byte] =
     @[]
 
 method ncGetNewData(self: var NAPopulationServerDP, n: NCNodeID): seq[byte] {.gcsafe.} =
@@ -47,7 +49,7 @@ method ncGetNewData(self: var NAPopulationServerDP, n: NCNodeID): seq[byte] {.gc
     # (avoid to get stuck in a local minimum)
     let last = self.population.high
     let i = rand(last)
-    return ncToBytes(self.population[i])
+    return self.population[i].naToBytes()
 
 method ncCollectData(self: var NAPopulationServerDP, n: NCNodeID, data: seq[byte]) {.gcsafe.} =
     let last = self.population.high
@@ -87,8 +89,8 @@ method ncMaybeDeadNode(self: var NAPopulationServerDP, n: NCNodeID) =
 method ncSaveData(self: var NAPopulationServerDP) {.gcsafe.} =
     naSaveData(self.resultFilename, self.population[0])
 
-proc naInitPopulationServerDP*[T](
-        individual: T,
+proc naInitPopulationServerDP*(
+        individual: NAIndividual,
         resultFilename: string,
         targetFitness: float64 = 0.0,
         populationSize: uint32 = 10,
@@ -97,7 +99,7 @@ proc naInitPopulationServerDP*[T](
 
     assert populationSize >= 5
 
-    result = NAPopulationServerDP[T](population: newSeq[T](populationSize))
+    result = NAPopulationServerDP(population: newSeq[NAIndividual](populationSize))
 
     result.targetFitness = targetFitness
     result.resultFilename = resultFilename

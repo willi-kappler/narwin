@@ -16,6 +16,9 @@ from std/random import randomize
 # External imports
 import num_crunch
 
+# Local imports
+import na_individual
+
 type
     NAPopulation* = ref object of RootObj
         population: seq[NAIndividual]
@@ -25,11 +28,9 @@ type
         acceptNewBest: bool
         resetPopulation: bool
 
-proc naSort[T](self: var NAPopulation[T]) =
-    self.population.sort do (a: T, b: T) -> int:
-        let fa = a.naGetFitness()
-        let fb = b.naGetFitness()
-        return cmp(fa, fb)
+proc naSort(self: var NAPopulation) =
+    self.population.sort do (a: NAIndividual, b: NAIndividual) -> int:
+        return cmp(a.fitness, b.fitness)
 
 proc naInitPopulation*(
         individual: NAIndividual,
@@ -111,10 +112,13 @@ proc naRun*(self: var NAPopulation) =
     ncDebug(fmt("Best fitness in this run: {fitness}"))
 
 
-proc naGetBestIndividual*[T](self: NAPopulation[T]): T =
+proc naGetBestIndividual*(self: NAPopulation): NAIndividual =
     self.population[0]
 
-proc naSetNewBestIndividual*[T](self: var NAPopulation, individual: T) =
+proc naGetBestIndividualBytes*(self: NAPopulation): seq[byte] =
+    self.naGetBestIndividual().naToBytes()
+
+proc naSetNewBestIndividual*(self: var NAPopulation, individual: NAIndividual) =
     if self.acceptNewBest:
         # Do not use the last position since that will be randomized.
         self.population[self.populationSize - 2] = individual
@@ -122,4 +126,7 @@ proc naSetNewBestIndividual*[T](self: var NAPopulation, individual: T) =
         let fitness = individual.fitness
         ncDebug(fmt("Accept individual from server with fitness: {fitness}"))
 
+proc naSetNewBestIndividualBytes*(self: var NAPopulation, inputData: seq[byte]) =
+    let individual = self.population[0].naFromBytes(inputData)
+    self.naSetNewBestIndividual(individual)
 

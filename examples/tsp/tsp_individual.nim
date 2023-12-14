@@ -17,10 +17,15 @@ from std/random import rand, shuffle
 from std/strutils import split, parseFloat
 from std/strformat import fmt
 
+# External imports
+import num_crunch
+
+# Local imports
+import ../../src/narvin
+
 type
-    TSPIndividual* = object
+    TSPIndividual* = ref object of NAIndividual
         data: seq[(float64, float64)]
-        fitness: float64
 
 method naMutate*(self: var TSPIndividual) =
     let last = self.data.high
@@ -64,10 +69,10 @@ method naMutate*(self: var TSPIndividual) =
     else:
         raise newException(ValueError, fmt("Unknown mutation operation: {operation}"))
 
-proc naRandomize*(self: var TSPIndividual) =
+method naRandomize*(self: var TSPIndividual) =
     shuffle(self.data)
 
-proc naCalculateFitness*(self: var TSPIndividual) =
+method naCalculateFitness*(self: var TSPIndividual) =
     var length: float64 = 0.0
     let last = self.data.high
 

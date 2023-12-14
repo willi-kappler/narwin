@@ -19,7 +19,7 @@ task checkAll, "run 'nim check' on all source files":
     exec "nim check narvin.nim"
 
     cd "narvin/"
-    #exec "nim check na_individual.nim"
+    exec "nim check na_individual.nim"
     exec "nim check na_population.nim"
     exec "nim check na_population_node.nim"
     exec "nim check na_population_server.nim"
