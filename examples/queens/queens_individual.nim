@@ -28,16 +28,50 @@ type
         data: seq[uint8]
 
 method naMutate*(self: var QueensIndividual) =
-    # TODO: implement
-    discard
+    var i = 0
+    var j = 0
+    let last = self.data.high
+
+    # find a position with a queen:
+    while true:
+        i = rand(last)
+        if self.data[i] == 1:
+            break
+
+    # Find a position without queen:
+    while true:
+        j = rand(last)
+        if self.data[j] == 0:
+            break
+
+    # Move the queen to a new empty position
+    swap(self.data[i], self.data[j])
 
 method naRandomize*(self: var QueensIndividual) =
-    # TODO: implement
-    discard
+    shuffle(self.data)
 
 method naCalculateFitness*(self: var QueensIndividual) =
-    # TODO: implement
-    discard
+    # Fitness means here: number of queen-collisions
+    var collisions = 0
+    var queens1 = 0
+    var queens2 = 0
+
+    for i in 0..<8:
+        queens1 = 0
+        queens2 = 0
+        for j in 0..<8:
+            # Check rows:
+            if self.data[(i * 8) + j] == 1:
+                inc(queens1)
+            # Check columns:
+            if self.data[(j * 8) + i] == 1:
+                inc(queens2)
+
+        collisions += (queens1 - 1)
+        collisions += (queens2 - 1)
+
+
+
 
 method naClone*(self: QueensIndividual): NAIndividual =
     result = QueensIndividual(data: self.data)
@@ -53,6 +87,14 @@ method naToJSON*(self: QueensIndividual): JsonNode =
     self.toJson()
 
 proc newBoard*(): QueensIndividual =
-    # TODO:implement
-    result = QueensIndividual(data: @[])
+    result = QueensIndividual(data: @[
+            1,1,1,1,1,1,1,1,
+            0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0
+        ])
 
