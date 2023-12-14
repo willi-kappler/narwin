@@ -26,6 +26,16 @@ type
         population: seq[NAIndividual]
         targetFitness: float64
         resultFilename: string
+        newFitnessCounter: uint32
+        saveNewFitness: bool
+
+proc naSaveData(fileName: string, individual: NAIndividual) =
+    let outFile = open(fileName, mode = fmWrite)
+    # Convert individual into a JSON object:
+    let converted = individual.naToJSON()
+    # Convert it into a string and write it into a file:
+    outFile.write($converted)
+    outFile.close()
 
 method ncIsFinished(self: var NAPopulationServerDP): bool =
     return self.population[0].fitness <= self.targetFitness
@@ -44,41 +54,47 @@ method ncGetNewData(self: var NAPopulationServerDP, n: NCNodeID): seq[byte] {.gc
 method ncCollectData(self: var NAPopulationServerDP, n: NCNodeID, data: seq[byte]) {.gcsafe.} =
     let last = self.population.high
     let individual = self.population[0].naFromBytes(data)
-    let fitness = individual.fitness
+    let newFitness = individual.fitness
+    let bestFitness = self.population[0].fitness
 
-    # Overwrite (kill) the least fit individual with the new best
-    # individual from the node population:
-    if fitness < self.population[last].fitness:
+    if newFitness < self.population[last].fitness:
         for indy in self.population:
-            if fitness == indy.fitness:
+            # Only accept new unique individual
+            if newFitness == indy.fitness:
                 return
 
+        # Overwrite (kill) the least fit individual with the new best
+        # individual from the node population:
         self.population[last] = individual
 
-        ncInfo(fmt("New individual added to the population, fitness: {fitness}"))
-        ncInfo(fmt("Current best fitness: {self.population[0].fitness}"))
+        ncInfo(fmt("New individual added to the population, fitness: {newFitness}"))
 
         # Sort population by fitness:
         self.population.sort do (a: NAIndividual, b: NAIndividual) -> int:
             return cmp(a.fitness, b.fitness)
 
+        if newFitness < bestFitness:
+            ncInfo(fmt("Current best fitness: {bestFitness}"))
+            ncInfo(fmt("New best fitness: {newFitness}"))
+
+            if self.saveNewFitness:
+                naSaveData(fmt("{self.newFitnessCounter}_{self.resultFilename}"), self.population[0])
+
+            inc(self.newFitnessCounter)
+
 method ncMaybeDeadNode(self: var NAPopulationServerDP, n: NCNodeID) =
+    # Not needed for narvin
     discard
 
 method ncSaveData(self: var NAPopulationServerDP) {.gcsafe.} =
-    let outFile = open(self.resultFilename, mode = fmWrite)
-    # Get the optimal solution:
-    # And turn it into a JSON object:
-    let converted = self.population[0].naToJSON()
-    # Write it out into a file:
-    outFile.write($converted)
-    outFile.close()
+    naSaveData(self.resultFilename, self.population[0])
 
 proc naInitPopulationServerDP*(
         individual: NAIndividual,
         resultFilename: string,
         targetFitness: float64 = 0.0,
-        populationSize: uint32 = 10
+        populationSize: uint32 = 10,
+        saveNewFitness: bool = true
         ): NAPopulationServerDP =
 
     assert populationSize >= 5
@@ -87,6 +103,7 @@ proc naInitPopulationServerDP*(
 
     result.targetFitness = targetFitness
     result.resultFilename = resultFilename
+    result.saveNewFitness = saveNewFitness
 
     result.population[0] = individual.naClone()
     result.population[0].naCalculateFitness()
