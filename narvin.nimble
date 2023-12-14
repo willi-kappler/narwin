@@ -35,9 +35,13 @@ task cleanTests, "Clean log files and binaries in tests/ folder":
     # Delete all executable files
     exec "find . -type f -perm /u=x -delete"
 
-task runMandel, "Runs the xxx example":
-    cd "examples/xxx/"
-    exec "nimble runXXX"
+task runTSP, "Runs the TSP example":
+    cd "examples/tsp/"
+    exec "nimble runTSP"
+
+task runQueens, "Runs the Queens example":
+    cd "examples/queens/"
+    exec "nimble runQueens"
 
 task genDoc, "Generate documentation":
     exec "nim doc --project src/narvin.nim"
