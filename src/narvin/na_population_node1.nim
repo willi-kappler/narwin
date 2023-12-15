@@ -19,10 +19,10 @@ import na_individual
 import na_population
 
 type
-    NAPopulationNodeDP = ref object of NCNodeDataProcessor
+    NAPopulationNodeDP1 = ref object of NCNodeDataProcessor
         population: NAPopulation
 
-method ncProcessData(self: var NAPopulationNodeDP, inputData: seq[byte]): seq[byte] =
+method ncProcessData(self: var NAPopulationNodeDP1, inputData: seq[byte]): seq[byte] =
     ncDebug("ncProcessData()", 2)
 
     self.population.naSetNewBestIndividualBytes(inputData)
@@ -31,16 +31,16 @@ method ncProcessData(self: var NAPopulationNodeDP, inputData: seq[byte]): seq[by
 
     return self.population.naGetBestIndividualBytes()
 
-proc naInitPopulationNodeDP*(
+proc naInitPopulationNodeDP1*(
         individual: NAIndividual,
         config: NAConfiguration
-        ): NAPopulationNodeDP =
+        ): NAPopulationNodeDP1 =
 
     ncDebug(fmt("Population size: {config.populationSize}"))
     ncDebug(fmt("Number of mutations: {config.numOfMutations}"))
     ncDebug(fmt("Number of iterations: {config.numOfIterations}"))
 
-    return NAPopulationNodeDP(
+    return NAPopulationNodeDP1(
         population: naInitPopulation(
             individual,
             config

@@ -36,9 +36,7 @@ when isMainModule:
         ncInitLogger(logger, 2)
 
         ncInfo("Starting server")
-        let dataProcessor = naInitPopulationServerDP(
-            tsp, naConfig
-        )
+        let dataProcessor = naInitPopulationServerDP(tsp, naConfig)
         ncInitServer(dataProcessor, ncConfig)
         ncRunServer()
     else:
@@ -58,9 +56,13 @@ when isMainModule:
         ncInitLogger(logger, 2)
 
         ncInfo("Starting Node")
-        let dataProcessor = naInitPopulationNodeDP(
-            tsp, naConfig
-        )
+        let dataProcessor =
+            if naConfig.populationKind == 0:
+                naInitPopulationNodeDP1(tsp, naConfig)
+            elif naConfig.populationKind == 1:
+                naInitPopulationNodeDP2(tsp, naConfig)
+            else:
+                raise newException(ValueError, fmt("Unknown population kind: {naConfig.populationKind}"))
         ncInitNode(dataProcessor, ncConfig)
         ncRunNode()
 
