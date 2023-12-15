@@ -82,6 +82,7 @@ proc naRun*(self: var NAPopulation) =
         ncDebug("Reset the whole population to random values")
         for i in 0..<self.populationSize:
             self.population[i].naRandomize()
+            self.population[i].naCalculateFitness()
 
     for i in 0..<self.numOfIterations:
         # Save all individuals of the current population.
