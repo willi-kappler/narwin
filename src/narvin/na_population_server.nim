@@ -75,7 +75,7 @@ method ncCollectData(self: var NAPopulationServerDP, n: NCNodeID, data: seq[byte
 
         if newFitness < bestFitness:
             ncInfo(fmt("Current best fitness: {bestFitness}"))
-            ncInfo(fmt("New best fitness: {newFitness}"))
+            ncInfo(fmt("New best fitness: {newFitness}, from node: {n}"))
 
             if self.saveNewFitness:
                 naSaveData(fmt("{self.newFitnessCounter}_{self.resultFilename}"), self.population[0])
@@ -109,4 +109,7 @@ proc naInitPopulationServerDP*(
     result.population[0].naCalculateFitness()
     for i in 1..<populationSize:
         result.population[i] = individual.naNewRandomIndividual()
+
+    ncDebug(fmt("Target fitness: {targetFitness}"))
+    ncDebug(fmt("Population size: {populationSize}"))
 
