@@ -37,9 +37,7 @@ when isMainModule:
 
         ncInfo("Starting server")
         let dataProcessor = naInitPopulationServerDP(
-            tsp,
-            "best_result.json",
-            naConfig.targetFitness
+            tsp, naConfig
         )
         ncInitServer(dataProcessor, ncConfig)
         ncRunServer()
@@ -61,12 +59,7 @@ when isMainModule:
 
         ncInfo("Starting Node")
         let dataProcessor = naInitPopulationNodeDP(
-            tsp,
-            naConfig.populationSize,
-            naconfig.numOfMutations,
-            naconfig.numOfIterations,
-            true,
-            naConfig.resetPopulation
+            tsp, naConfig
         )
         ncInitNode(dataProcessor, ncConfig)
         ncRunNode()

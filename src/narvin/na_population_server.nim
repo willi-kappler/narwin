@@ -19,7 +19,9 @@ from std/random import rand
 import num_crunch
 
 # Local imports
+import na_config
 import na_individual
+
 
 type
     NAPopulationServerDP* = ref object of NCServerDataProcessor
@@ -91,25 +93,22 @@ method ncSaveData(self: var NAPopulationServerDP) {.gcsafe.} =
 
 proc naInitPopulationServerDP*(
         individual: NAIndividual,
-        resultFilename: string,
-        targetFitness: float64 = 0.0,
-        populationSize: uint32 = 10,
-        saveNewFitness: bool = true
+        config: NAConfiguration
         ): NAPopulationServerDP =
 
-    assert populationSize >= 5
+    assert config.populationSize >= 5
 
-    result = NAPopulationServerDP(population: newSeq[NAIndividual](populationSize))
+    result = NAPopulationServerDP(population: newSeq[NAIndividual](config.populationSize))
 
-    result.targetFitness = targetFitness
-    result.resultFilename = resultFilename
-    result.saveNewFitness = saveNewFitness
+    result.targetFitness = config.targetFitness
+    result.resultFilename = config.resultFilename
+    result.saveNewFitness = config.saveNewFitness
 
     result.population[0] = individual.naClone()
     result.population[0].naCalculateFitness()
-    for i in 1..<populationSize:
+    for i in 1..<config.populationSize:
         result.population[i] = individual.naNewRandomIndividual()
 
-    ncDebug(fmt("Target fitness: {targetFitness}"))
-    ncDebug(fmt("Population size: {populationSize}"))
+    ncDebug(fmt("Target fitness: {config.targetFitness}"))
+    ncDebug(fmt("Population size: {config.populationSize}"))
 

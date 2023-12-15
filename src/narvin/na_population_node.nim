@@ -14,6 +14,7 @@ from std/strformat import fmt
 import num_crunch
 
 # Local imports
+import na_config
 import na_individual
 import na_population
 
@@ -32,24 +33,16 @@ method ncProcessData(self: var NAPopulationNodeDP, inputData: seq[byte]): seq[by
 
 proc naInitPopulationNodeDP*(
         individual: NAIndividual,
-        populationSize: uint32 = 10,
-        numOfMutations: uint32 = 10,
-        numOfIterations: uint32 = 1000,
-        acceptNewBest: bool = true,
-        resetPopulation: bool = false
+        config: NAConfiguration
         ): NAPopulationNodeDP =
 
-    ncDebug(fmt("Population size: {populationSize}"))
-    ncDebug(fmt("Number of mutations: {numOfMutations}"))
-    ncDebug(fmt("Number of iterations: {numOfIterations}"))
+    ncDebug(fmt("Population size: {config.populationSize}"))
+    ncDebug(fmt("Number of mutations: {config.numOfMutations}"))
+    ncDebug(fmt("Number of iterations: {config.numOfIterations}"))
 
     return NAPopulationNodeDP(
         population: naInitPopulation(
             individual,
-            populationSize,
-            numOfMutations,
-            numOfIterations,
-            acceptNewBest,
-            resetPopulation
+            config
         ))
 

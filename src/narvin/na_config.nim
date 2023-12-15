@@ -16,8 +16,13 @@ from os import getAppFilename, splitPath
 
 type
     NAConfiguration* = object
+        # Server:
         serverMode*: bool
         targetFitness*: float64
+        resultFilename*: string
+        saveNewFitness*: bool
+
+        # Node:
         populationSize*: uint32
         numOfMutations*: uint32
         numOfIterations*: uint32
@@ -32,11 +37,13 @@ proc naShowHelpAndQuit*() =
     echo("Use --server to start in 'server mode' otherwise start in 'node mode':")
     echo(fmt("{name}: this starts in 'node mode' and tries to connect to the server"))
     echo(fmt("{name} --server: this starts in 'server mode' and waits for nodes to connect"))
-
-    echo("-m [uint32]: number of mutations per iteration")
-    echo("-p [uint32]: population size")
-    echo("-i [uint32]: number of iterations")
     echo("-t [float64]: target fitness")
+    echo("--file: output filename for the result (optimal solution)")
+    # TODO: option for save new fitness
+
+    echo("-p [uint32]: population size")
+    echo("-m [uint32]: number of mutations per iteration")
+    echo("-i [uint32]: number of iterations")
     echo("-k [uint8]: population kind")
     echo("--reset: before each run randomize the whole population")
 
@@ -45,6 +52,10 @@ proc naShowHelpAndQuit*() =
 proc naConfigFromCmdLine*(): NAConfiguration =
     # Default values:
     result.serverMode = false
+    result.targetFitness = 0.0
+    result.resultFilename = "best_result.json"
+    result.saveNewFitness = true
+
     result.populationSize = 10
     result.numOfMutations = 10
     result.numOfIterations = 1000
@@ -61,14 +72,16 @@ proc naConfigFromCmdLine*(): NAConfiguration =
         of cmdShortOption, cmdLongOption:
             if cmdParser.key == "server":
                 result.serverMode = true
-            elif cmdParser.key == "m":
-                result.numOfMutations = uint32(parseUint(cmdParser.val))
-            elif cmdParser.key == "p":
-                result.populationSize = uint32(parseUint(cmdParser.val))
-            elif cmdParser.key == "i":
-                result.numOfIterations = uint32(parseUint(cmdParser.val))
             elif cmdParser.key == "t":
                 result.targetFitness = parseFloat(cmdParser.val)
+            elif cmdParser.key == "file":
+                result.resultFilename = cmdParser.val
+            elif cmdParser.key == "p":
+                result.populationSize = uint32(parseUint(cmdParser.val))
+            elif cmdParser.key == "m":
+                result.numOfMutations = uint32(parseUint(cmdParser.val))
+            elif cmdParser.key == "i":
+                result.numOfIterations = uint32(parseUint(cmdParser.val))
             elif cmdParser.key == "reset":
                 result.resetPopulation = true
             elif cmdParser.key == "k":

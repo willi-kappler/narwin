@@ -17,6 +17,7 @@ from std/random import randomize
 import num_crunch
 
 # Local imports
+import na_config
 import na_individual
 
 type
@@ -34,37 +35,33 @@ proc naSort(self: var NAPopulation) =
 
 proc naInitPopulation*(
         individual: NAIndividual,
-        populationSize: uint32,
-        numOfMutations: uint32,
-        numOfIterations: uint32,
-        acceptNewBest: bool,
-        resetPopulation: bool
+        config: NAConfiguration
         ): NAPopulation =
 
-    assert populationSize >= 5
-    assert numOfMutations > 0
-    assert numOfIterations > 0
+    assert config.populationSize >= 5
+    assert config.numOfMutations > 0
+    assert config.numOfIterations > 0
 
     # Init random number generator
     randomize()
 
-    result = NAPopulation(population: newSeq[NAIndividual](2 * populationSize))
+    result = NAPopulation(population: newSeq[NAIndividual](2 * config.populationSize))
 
-    result.populationSize = populationSize
-    result.numOfMutations = numOfMutations
-    result.numOfIterations = numOfIterations
+    result.populationSize = config.populationSize
+    result.numOfMutations = config.numOfMutations
+    result.numOfIterations = config.numOfIterations
 
-    if resetPopulation:
+    if config.resetPopulation:
         result.acceptNewBest = false
     else:
-        result.acceptNewBest = acceptNewBest
+        result.acceptNewBest = config.acceptNewBest
 
-    result.resetPopulation = resetPopulation
+    result.resetPopulation = config.resetPopulation
 
     result.population[0] = individual.naClone()
     result.population[0].naCalculateFitness()
     # Initialize the population with random individuals:
-    for i in 1..<(2 * populationSize):
+    for i in 1..<(2 * config.populationSize):
         result.population[i] = individual.naNewRandomIndividual()
 
     result.naSort()
