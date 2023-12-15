@@ -72,9 +72,12 @@ when isMainModule:
         of cmdArgument:
             showHelpAndQuit()
 
-    # Best fitness with this data: 325.1787170723113
+    # Best fitness with city_positions1: 325.1787170723113
     # Possible good limit: 330.0
-    let tsp = loadTSP("city_positions1.txt")
+    #
+    # Best fitness with city_positions2: 8433.92388034772
+    # Possible good limit: 8500.0
+    let tsp = loadTSP("city_positions2.txt")
 
     if runServer:
         let logger = newFileLogger("tsp_server.log", fmtStr=verboseFmtStr)
