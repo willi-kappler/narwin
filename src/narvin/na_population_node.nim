@@ -7,6 +7,9 @@
 ## This Nim library allows you to write programs using evolutinary algorithms.
 ##
 
+# Nim std imports
+from std/strformat import fmt
+
 # External imports
 import num_crunch
 
