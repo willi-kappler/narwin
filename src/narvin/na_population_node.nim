@@ -35,6 +35,11 @@ proc naInitPopulationNodeDP*(
         acceptNewBest: bool = true,
         resetPopulation: bool = false
         ): NAPopulationNodeDP =
+
+    ncDebug(fmt("Population size: {populationSize}"))
+    ncDebug(fmt("Number of mutations: {numOfMutations}"))
+    ncDebug(fmt("Number of iterations: {numOfIterations}"))
+
     return NAPopulationNodeDP(
         population: naInitPopulation(
             individual,
