@@ -9,6 +9,7 @@
 
 # Nim std imports
 from std/strformat import fmt
+from std/random import randomize, rand
 
 # External imports
 import num_crunch
@@ -69,7 +70,7 @@ method ncProcessData(self: var NAPopulationNodeDP2, inputData: seq[byte]): seq[b
         self.findWorstIndividual()
 
         # Choose a random individual:
-        let j = rand(self.populationSize - 1)
+        let j = rand(int(self.populationSize - 1))
         tmpIndividual = self.population[j].naClone()
 
         # And mutate it:
