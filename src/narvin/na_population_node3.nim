@@ -34,14 +34,22 @@ type
         worstFitness: float64
 
 proc findWorstIndividual(self: var NAPopulationNodeDP3) =
-    for i in 0..<self.populationSize:
+    self.worstFitness = self.population[0].fitness
+    self.worstIndex = 0
+
+    for i in 1..<self.populationSize:
         let currentFitness = self.population[i].fitness
         if currentFitness > self.worstFitness:
             self.worstFitness = currentFitness
             self.worstIndex = i
 
 proc findBestAndWorstIndividual(self: var NAPopulationNodeDP3) =
-    for i in 0..<self.populationSize:
+    self.bestFitness = self.population[0].fitness
+    self.bestIndex = 0
+    self.worstFitness = self.population[0].fitness
+    self.worstIndex = 0
+
+    for i in 1..<self.populationSize:
         let currentFitness = self.population[i].fitness
         if currentFitness < self.bestFitness:
             self.bestFitness = currentFitness
@@ -79,7 +87,7 @@ method ncProcessData(self: var NAPopulationNodeDP3, inputData: seq[byte]): seq[b
         # If the mutated individual is better than the original
         # it gets overwritten (killed) by the better one:
         if tmpIndividual.fitness < self.population[j].fitness:
-            self.population[j] = tmpIndividual
+            self.population[j] = tmpIndividual.naClone()
             if tmpIndividual.fitness < self.targetFitness:
                 break
 
