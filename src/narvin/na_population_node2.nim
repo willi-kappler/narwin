@@ -26,6 +26,7 @@ type
         numOfIterations: uint32
         acceptNewBest: bool
         resetPopulation: bool
+        targetFitness: float64
 
         bestIndex: uint32
         bestFitness: float64
@@ -83,6 +84,8 @@ method ncProcessData(self: var NAPopulationNodeDP2, inputData: seq[byte]): seq[b
         # it gets overwritten (killed) by the better one:
         if tmpIndividual.fitness < self.worstFitness:
             self.population[self.worstIndex] = tmpIndividual
+            if tmpIndividual.fitness < self.targetFitness:
+                break
 
     # Find the best and the worst individual at the end:
     self.findBestAndWorstIndividual()
@@ -111,6 +114,7 @@ proc naInitPopulationNodeDP2*(
     result.populationSize = config.populationSize
     result.numOfMutations = config.numOfMutations
     result.numOfIterations = config.numOfIterations
+    result.targetFitness = config.targetFitness
 
     if config.resetPopulation:
         result.acceptNewBest = false

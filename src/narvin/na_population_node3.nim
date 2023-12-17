@@ -26,6 +26,7 @@ type
         numOfIterations: uint32
         acceptNewBest: bool
         resetPopulation: bool
+        targetFitness: float64
 
         bestIndex: uint32
         bestFitness: float64
@@ -66,7 +67,6 @@ method ncProcessData(self: var NAPopulationNodeDP3, inputData: seq[byte]): seq[b
         self.population[self.worstIndex] = tmpIndividual.naClone()
 
     for i in 0..<self.numOfIterations:
-        # Choose a random individual:
         let j = rand(int(self.populationSize - 1))
         tmpIndividual = self.population[j].naClone()
 
@@ -80,6 +80,8 @@ method ncProcessData(self: var NAPopulationNodeDP3, inputData: seq[byte]): seq[b
         # it gets overwritten (killed) by the better one:
         if tmpIndividual.fitness < self.population[j].fitness:
             self.population[j] = tmpIndividual
+            if tmpIndividual.fitness < self.targetFitness:
+                break
 
     # Find the best and the worst individual at the end:
     self.findBestAndWorstIndividual()
@@ -105,6 +107,7 @@ proc naInitPopulationNodeDP3*(individual: NAIndividual, config: NAConfiguration)
     result.populationSize = config.populationSize
     result.numOfMutations = config.numOfMutations
     result.numOfIterations = config.numOfIterations
+    result.targetFitness = config.targetFitness
 
     if config.resetPopulation:
         result.acceptNewBest = false
