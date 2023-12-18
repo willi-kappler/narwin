@@ -27,15 +27,7 @@ method ncProcessData(self: var NAPopulationNodeDP1, inputData: seq[byte]): seq[b
 
     let offset = self.population.populationSize
 
-    if self.population.resetPopulation:
-        ncDebug("Reset the whole population to random values")
-        for i in 0..<self.population.populationSize:
-            self.population.population[i].naRandomize()
-            self.population.population[i].naCalculateFitness()
-    elif self.population.acceptNewBest:
-        let tmpIndividual = self.population.population[0].naFromBytes(inputData)
-        ncDebug(fmt("Accept individual from server with fitness: {tmpIndividual.fitness}"))
-        self.population.population[offset - 2] = tmpIndividual.naClone()
+    self.population.naResetOrAcepptBest(inputData)
 
     for i in 0..<self.population.numOfIterations:
         for j in 0..<self.population.populationSize:
@@ -43,7 +35,7 @@ method ncProcessData(self: var NAPopulationNodeDP1, inputData: seq[byte]): seq[b
             # Those will not be mutated.
             # This overwrites all the individuals above self.populationSize.
             # They will not survive and die.
-            self.population.population[j + offset] = self.population.population[j].naClone()
+            self.population.population[j + offset] = self.population.naClone(j)
 
             # Now mutate all individuals of the current active population:
             for k in 0..<self.population.numOfMutations:
@@ -71,6 +63,8 @@ method ncProcessData(self: var NAPopulationNodeDP1, inputData: seq[byte]): seq[b
     return self.population.population[0].naToBytes()
 
 proc naInitPopulationNodeDP1*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP1 =
+    ncDebug("naInitPopulationNodeDP1")
+
     var population = naInitPopulation(individual, config)
     population.population = newSeq[NAIndividual](2 * config.populationSize)
 

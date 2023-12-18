@@ -9,7 +9,6 @@
 
 # Nim std imports
 from std/strformat import fmt
-from std/random import randomize, rand
 
 # External imports
 import num_crunch
@@ -26,22 +25,16 @@ type
 method ncProcessData(self: var NAPopulationNodeDP3, inputData: seq[byte]): seq[byte] =
     ncDebug("ncProcessData()", 2)
 
-    var tmpIndividual = self.population.population[0].naClone()
+    var tmpIndividual = self.population.naClone(0)
 
-    if self.population.resetPopulation:
-        ncDebug("Reset the whole population to random values")
-        for i in 0..<self.population.populationSize:
-            self.population.population[i].naRandomize()
-            self.population.population[i].naCalculateFitness()
-    elif self.population.acceptNewBest:
-        tmpIndividual = self.population.population[0].naFromBytes(inputData)
-        ncDebug(fmt("Accept individual from server with fitness: {tmpIndividual.fitness}"))
-        self.population.findWorstIndividual()
-        self.population.population[self.population.worstIndex] = tmpIndividual.naClone()
+    self.population.naResetOrAcepptBest(inputData)
+
+    # Pick a random individual and randomize it:
+    self.population.naRandomizeAny()
 
     for i in 0..<self.population.numOfIterations:
-        let j = rand(int(self.population.populationSize - 1))
-        tmpIndividual = self.population.population[j].naClone()
+        let j = self.population.naGetRandomIndex()
+        tmpIndividual = self.population.naClone(j)
 
         # And mutate it:
         for k in 0..<self.population.numOfMutations:
@@ -64,6 +57,8 @@ method ncProcessData(self: var NAPopulationNodeDP3, inputData: seq[byte]): seq[b
     return self.population.population[self.population.bestIndex].naToBytes()
 
 proc naInitPopulationNodeDP3*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP3 =
+    ncDebug("naInitPopulationNodeDP3")
+
     var population = naInitPopulation(individual, config)
     population.population = newSeq[NAIndividual](config.populationSize)
 

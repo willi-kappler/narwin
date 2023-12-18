@@ -55,7 +55,8 @@ method ncGetNewData(self: var NAPopulationServerDP, n: NCNodeID): seq[byte] {.gc
 
 method ncCollectData(self: var NAPopulationServerDP, n: NCNodeID, data: seq[byte]) {.gcsafe.} =
     let last = self.population.high
-    let individual = self.population[0].naFromBytes(data)
+    var individual = self.population[0].naClone()
+    individual.naFromBytes(data)
     let newFitness = individual.fitness
     let bestFitness = self.population[0].fitness
 

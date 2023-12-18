@@ -23,13 +23,13 @@ method naRandomize*(self: var NAIndividual) {.base.} =
 method naCalculateFitness*(self: var NAIndividual) {.base.} =
     quit("You must override this method: naCalculateFitness")
 
-method naClone*(self: NAIndividual): NAIndividual {.base.} =
+method naClone*(self: NAIndividual): NAIndividual {.base, gcsafe.} =
     quit("You must override this method: naClone")
 
 method naToBytes*(self: NAIndividual): seq[byte] {.base, gcsafe.} =
     quit("You must override this method: naToBytes")
 
-method naFromBytes*(self: NAIndividual, data: seq[byte]): NAIndividual {.base, gcsafe.} =
+method naFromBytes*(self: var NAIndividual, data: seq[byte]) {.base, gcsafe.} =
     quit("You must override this method: naFromBytes")
 
 method naToJSON*(self: NAIndividual): JsonNode {.base, gcsafe.} =

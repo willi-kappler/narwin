@@ -65,11 +65,42 @@ proc naSort*(self: var NAPopulation) =
     self.population.sort do (a: NAIndividual, b: NAIndividual) -> int:
         return cmp(a.fitness, b.fitness)
 
+proc naGetRandomIndex*(self: NAPopulation): uint32 =
+    uint32(rand(int(self.populationSize - 1)))
+
+proc naRandomizeSpecific*(self: var NAPopulation, index: uint32) =
+    self.population[index].naRandomize()
+    self.population[index].naCalculateFitness()
+
+proc naRandomizeAny*(self: var NAPopulation) =
+    let index = self.naGetRandomIndex()
+    self.naRandomizeSpecific(index)
+
+proc naResetPopulation*(self: var NAPopulation) =
+    ncDebug("Reset the whole population to random values")
+    for i in 0..<self.populationSize:
+        self.population[i].naRandomize()
+        self.population[i].naCalculateFitness()
+
+proc naResetOrAcepptBest*(self: var NAPopulation, inputData: seq[byte]) =
+    if self.resetPopulation:
+        self.naResetPopulation()
+    elif self.acceptNewBest:
+        let index = self.naGetRandomIndex()
+        self.population[index].naFromBytes(inputData)
+        ncDebug(fmt("Accept individual from server with fitness: {self.population[index].fitness}"))
+
+proc naClone*(self: NAPopulation, index: uint32): NAIndividual =
+    self.population[index].naClone()
+
 proc naInitPopulation*(individual: NAIndividual, config: NAConfiguration): NAPopulation =
 
     ncDebug(fmt("Population size: {config.populationSize}"))
     ncDebug(fmt("Number of mutations: {config.numOfMutations}"))
     ncDebug(fmt("Number of iterations: {config.numOfIterations}"))
+    ncDebug(fmt("Target fitness: {config.targetFitness}"))
+    ncDebug(fmt("Reset population: {config.resetPopulation}"))
+    ncDebug(fmt("Accept new best from server: {config.acceptNewBest}"))
 
     assert config.populationSize >= 5
     assert config.numOfMutations > 0
