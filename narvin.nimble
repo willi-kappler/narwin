@@ -21,6 +21,7 @@ task checkAll, "run 'nim check' on all source files":
     cd "narvin/"
     exec "nim check na_config.nim"
     exec "nim check na_individual.nim"
+    exec "nim check na_population.nim"
     exec "nim check na_population_node1.nim"
     exec "nim check na_population_node2.nim"
     exec "nim check na_population_node3.nim"
