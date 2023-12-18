@@ -35,32 +35,32 @@ method ncProcessData(self: var NAPopulationNodeDP1, inputData: seq[byte]): seq[b
             # Those will not be mutated.
             # This overwrites all the individuals above self.populationSize.
             # They will not survive and die.
-            self.population.population[j + offset] = self.population.naClone(j)
+            self.population[j + offset] = self.population.naClone(j)
 
             # Now mutate all individuals of the current active population:
             for k in 0..<self.population.numOfMutations:
-                self.population.population[j].naMutate()
+                self.population[j].naMutate()
             # Calculate the new fitness for the mutated individual:
-            self.population.population[j].naCalculateFitness()
+            self.population[j].naCalculateFitness()
 
         # The last individual will be totally random.
         # This helps a bit to escape a local minimum.
-        self.population.population[offset - 1].naRandomize()
-        self.population.population[offset - 1].naCalculateFitness()
+        self.population[offset - 1].naRandomize()
+        self.population[offset - 1].naCalculateFitness()
 
         # Sort the whole population (new and old) by fitness:
         # All individuals that are not fit enough will be moved to position
         # above self.populationSize and will be overwritten in the next iteration.
         self.population.naSort()
 
-        if self.population.population[0].fitness <= self.population.targetFitness:
+        if self.population[0].fitness <= self.population.targetFitness:
             ncDebug(fmt("Early exit at i: {i}"))
             break
 
-    let fitness = self.population.population[0].fitness
+    let fitness = self.population[0].fitness
     ncDebug(fmt("Best fitness in this run: {fitness}"))
 
-    return self.population.population[0].naToBytes()
+    return self.population[0].naToBytes()
 
 proc naInitPopulationNodeDP1*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP1 =
     ncDebug("naInitPopulationNodeDP1")
@@ -69,12 +69,12 @@ proc naInitPopulationNodeDP1*(individual: NAIndividual, config: NAConfiguration)
     population.population = newSeq[NAIndividual](2 * config.populationSize)
 
     result = NAPopulationNodeDP1(population: population)
-    result.population.population[0] = individual.naClone()
-    result.population.population[0].naCalculateFitness()
+    result.population[0] = individual.naClone()
+    result.population[0].naCalculateFitness()
 
     # Initialize the population with random individuals:
     for i in 1..<(2 * config.populationSize):
-        result.population.population[i] = individual.naNewRandomIndividual()
+        result.population[i] = individual.naNewRandomIndividual()
 
     result.population.naSort()
 

@@ -49,7 +49,7 @@ method ncProcessData(self: var NAPopulationNodeDP2, inputData: seq[byte]): seq[b
         # If the mutated individual is better than the worst
         # it gets overwritten (killed) by the better one:
         if tmpIndividual.fitness < self.population.worstFitness:
-            self.population.population[self.population.worstIndex] = tmpIndividual.naClone()
+            self.population[self.population.worstIndex] = tmpIndividual.naClone()
             if tmpIndividual.fitness <= self.population.targetFitness:
                 ncDebug(fmt("Early exit at i: {i}"))
                 break
@@ -58,7 +58,7 @@ method ncProcessData(self: var NAPopulationNodeDP2, inputData: seq[byte]): seq[b
     self.population.findBestAndWorstIndividual()
     ncDebug(fmt("Best fitness: {self.population.bestFitness}, worst fitness: {self.population.worstFitness}"))
 
-    return self.population.population[self.population.bestIndex].naToBytes()
+    return self.population[self.population.bestIndex].naToBytes()
 
 proc naInitPopulationNodeDP2*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP2 =
     ncDebug("naInitPopulationNodeDP2")
@@ -67,10 +67,10 @@ proc naInitPopulationNodeDP2*(individual: NAIndividual, config: NAConfiguration)
     population.population = newSeq[NAIndividual](config.populationSize)
 
     result = NAPopulationNodeDP2(population: population)
-    result.population.population[0] = individual.naClone()
-    result.population.population[0].naCalculateFitness()
+    result.population[0] = individual.naClone()
+    result.population[0].naCalculateFitness()
 
     # Initialize the population with random individuals:
     for i in 1..<config.populationSize:
-        result.population.population[i] = individual.naNewRandomIndividual()
+        result.population[i] = individual.naNewRandomIndividual()
 

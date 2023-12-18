@@ -93,8 +93,13 @@ proc naResetOrAcepptBest*(self: var NAPopulation, inputData: seq[byte]) =
 proc naClone*(self: NAPopulation, index: uint32): NAIndividual =
     self.population[index].naClone()
 
-proc naInitPopulation*(individual: NAIndividual, config: NAConfiguration): NAPopulation =
+proc `[]`*(self: var NAPopulation, index: uint32): var NAIndividual =
+    self.population[index]
 
+proc `[]=`*(self: var NAPopulation, index: uint32, individual: NAIndividual) =
+    self.population[index] = individual.naClone()
+
+proc naInitPopulation*(individual: NAIndividual, config: NAConfiguration): NAPopulation =
     ncDebug(fmt("Population size: {config.populationSize}"))
     ncDebug(fmt("Number of mutations: {config.numOfMutations}"))
     ncDebug(fmt("Number of iterations: {config.numOfIterations}"))
