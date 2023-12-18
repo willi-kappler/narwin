@@ -96,8 +96,8 @@ method naClone*(self: TSPIndividual): NAIndividual =
 method naToBytes*(self: TSPIndividual): seq[byte] =
     ncToBytes(self)
 
-method naFromBytes*(self: TSPIndividual, data: seq[byte]): NAIndividual =
-    ncFromBytes(data, TSPIndividual)
+method naFromBytes*(self: var TSPIndividual, data: seq[byte]) =
+    self = ncFromBytes(data, TSPIndividual)
 
 method naToJSON*(self: TSPIndividual): JsonNode =
     self.toJson()
