@@ -57,7 +57,8 @@ method ncProcessData(self: var NAPopulationNodeDP2, inputData: seq[byte]): seq[b
         # it gets overwritten (killed) by the better one:
         if tmpIndividual.fitness < self.population.worstFitness:
             self.population.population[self.population.worstIndex] = tmpIndividual.naClone()
-            if tmpIndividual.fitness < self.population.targetFitness:
+            if tmpIndividual.fitness <= self.population.targetFitness:
+                ncDebug(fmt("Early exit at i: {i}"))
                 break
 
     # Find the best and the worst individual at the end:
