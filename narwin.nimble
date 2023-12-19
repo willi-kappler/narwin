@@ -16,9 +16,9 @@ task testAll, "Run all test cases in tests/":
 
 task checkAll, "run 'nim check' on all source files":
     cd "src/"
-    exec "nim check narvin.nim"
+    exec "nim check narwin.nim"
 
-    cd "narvin/"
+    cd "narwin/"
     exec "nim check na_config.nim"
     exec "nim check na_individual.nim"
     exec "nim check na_population.nim"
@@ -48,5 +48,5 @@ task runQueens, "Runs the Queens example":
     exec "nimble runQueens"
 
 task genDoc, "Generate documentation":
-    exec "nim doc --project src/narvin.nim"
+    exec "nim doc --project src/narwin.nim"
 

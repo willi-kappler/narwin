@@ -1,8 +1,8 @@
-# This module is part of narvin: https://github.com/willi-kappler/narvin
+# This module is part of narwin: https://github.com/willi-kappler/narwin
 ##
 ## Written by Willi Kappler, License: MIT
 ##
-## This module contains the implementation of the NAIndividual code from narvin for the TSP example.
+## This module contains the implementation of the NAIndividual code from narwin for the TSP example.
 ##
 ## This Nim library allows you to write programs using evolutinary algorithms.
 ##
@@ -21,7 +21,7 @@ from std/strformat import fmt
 import num_crunch
 
 # Local imports
-import ../../src/narvin
+import ../../src/narwin
 
 type
     QueensIndividual* = ref object of NAIndividual

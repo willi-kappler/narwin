@@ -1,4 +1,4 @@
-## This module is part of narvin: https://github.com/willi-kappler/narvin
+## This module is part of narwin: https://github.com/willi-kappler/narwin
 ##
 ## Written by Willi Kappler, License: MIT
 ##
@@ -14,13 +14,13 @@ from std/strformat import fmt
 import num_crunch
 
 # Local imports
-import narvin/na_config
-import narvin/na_individual
-import narvin/na_population_node1
-import narvin/na_population_node2
-import narvin/na_population_node3
-import narvin/na_population_node4
-import narvin/na_population_server
+import narwin/na_config
+import narwin/na_individual
+import narwin/na_population_node1
+import narwin/na_population_node2
+import narwin/na_population_node3
+import narwin/na_population_node4
+import narwin/na_population_server
 
 export na_config
 export na_individual

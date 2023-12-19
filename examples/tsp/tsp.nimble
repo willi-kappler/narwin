@@ -20,17 +20,26 @@ task runTSP, "Runs the TSP example":
     exec "./tsp --server -t=330.0 &"
     exec "sleep 5"
 
-    # Start four nodes
-    exec "./tsp -m=2 -p=200 -i=10000 -t=330.00 -k=0 &"
+    # Start 5 nodes
+    exec "./tsp -m=20 -p=200 -i=1000000 -t=330.00 -k=3 &"
     exec "sleep 1"
 
-    exec "./tsp -m=2 -p=200 -i=10000 -t=330.00 --reset -k=0 &"
+    exec "./tsp -m=30 -p=200 -i=1000000 -t=330.00 -k=3 &"
     exec "sleep 1"
 
-    exec "./tsp -m=10 -p=20 -i=10000 -t=330.00 -k=0 &"
-    exec "sleep 1"
+     #exec "./tsp -m=2 -p=200 -i=10000 -t=330.00 -k=0 &"
+    #exec "sleep 1"
 
-    exec "./tsp -m=20 -p=20 -i=10000 -t=330.00 -k=0 &"
+    #exec "./tsp -m=2 -p=200 -i=1000000 -t=330.00 -k=1 &"
+    #exec "sleep 1"
+
+    #exec "./tsp -m=20 -p=200 -i=100000 -t=330.00 -k=2 &"
+    #exec "sleep 1"
+
+    #exec "./tsp -m=20 -p=200 -i=100000 -t=330.00 -k=3 &"
+    #exec "sleep 1"
+
+    #exec "./tsp -m=2 -p=10 -i=100000 -t=330.00 -k=0 --reset &"
 
 task cleanTSP, "Clean up after calculation":
     exec "rm -f tsp"

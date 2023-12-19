@@ -1,4 +1,4 @@
-# This module is part of narvin: https://github.com/willi-kappler/narvin
+# This module is part of narwin: https://github.com/willi-kappler/narwin
 ##
 ## Written by Willi Kappler, License: MIT
 ##
@@ -86,7 +86,7 @@ method ncCollectData(self: var NAPopulationServerDP, n: NCNodeID, data: seq[byte
             inc(self.newFitnessCounter)
 
 method ncMaybeDeadNode(self: var NAPopulationServerDP, n: NCNodeID) =
-    # Not needed for narvin
+    # Not needed for narwin
     discard
 
 method ncSaveData(self: var NAPopulationServerDP) {.gcsafe.} =

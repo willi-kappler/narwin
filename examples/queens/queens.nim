@@ -1,8 +1,8 @@
-# This module is part of narvin: https://github.com/willi-kappler/narvin
+# This module is part of narwin: https://github.com/willi-kappler/narwin
 ##
 ## Written by Willi Kappler, License: MIT
 ##
-## This file contains the Queens example for narvin.
+## This file contains the Queens example for narwin.
 ##
 ## This Nim library allows you to write programs using evolutinary algorithms.
 ##
@@ -18,7 +18,7 @@ from std/strutils import parseUint, parseFloat
 from os import getAppFilename, splitPath, fileExists
 
 # Local imports
-import ../../src/narvin
+import ../../src/narwin
 
 import queens_individual
 

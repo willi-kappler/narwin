@@ -1,4 +1,4 @@
-## This module is part of narvin: https://github.com/willi-kappler/narvin
+## This module is part of narwin: https://github.com/willi-kappler/narwin
 ##
 ## Written by Willi Kappler, License: MIT
 ##

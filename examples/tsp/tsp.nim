@@ -1,10 +1,10 @@
-## This module is part of narvin: https://github.com/willi-kappler/narvin
+## This module is part of narwin: https://github.com/willi-kappler/narwin
 ##
 ## Written by Willi Kappler, License: MIT
 ##
 ## This Nim library allows you to write programs using evolutinary algorithms.
 ##
-## This file contains the TSP (traveling salesman problem) example for narvin.
+## This file contains the TSP (traveling salesman problem) example for narwin.
 ##
 
 
@@ -15,7 +15,7 @@ from std/strformat import fmt
 from os import fileExists
 
 # Local imports
-import ../../src/narvin
+import ../../src/narwin
 
 import tsp_individual
 

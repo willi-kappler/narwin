@@ -1,4 +1,4 @@
-# narvin
+# Narwin
 
 [![MIT licensed](https://img.shields.io/github/license/willi-kappler/num_crunch)](./LICENSE)
 
@@ -6,15 +6,15 @@ Evolutionary algorithms with Nim [Nim](https://nim-lang.org/ "The Nim programmin
 
 (Keywords: evolution, genetic, scientific computing)
 
-The narvin library allows you to write programs with evolutionary algorithms easily.
+The narwin library allows you to write programs with evolutionary algorithms easily.
 
-It uses num_crunch underneath so that you can run your simulation on a cluster (HPC).
+It uses [num_crunch](https://github.com/willi-kappler/num_crunch) underneath so that you can run your simulation on a cluster (HPC).
 
 
 
 ## FAQ
-- Why is it called narvin ?
-    It's a wordplay Nim (programming language) + Darvin (evolution) = narvin
+- Why is it called narwin ?
+    It's a wordplay Nim (programming language) + Darwin (evolution) = narwin
 
 
 ## License
