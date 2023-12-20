@@ -36,8 +36,11 @@ method naMutate*(self: var TSPIndividual) =
     while i == j:
         j = rand(last)
 
+    if i > j:
+        swap(i, j)
+
     # Choose a random mutation operation
-    let operation = rand(2)
+    let operation = rand(4)
 
     case operation
     of 0:
@@ -48,9 +51,6 @@ method naMutate*(self: var TSPIndividual) =
     of 1:
         # Rotate left
 
-        if i > j:
-            swap(i, j)
-
         let tmp = self.data[i]
         for k in i..<j:
             self.data[k] = self.data[k+1]
@@ -58,14 +58,32 @@ method naMutate*(self: var TSPIndividual) =
     of 2:
         # Rotate right
 
-        if i > j:
-            swap(i, j)
-
         let tmp = self.data[j]
         for k in i..<j:
             let l = i + j - k - 1
             self.data[l+1] = self.data[l]
         self.data[i] = tmp
+    of 3:
+        # Reverse order
+
+        let d = j - i
+
+        for k in 0..<d:
+            let u = i+k
+            let v = j-k
+            if u > v:
+                break
+            swap(self.data[u], self.data[v])
+    of 4:
+        # Swap two parts
+
+        # Select random length
+        let limit = min(last - j, j - i - 1)
+        var d = rand(limit)
+
+        for k in 0..d:
+            swap(self.data[i+k], self.data[j+k])
+
     else:
         raise newException(ValueError, fmt("Unknown mutation operation: {operation}"))
 
