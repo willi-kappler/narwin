@@ -27,8 +27,8 @@ when isMainModule:
     # Best fitness with city_positions1: 325.1787170723113
     # Possible good limit: 330.0
     #
-    # Best fitness with city_positions2: 7919.479126917231
-    # Possible good limit: 8000.0
+    # Best fitness with city_positions2: 7887.528337351338
+    # Possible good limit: 7900.0
     let tsp = loadTSP("city_positions2.txt")
 
     if naConfig.serverMode:
