@@ -40,7 +40,7 @@ method naMutate*(self: var TSPIndividual) =
         swap(i, j)
 
     # Choose a random mutation operation
-    let operation = rand(4)
+    let operation = rand(5)
 
     case operation
     of 0:
@@ -83,6 +83,13 @@ method naMutate*(self: var TSPIndividual) =
 
         for k in 0..d:
             swap(self.data[i+k], self.data[j+k])
+
+    of 5:
+        # Swap positions along a line of indidices
+
+        for k in countup(i, j, 2):
+            if k + 1 <= last:
+                swap(self.data[k], self.data[k + 1])
 
     else:
         raise newException(ValueError, fmt("Unknown mutation operation: {operation}"))
