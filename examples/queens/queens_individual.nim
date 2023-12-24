@@ -25,51 +25,59 @@ import ../../src/narwin
 
 type
     QueensIndividual* = ref object of NAIndividual
-        data: seq[uint8]
+        data: seq[(uint8, uint8)] # (row, column)
+
+proc randPos(): uint8 =
+    uint8(rand(7) + 1)
 
 method naMutate*(self: var QueensIndividual) =
-    var i = 0
-    var j = 0
     let last = self.data.high
 
-    # find a position with a queen:
-    while true:
-        i = rand(last)
-        if self.data[i] == 1:
-            break
+    # Select one of the queens randomly:
+    let i = rand(last)
 
-    # Find a position without queen:
-    while true:
-        j = rand(last)
-        if self.data[j] == 0:
-            break
+    # Choose mutation operation:
+    let operation = rand(1)
 
-    # Move the queen to a new empty position
-    swap(self.data[i], self.data[j])
+    case operation
+    of 0:
+        # Just set a random position:
+        self.data[i][0] = randPos()
+        self.data[i][1] = randPos()
+    of 1:
+        # Choose another queen randomly:
+        var j = rand(last)
+
+        while i == j:
+            # Ensure that both indices are different
+            j = rand(last)
+
+        let q1row = self.data[i][0]
+        let q1col = self.data[i][1]
+
+        var q2row = randPos()
+        var q2col = randPos()
+
+        while q1row == q2row:
+            q2row = randPos()
+        while q1col == q2col:
+            q2col = randPos()
+
+        self.data[j][0] = q2row
+        self.data[j][1] = q2col
+    else:
+        raise newException(ValueError, fmt("Unknown mutation operation: {operation}"))
+
 
 method naRandomize*(self: var QueensIndividual) =
     shuffle(self.data)
 
 method naCalculateFitness*(self: var QueensIndividual) =
-    # Fitness means here: number of queen-collisions
-    var collisions = 0
-    var queens1 = 0
-    var queens2 = 0
+    # Fitness means here: number of queen-collisions:
+    # The fewer collisions the better the fitness.
 
-    for i in 0..<8:
-        queens1 = 0
-        queens2 = 0
-        for j in 0..<8:
-            # Check rows:
-            if self.data[(i * 8) + j] == 1:
-                inc(queens1)
-            # Check columns:
-            if self.data[(j * 8) + i] == 1:
-                inc(queens2)
-
-        collisions += (queens1 - 1)
-        collisions += (queens2 - 1)
-
+    var rowCollisions = 0
+    var colCollisions = 0
 
 
 
@@ -88,13 +96,13 @@ method naToJSON*(self: QueensIndividual): JsonNode =
 
 proc newBoard*(): QueensIndividual =
     result = QueensIndividual(data: @[
-            1,1,1,1,1,1,1,1,
-            0,0,0,0,0,0,0,0,
-            0,0,0,0,0,0,0,0,
-            0,0,0,0,0,0,0,0,
-            0,0,0,0,0,0,0,0,
-            0,0,0,0,0,0,0,0,
-            0,0,0,0,0,0,0,0,
-            0,0,0,0,0,0,0,0
+        (1, 1),
+        (1, 1),
+        (1, 1),
+        (1, 1),
+        (1, 1),
+        (1, 1),
+        (1, 1),
+        (1, 1)
         ])
 
