@@ -9,11 +9,9 @@
 
 
 # Nim std imports
-import std/parseopt
 import std/logging
 
 from std/strformat import fmt
-from std/strutils import parseUint, parseFloat
 #from system import quit
 from os import getAppFilename, splitPath, fileExists
 
