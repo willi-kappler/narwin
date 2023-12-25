@@ -25,8 +25,8 @@ type
     QueensIndividual* = ref object of NAIndividual
         data: seq[(uint8, uint8)] # (row, column)
 
-proc randPos(): uint8 =
-    uint8(rand(7) + 1)
+proc randPos(maxPos: int): uint8 =
+    uint8(rand(maxPos) + 1)
 
 proc hasCollision(r1: uint8, c1: uint8, r2: uint8, c2: uint8): bool =
     if r1 == r2:
@@ -59,8 +59,8 @@ method naMutate*(self: var QueensIndividual) =
     case operation
     of 0:
         # Just set a random position:
-        self.data[i][0] = randPos()
-        self.data[i][1] = randPos()
+        self.data[i][0] = randPos(last)
+        self.data[i][1] = randPos(last)
     of 1:
         # Choose another queen randomly:
         var j = rand(last)
@@ -70,8 +70,8 @@ method naMutate*(self: var QueensIndividual) =
             j = rand(last)
 
         # randomly choose a new position for the first queen:
-        var r1 = randPos()
-        var c1 = randPos()
+        var r1 = randPos(last)
+        var c1 = randPos(last)
 
         # Get position of second queen:
         let r2 = self.data[j][0]
@@ -79,8 +79,8 @@ method naMutate*(self: var QueensIndividual) =
 
         # Ensure that there is no collision:
         while hasCollision(r1, c1, r2, c2):
-            r1 = randPos()
-            c1 = randPos()
+            r1 = randPos(last)
+            c1 = randPos(last)
 
         # Set the new row and column
         self.data[i][0] = r1
@@ -96,10 +96,11 @@ method naCalculateFitness*(self: var QueensIndividual) =
     # Fitness means here: number of queen-collisions:
     # The fewer collisions the better the fitness.
 
+    let last = self.data.high
     var numOfCollisions = 0
 
-    for i in 1..8:
-        for j in i..8:
+    for i in 0..last:
+        for j in (i + 1)..last:
             if self.hasCollision(uint8(i), uint8(j)):
                 numOfCollisions += 1
 
