@@ -21,14 +21,13 @@ import ../../src/narwin
 import queens_individual
 
 when isMainModule:
-    var runServer = false
     let ncConfig = ncLoadConfig("config.ini")
 
     let naConfig = naConfigFromCmdLine()
 
     let queens = newBoard()
 
-    if runServer:
+    if naConfig.serverMode:
         let logger = newFileLogger("queens_server.log", fmtStr=verboseFmtStr)
         ncInitLogger(logger, 2)
 
