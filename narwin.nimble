@@ -47,6 +47,10 @@ task runQueens, "Runs the Queens example":
     cd "examples/queens/"
     exec "nimble runQueens"
 
+task runSudoku, "Runs the Sudoku example":
+    cd "examples/sudoku/"
+    exec "nimble runSudoku"
+
 task genDoc, "Generate documentation":
     exec "nim doc --project src/narwin.nim"
 
