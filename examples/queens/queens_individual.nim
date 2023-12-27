@@ -90,7 +90,11 @@ method naMutate*(self: var QueensIndividual) =
 
 
 method naRandomize*(self: var QueensIndividual) =
-    shuffle(self.data)
+    let last = self.data.high
+
+    for i in 0..last:
+        self.data[i][0] = randPos(last)
+        self.data[i][1] = randPos(last)
 
 method naCalculateFitness*(self: var QueensIndividual) =
     # Fitness means here: number of queen-collisions:
