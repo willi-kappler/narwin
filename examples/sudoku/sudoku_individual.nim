@@ -85,24 +85,13 @@ method naMutate*(self: var SudokuIndividual) =
         var v = randValue()
 
         while true:
-            if self.getVal2(i, j1) == v:
-                # Value above
-                v = randValue()
-                continue
-            elif self.getVal2(i, j2) == v:
-                # Value below
-                v = randValue()
-                continue
-            elif self.getVal2(i1, j) == v:
-                # Value to the left
-                v = randValue()
-                continue
-            elif self.getVal2(i2, j) == v:
-                # Value to the right
-                v = randValue()
-                continue
-            else:
-                break
+            if self.getVal2(i, j1) != v and
+               self.getVal2(i, j2) != v and
+               self.getVal2(i1, j) != v and
+               self.getVal2(i2, j) != v:
+                   break
+
+            v = randValue()
 
         self.setVal2(i, j, v)
 
