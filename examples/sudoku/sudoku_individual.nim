@@ -39,9 +39,9 @@ proc setVal2(self: var SudokuIndividual, i: uint8, j: uint8, val: uint8) =
     self.data2[(j * 9) + i] = val
 
 proc checkLine(self: SudokuIndividual, iStart: uint8, jStart: uint8, iInc: int8, jInc: int8, val: uint8): uint8 =
-    var counter: uint8 = 0
-    var i: int8 = int8(iStart)
-    var j: int8 = int8(jStart)
+    var counter = 0'u8
+    var i = int8(iStart)
+    var j = int8(jStart)
 
     for _ in 0..8:
         if self.getVal2(uint8(i), uint8(j)) == val:
@@ -55,14 +55,14 @@ proc checkLine(self: SudokuIndividual, iStart: uint8, jStart: uint8, iInc: int8,
         return 0
 
 proc checkTile(self: SudokuIndividual, i: uint8, j: uint8): uint8 =
-    var errors: uint8 = 0
-    var counter: uint8 = 0
+    var errors = 0'u8
+    var counter = 0'u8
 
-    for n in 0..9:
+    for n in 0'u8..9'u8:
         counter = 0
-        for u in 0..2:
-            for v in 0..2:
-                if self.getVal2(i + uint8(u), j + uint8(v)) == uint8(n):
+        for u in 0'u8..2'u8:
+            for v in 0'u8..2'u8:
+                if self.getVal2(i + u, j + v) == n:
                     inc(counter)
         if n == 0:
             errors += counter
@@ -74,8 +74,8 @@ proc checkTile(self: SudokuIndividual, i: uint8, j: uint8): uint8 =
 
 method naMutate*(self: var SudokuIndividual) =
     # Pick a random position:
-    var i: uint8 = uint8(rand(8))
-    var j: uint8 = uint8(rand(8))
+    var i = uint8(rand(8))
+    var j = uint8(rand(8))
 
     while self.getVal1(i, j) != 0:
         i = uint8(rand(8))
@@ -89,10 +89,10 @@ method naMutate*(self: var SudokuIndividual) =
         # Set it to a random value:
         self.setVal2(i, j, randValue())
     of 1:
-        var i1: uint8 = 0
-        var i2: uint8 = 0
-        var j1: uint8 = 0
-        var j2: uint8 = 0
+        var i1 = 0'u8
+        var i2 = 0'u8
+        var j1 = 0'u8
+        var j2 = 0'u8
 
         if j == 0:
             j1 = 8
