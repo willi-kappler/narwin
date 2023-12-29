@@ -38,6 +38,22 @@ proc getVal2(self: SudokuIndividual, i: uint8, j: uint8): uint8 =
 proc setVal2(self: var SudokuIndividual, i: uint8, j: uint8, val: uint8) =
     self.data2[(j * 9) + i] = val
 
+proc checkLine(self: SudokuIndividual, iStart: uint8, jStart: uint8, iInc: int8, jInc: int8, val: uint8): uint8 =
+    var counter: uint8 = 0
+    var i: int8 = int8(iStart)
+    var j: int8 = int8(jStart)
+
+    for _ in 0..8:
+        if self.getVal2(uint8(i), uint8(j)) == val:
+            inc(counter)
+        i += iInc
+        j += jInc
+
+    if (val == 0) or (counter > 1):
+        return counter
+    else:
+        return 0
+
 proc checkTile(self: SudokuIndividual, i: uint8, j: uint8): uint8 =
     var errors: uint8 = 0
     var counter: uint8 = 0
@@ -57,7 +73,6 @@ proc checkTile(self: SudokuIndividual, i: uint8, j: uint8): uint8 =
     return errors
 
 method naMutate*(self: var SudokuIndividual) =
-
     # Pick a random position:
     var i: uint8 = uint8(rand(8))
     var j: uint8 = uint8(rand(8))
@@ -127,62 +142,22 @@ method naRandomize*(self: var SudokuIndividual) =
 method naCalculateFitness*(self: var SudokuIndividual) =
     # Fitness means number of errors, the lower the better
     var errors: uint16 = 0
-    var counter: uint16 = 0
 
-    # Check rows:
-    for i in 0..8:
-        for n in 0..9:
-            counter = 0
-            for j in 0..8:
-                if self.getVal2(uint8(j), uint8(i)) == uint8(n):
-                    inc(counter)
-            if n == 0:
-                errors += counter
-            else:
-                if counter > 1:
-                    errors += counter
-
-
-    # Check columns:
-    for i in 0..8:
-        for n in 0..9:
-            counter = 0
-            for j in 0..8:
-                if self.getVal2(uint8(i), uint8(j)) == uint8(n):
-                    inc(counter)
-            if n == 0:
-                errors += counter
-            else:
-                if counter > 1:
-                    errors += counter
+    # Check rows and columns:
+    for i in 0'u8..8'u8:
+        for n in 0'u8..9'u8:
+            errors += self.checkLine(0, i, 1, 0, n)
+            errors += self.checkLine(i, 0, 0, 1, n)
 
     # Check diagonals:
-    for n in 0..9:
-        counter = 0
-        for i in 0..8:
-            if self.getVal2(uint8(i), uint8(i)) == uint8(n):
-                inc(counter)
-        if n == 0:
-            errors += counter
-        else:
-            if counter > 1:
-                errors += counter
-
-    for n in 0..9:
-        counter = 0
-        for i in 0..8:
-            if self.getVal2(uint8(8 - i), uint8(i)) == uint8(n):
-                inc(counter)
-        if n == 0:
-            errors += counter
-        else:
-            if counter > 1:
-                errors += counter
+    for n in 0'u8..9'u8:
+        errors += self.checkLine(0, 0, 1, 1, n)
+        errors += self.checkLine(8, 0, -1, 1, n)
 
     # Check each tile:
-    for i in countup(0, 6, 3):
-        for j in countup(0, 6, 3):
-            errors += self.checkTile(uint8(i), uint8(j))
+    for i in countup(0'u8, 6'u8, 3'u8):
+        for j in countup(0'u8, 6'u8, 3'u8):
+            errors += self.checkTile(i, j)
 
     self.fitness = float64(errors)
 
