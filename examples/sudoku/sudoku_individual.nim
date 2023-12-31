@@ -59,14 +59,8 @@ proc checkLineN(self: SudokuIndividual, iStart: uint8, jStart: uint8, iInc: int8
     else:
         return 0
 
-proc checkLine(self: SudokuIndividual, iStart: uint8, jStart: uint8, iInc: int8, jInc: int8): uint8 =
+proc checkBlock(self: SudokuIndividual, i: uint8, j: uint8): uint8 =
     result = 0'u8
-
-    for n in 0'u8..9'u8:
-        result += self.checkLineN(iStart, jStart, iInc, jInc, n)
-
-proc checkTile(self: SudokuIndividual, i: uint8, j: uint8): uint8 =
-    var errors = 0'u8
     var counter = 0'u8
 
     for n in 0'u8..9'u8:
@@ -76,12 +70,10 @@ proc checkTile(self: SudokuIndividual, i: uint8, j: uint8): uint8 =
                 if self.getVal2(i + u, j + v) == n:
                     inc(counter)
         if n == 0:
-            errors += counter
+            result += counter
         else:
             if counter > 1:
-                errors += (counter - 1)
-
-    return errors
+                result += counter - 1
 
 method naMutate*(self: var SudokuIndividual) =
     # Pick a random position:
@@ -94,7 +86,7 @@ method naMutate*(self: var SudokuIndividual) =
         j = randIndex()
 
     # Select a random operation:
-    let operation = rand(6)
+    let operation = rand(1)
 
     case operation
     of 0:
@@ -140,57 +132,6 @@ method naMutate*(self: var SudokuIndividual) =
             v = randValue()
 
         self.setVal2(i, j, v)
-    of 2:
-        # Randomize tile:
-        i = uint8(rand(2) * 3)
-        j = uint8(rand(2) * 3)
-
-        while true:
-            for u in 0'u8..2'u8:
-                for v in 0'u8..2'u8:
-                    let x = i + u
-                    let y = j + v
-                    if self.getVal1(x, y) == 0:
-                        self.setVal2(x, y, randValue())
-            if self.checkTile(i, j) == 0:
-                break
-    of 3:
-        # Randomize row:
-        let i = randIndex()
-
-        while true:
-            for j in 0'u8..8'u8:
-                if self.getVal1(j, i) == 0:
-                    self.setVal2(j, i, randValue())
-
-            if self.checkLine(0, i, 1, 0) == 0:
-                break
-    of 4:
-        # Randomize column:
-        let i = randIndex()
-
-        while true:
-            for j in 0'u8..8'u8:
-                if self.getVal1(i, j) == 0:
-                    self.setVal2(i, j, randValue())
-            if self.checkLine(i, 0, 0, 1) == 0:
-                break
-    of 5:
-        # Randomize diagonal 1
-        while true:
-            for i in 0'u8..8'u8:
-                if self.getVal1(i, i) == 0:
-                    self.setVal2(i, i, randValue())
-            if self.checkLine(0, 0, 1, 1) == 0:
-                break
-    of 6:
-        # Randomize diagonal 2
-        while true:
-            for i in 0'u8..8'u8:
-                if self.getVal1(8 - i, i) == 0:
-                    self.setVal2(8 - i, i, randValue())
-            if self.checkLine(8, 0, -1, 1) == 0:
-                break
     else:
         raise newException(ValueError, fmt("Unknown mutation operation: {operation}"))
 
@@ -213,14 +154,14 @@ method naCalculateFitness*(self: var SudokuIndividual) =
             errors += self.checkLineN(i, 0, 0, 1, n)
 
     # Check diagonals:
-    for n in 0'u8..9'u8:
-        errors += self.checkLineN(0, 0, 1, 1, n)
-        errors += self.checkLineN(8, 0, -1, 1, n)
+    #for n in 0'u8..9'u8:
+        #errors += self.checkLineN(0, 0, 1, 1, n)
+        #errors += self.checkLineN(8, 0, -1, 1, n)
 
-    # Check each tile:
+    # Check each block:
     for i in countup(0'u8, 6'u8, 3'u8):
         for j in countup(0'u8, 6'u8, 3'u8):
-            errors += self.checkTile(i, j)
+            errors += self.checkBlock(i, j)
 
     self.fitness = float64(errors)
 
