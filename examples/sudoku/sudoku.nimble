@@ -21,16 +21,16 @@ task runSudoku, "Runs the Sudoku example":
     exec "sleep 5"
 
     # Start four nodes
+    exec "./sudoku -m=1 -p=200 -i=10000 -k=0 &"
+    exec "sleep 1"
+
     exec "./sudoku -m=2 -p=200 -i=10000 -k=0 &"
     exec "sleep 1"
 
-    exec "./sudoku -m=2 -p=200 -i=1000000 -k=1 &"
+    exec "./sudoku -m=4 -p=200 -i=10000 -k=0 &"
     exec "sleep 1"
 
-    exec "./sudoku -m=2 -p=200 -i=1000000 -k=2 &"
-    exec "sleep 1"
-
-    exec "./sudoku -m=20 -p=200 -i=100000 -k=3 &"
+    exec "./sudoku -m=8 -p=200 -i=10000 -k=0 &"
 
 task cleanSudoku, "Clean up after calculation":
     exec "rm -f sudoku"
