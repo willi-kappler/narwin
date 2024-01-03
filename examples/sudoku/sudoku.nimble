@@ -17,6 +17,7 @@ task checkAll, "run 'nim check' on all source files":
 task runSudoku, "Runs the Sudoku example":
     #exec "nim c sudoku.nim"
     exec "nim c -d:release sudoku.nim"
+    #exec "./sudoku --server --samefitness &"
     exec "./sudoku --server &"
     exec "sleep 5"
 
@@ -30,7 +31,13 @@ task runSudoku, "Runs the Sudoku example":
     exec "./sudoku -m=4 -p=200 -i=10000 -k=0 &"
     exec "sleep 1"
 
-    exec "./sudoku -m=8 -p=200 -i=10000 -k=0 &"
+    exec "./sudoku -m=1 -p=200 -i=100000 -k=0 --reset &"
+    exec "sleep 1"
+
+    exec "./sudoku -m=2 -p=200 -i=100000 -k=0 --reset &"
+    exec "sleep 1"
+
+    exec "./sudoku -m=4 -p=200 -i=100000 -k=0 --reset &"
 
 task cleanSudoku, "Clean up after calculation":
     exec "rm -f sudoku"
