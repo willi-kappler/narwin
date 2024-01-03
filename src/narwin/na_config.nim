@@ -21,6 +21,7 @@ type
         targetFitness*: float64
         resultFilename*: string
         saveNewFitness*: bool
+        sameFitness*: bool
 
         # Node:
         populationSize*: uint32
@@ -39,6 +40,7 @@ proc naShowHelpAndQuit*() =
     echo(fmt("{name} --server: this starts in 'server mode' and waits for nodes to connect"))
     echo("-t [float64]: target fitness")
     echo("--file: output filename for the result (optimal solution)")
+    echo("--samefitness: allow individuals with the same fitness in the global population")
     # TODO: option for save new fitness
 
     echo("-p [uint32]: population size")
@@ -55,6 +57,7 @@ proc naConfigFromCmdLine*(): NAConfiguration =
     result.targetFitness = 0.0
     result.resultFilename = "best_result.json"
     result.saveNewFitness = true
+    result.sameFitness = false
 
     result.populationSize = 10
     result.numOfMutations = 10
@@ -84,11 +87,12 @@ proc naConfigFromCmdLine*(): NAConfiguration =
                 result.numOfIterations = uint32(parseUint(cmdParser.val))
             elif cmdParser.key == "reset":
                 result.resetPopulation = true
+            elif cmdParser.key == "samefitness":
+                result.sameFitness = true
             elif cmdParser.key == "k":
                 result.populationKind = uint8(parseUint(cmdParser.val))
             else:
                 naShowHelpAndQuit()
         of cmdArgument:
             naShowHelpAndQuit()
-
 

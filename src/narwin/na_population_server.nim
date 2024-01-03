@@ -30,6 +30,7 @@ type
         resultFilename: string
         newFitnessCounter: uint32
         saveNewFitness: bool
+        sameFitness: bool
 
 proc naSaveData(fileName: string, individual: NAIndividual) =
     let outFile = open(fileName, mode = fmWrite)
@@ -61,16 +62,17 @@ method ncCollectData(self: var NAPopulationServerDP, n: NCNodeID, data: seq[byte
     let bestFitness = self.population[0].fitness
 
     if newFitness < self.population[last].fitness:
-        for indy in self.population:
-            # Only accept new unique individual
-            if newFitness == indy.fitness:
-                return
+        if not self.sameFitness:
+            # Only accept new unique individual:
+            for indy in self.population:
+                if newFitness == indy.fitness:
+                    return
 
         # Overwrite (kill) the least fit individual with the new best
         # individual from the node population:
         self.population[last] = individual
 
-        ncInfo(fmt("New individual added to the population, fitness: {newFitness}"))
+        ncInfo(fmt("New individual added to the population, fitness: {newFitness}, node: {n}"))
 
         # Sort population by fitness:
         self.population.sort do (a: NAIndividual, b: NAIndividual) -> int:
@@ -78,7 +80,7 @@ method ncCollectData(self: var NAPopulationServerDP, n: NCNodeID, data: seq[byte
 
         if newFitness < bestFitness:
             ncInfo(fmt("Current best fitness: {bestFitness}"))
-            ncInfo(fmt("New best fitness: {newFitness}, from node: {n}"))
+            ncInfo(fmt("New best fitness: {newFitness}, node: {n}"))
 
             if self.saveNewFitness:
                 naSaveData(fmt("{self.newFitnessCounter}_{self.resultFilename}"), self.population[0])
@@ -104,6 +106,7 @@ proc naInitPopulationServerDP*(
     result.targetFitness = config.targetFitness
     result.resultFilename = config.resultFilename
     result.saveNewFitness = config.saveNewFitness
+    result.sameFitness = config.sameFitness
 
     result.population[0] = individual.naClone()
     result.population[0].naCalculateFitness()
