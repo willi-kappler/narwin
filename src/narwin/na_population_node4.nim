@@ -27,6 +27,7 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
 
     var tmpIndividual1 = self.population.naClone(0)
     var tmpIndividual2 = self.population.naClone(0)
+    var tmpIndividual3 = self.population.naClone(0)
     var original = self.population.naClone(0)
 
     self.population.naResetOrAcepptBest(inputData)
@@ -39,27 +40,32 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
         original = self.population.naClone(j)
         tmpIndividual1 = self.population.naClone(j)
         tmpIndividual2 = self.population.naClone(j)
+        tmpIndividual3 = self.population.naClone(j)
 
         for k in 0..<self.population.numOfMutations:
             # Mutate it:
             tmpIndividual1.naMutate()
             tmpIndividual2.naMutate()
+            tmpIndividual3.naMutate()
             # Calculate the new fitness for the mutated individuals:
             tmpIndividual1.naCalculateFitness()
             tmpIndividual2.naCalculateFitness()
+            tmpIndividual3.naCalculateFitness()
 
             # Check if any is better than the current one:
             # If the mutated individual is better than the original
             # it gets overwritten (killed) by the better one:
-            if tmpIndividual1.fitness < tmpIndividual2.fitness:
-                if tmpIndividual1.fitness < self.population[j].fitness:
-                    self.population[j] = tmpIndividual1.naClone()
-            else:
-                if tmpIndividual2.fitness < self.population[j].fitness:
-                    self.population[j] = tmpIndividual2.naClone()
 
-            # Reset first individual:
+            if tmpIndividual1.fitness < self.population[j].fitness:
+                self.population[j] = tmpIndividual1.naClone()
+            if tmpIndividual2.fitness < self.population[j].fitness:
+                self.population[j] = tmpIndividual2.naClone()
+            if tmpIndividual3.fitness < self.population[j].fitness:
+                self.population[j] = tmpIndividual3.naClone()
+
+            # Reset first and second individual:
             tmpIndividual1 = original.naClone()
+            tmpIndividual2 = self.population[j].naClone()
 
         if self.population[j].fitness <= self.population.targetFitness:
             ncDebug(fmt("Early exit at i: {i}"))
