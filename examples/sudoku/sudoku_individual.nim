@@ -14,7 +14,7 @@ import std/jsonutils
 
 from std/random import rand, shuffle
 from std/strformat import fmt
-from std/sequtils import toSeq
+#from std/sequtils import toSeq
 
 # External imports
 import num_crunch
@@ -77,6 +77,35 @@ proc checkBlock(self: SudokuIndividual, i: uint8, j: uint8): uint8 =
             else:
                 inUse.incl(n)
 
+proc randomEmptyPosition(self: SudokuIndividual): (uint8, uint8) =
+    var col = randIndex()
+    var row = randIndex()
+
+    while self.getVal1(col, row) != 0:
+        col = randIndex()
+        row = randIndex()
+
+    return (col, row)
+
+proc randomEmptyCol(self: SudokuIndividual, row: uint8): uint8 =
+    result = randIndex()
+
+    while self.getVal1(result, row) != 0:
+        result = randIndex()
+
+proc randomEmptyRow(self: SudokuIndividual, col: uint8): uint8 =
+    result = randIndex()
+
+    while self.getVal1(col, result) != 0:
+        result = randIndex()
+
+proc swapValues(self: var SudokuIndividual, col1: uint8, row1: uint8, col2: uint8, row2: uint8) =
+    let v1 = self.getVal2(col1, row1)
+    let v2 = self.getVal2(col2, row2)
+
+    self.setVal2(col1, row1, v2)
+    self.setVal2(col2, row2, v1)
+
 proc colInUse(self: SudokuIndividual, col: uint8): set[uint8] =
     result = {}
     for row in 0'u8..8:
@@ -104,27 +133,38 @@ proc blockInUse(self: SudokuIndividual, col: uint8, row: uint8): set[uint8] =
 
 method naMutate*(self: var SudokuIndividual) =
     # Pick a random position:
-    var i = randIndex()
-    var j = randIndex()
+    let (col, row) = self.randomEmptyPosition()
 
-    # Ensure that the value is allowed to change:
-    while self.getVal1(i, j) != 0:
-        i = randIndex()
-        j = randIndex()
+    # Pick a random mutation operation:
+    let operation = rand(4)
 
-    let allNumbers = {1'u8..9}
+    case operation
+    of 0:
+        # Set random value:
+        self.setVal2(col, row, randValue())
+    of 1:
+        # Swap in row:
+        let col2 = self.randomEmptyCol(row)
+        self.swapValues(col, row, col2, row)
+    of 2:
+        # Swap in col:
+        let row2 = self.randomEmptyRow(col)
+        self.swapValues(col, row, col, row2)
+    of 3:
+        # Swap two random positions:
+        let (col2, row2) = self.randomEmptyPosition()
+        self.swapValues(col, row, col2, row2)
+    of 4:
+        # Swap multiple random positions:
+        let counter = rand(7) + 3
 
-    let colSet = self.colInUse(i)
-    let rowSet = self.rowInUse(j)
-    let blockSet = self.blockInUse(i, j)
-
-    let possibleNumbers = toSeq(allNumbers - (colSet + rowSet + blockSet))
-
-    if possibleNumbers.len() == 0:
-        self.setVal2(i, j, randValue())
+        for _ in 0..counter:
+            let (col1, row1) = self.randomEmptyPosition()
+            let (col2, row2) = self.randomEmptyPosition()
+            self.swapValues(col1, row1, col2, row2)
     else:
-        let v = possibleNumbers[rand(possibleNumbers.high)]
-        self.setVal2(i, j, v)
+        raise newException(ValueError, fmt("Unknown mutation operation: {operation}"))
+
 
 method naRandomize*(self: var SudokuIndividual) =
     let last = self.data1.high
