@@ -26,7 +26,6 @@ type
     SudokuIndividual* = ref object of NAIndividual
         data1: seq[uint8]
         data2: seq[uint8]
-        #data3: seq[set[uint8]]
 
 proc randValue(): uint8 =
     uint8(rand(8) + 1)
@@ -43,27 +42,30 @@ proc getVal2(self: SudokuIndividual, col: uint8, row: uint8): uint8 =
 proc setVal2(self: var SudokuIndividual, col: uint8, row: uint8, val: uint8) =
     self.data2[(row * 9) + col] = val
 
-proc checkRow(self: SudokuIndividual, row: uint8): uint8 =
+proc checkPos(self: SudokuIndividual, col: uint8, row: uint8, inUse: var set[uint8]): uint8 =
+    let n = self.getVal2(col, row)
+    if (n == 0) or (n in inUse):
+        return 1
+    else:
+        inUse.incl(n)
+        return 0
+
+proc checkLine(self: SudokuIndividual, col: uint8, row: uint8, colInc: uint8, rowInc: uint8): uint8 =
     result = 0 # Number of errors
     var inUse: set[uint8]
+    var c = col
+    var r = row
 
-    for col in 0'u8..8:
-        let n = self.getVal2(col, row)
-        if (n == 0) or (n in inUse):
-            inc(result)
-        else:
-            inUse.incl(n)
+    for _ in 0..8:
+        result += self.checkPos(c, r, inUse)
+        c = c + colInc
+        r = r + rowInc
+
+proc checkRow(self: SudokuIndividual, row: uint8): uint8 =
+    self.checkLine(0, row, 1, 0)
 
 proc checkCol(self: SudokuIndividual, col: uint8): uint8 =
-    result = 0 # Number of errors
-    var inUse: set[uint8]
-
-    for row in 0'u8..8:
-        let n = self.getVal2(col, row)
-        if (n == 0) or (n in inUse):
-            inc(result)
-        else:
-            inUse.incl(n)
+    self.checkLine(col, 0, 0, 1)
 
 proc checkBlock(self: SudokuIndividual, i: uint8, j: uint8): uint8 =
     result = 0 # Number of errors
@@ -71,11 +73,7 @@ proc checkBlock(self: SudokuIndividual, i: uint8, j: uint8): uint8 =
 
     for u in 0'u8..2:
         for v in 0'u8..2:
-            let n = self.getVal2(i + u, j + v)
-            if (n == 0) or (n in inUse):
-                inc(result)
-            else:
-                inUse.incl(n)
+            result += self.checkPos(i + u, j + v, inUse)
 
 proc randomEmptyPosition(self: SudokuIndividual): (uint8, uint8) =
     var col = randIndex()
@@ -106,37 +104,12 @@ proc swapValues(self: var SudokuIndividual, col1: uint8, row1: uint8, col2: uint
     self.setVal2(col1, row1, v2)
     self.setVal2(col2, row2, v1)
 
-proc colInUse(self: SudokuIndividual, col: uint8): set[uint8] =
-    result = {}
-    for row in 0'u8..8:
-        let n = self.getVal2(col, row)
-        if n > 0:
-            result.incl(n)
-
-proc rowInUse(self: SudokuIndividual, row: uint8): set[uint8] =
-    result = {}
-    for col in 0'u8..8:
-        let n = self.getVal2(col, row)
-        if n > 0:
-            result.incl(n)
-
-proc blockInUse(self: SudokuIndividual, col: uint8, row: uint8): set[uint8] =
-    result = {}
-    let i = (col div 3'u8) * 3'u8
-    let j = (row div 3'u8) * 3'u8
-
-    for u in 0'u8..2:
-        for v in 0'u8..2:
-            let n = self.getVal2(i + u, j + v)
-            if n > 0:
-                result.incl(n)
-
 method naMutate*(self: var SudokuIndividual) =
     # Pick a random position:
     let (col, row) = self.randomEmptyPosition()
 
     # Pick a random mutation operation:
-    let operation = rand(4)
+    let operation = rand(3)
 
     case operation
     of 0:
@@ -151,12 +124,8 @@ method naMutate*(self: var SudokuIndividual) =
         let row2 = self.randomEmptyRow(col)
         self.swapValues(col, row, col, row2)
     of 3:
-        # Swap two random positions:
-        let (col2, row2) = self.randomEmptyPosition()
-        self.swapValues(col, row, col2, row2)
-    of 4:
         # Swap multiple random positions:
-        let counter = rand(7) + 3
+        let counter = rand(19) + 1
 
         for _ in 0..counter:
             let (col1, row1) = self.randomEmptyPosition()
