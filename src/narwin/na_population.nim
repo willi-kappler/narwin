@@ -35,6 +35,7 @@ type
         bestFitness*: float64
         worstIndex*: uint32
         worstFitness*: float64
+        fixedMutation*: bool
 
 proc findWorstIndividual*(self: var NAPopulation) =
     self.worstFitness = self.population[0].fitness
@@ -90,6 +91,12 @@ proc naResetOrAcepptBest*(self: var NAPopulation, inputData: seq[byte]) =
         self.population[index].naFromBytes(inputData)
         ncDebug(fmt("Accept individual from server with fitness: {self.population[index].fitness}"))
 
+proc naGetNumberOfMutations*(self: NAPopulation): uint32 =
+    if self.fixedMutation:
+        return self.numOfMutations
+    else:
+        return uint32(rand(int(self.numOfMutations) - 1) + 1)
+
 proc naClone*(self: NAPopulation, index: uint32): NAIndividual =
     self.population[index].naClone()
 
@@ -118,6 +125,7 @@ proc naInitPopulation*(individual: NAIndividual, config: NAConfiguration): NAPop
     result.numOfMutations = config.numOfMutations
     result.numOfIterations = config.numOfIterations
     result.targetFitness = config.targetFitness
+    result.fixedMutation = config.fixedMutation
 
     if config.resetPopulation:
         result.acceptNewBest = false

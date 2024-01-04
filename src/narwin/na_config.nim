@@ -30,6 +30,8 @@ type
         acceptNewBest*: bool
         resetPopulation*: bool
         populationKind*: uint8
+        fixedMutation*: bool
+        fitnessRate*: float64
 
 proc naShowHelpAndQuit*() =
     let path = getAppFilename()
@@ -38,16 +40,18 @@ proc naShowHelpAndQuit*() =
     echo("Use --server to start in 'server mode' otherwise start in 'node mode':")
     echo(fmt("{name}: this starts in 'node mode' and tries to connect to the server"))
     echo(fmt("{name} --server: this starts in 'server mode' and waits for nodes to connect"))
-    echo("-t [float64]: target fitness")
+    echo("-t [float64]: target fitness (0.0)")
     echo("--file: output filename for the result (optimal solution)")
-    echo("--samefitness: allow individuals with the same fitness in the global population")
+    echo("--samefitness: allow individuals with the same fitness in the global population (false)")
     # TODO: option for save new fitness
 
-    echo("-p [uint32]: population size")
-    echo("-m [uint32]: number of mutations per iteration")
-    echo("-i [uint32]: number of iterations")
-    echo("-k [uint8]: population kind")
-    echo("--reset: before each run randomize the whole population")
+    echo("-p [uint32]: population size (10)")
+    echo("-m [uint32]: number of mutations per iteration (10)")
+    echo("-i [uint32]: number of iterations (1000)")
+    echo("-k [uint8]: population kind (0)")
+    echo("--reset: before each run randomize the whole population (false)")
+    echo("--fixedmutation: use a fixed number of mutations for each iteration (false)")
+    echo("--fitnessrate [float64]: the rate at which the fitness limit is decreased (0.999)")
 
     quit()
 
@@ -65,6 +69,8 @@ proc naConfigFromCmdLine*(): NAConfiguration =
     result.acceptNewBest = true
     result.resetPopulation = false
     result.populationKind = 0
+    result.fixedMutation = false
+    result.fitnessRate = 0.999
 
     var cmdParser = initOptParser()
     while true:
@@ -89,6 +95,10 @@ proc naConfigFromCmdLine*(): NAConfiguration =
                 result.resetPopulation = true
             elif cmdParser.key == "samefitness":
                 result.sameFitness = true
+            elif cmdParser.key == "fixedmutation":
+                result.fixedMutation = true
+            elif cmdParser.key == "fitnessrate":
+                result.fitnessRate = parseFloat(cmdParser.val)
             elif cmdParser.key == "k":
                 result.populationKind = uint8(parseUint(cmdParser.val))
             else:

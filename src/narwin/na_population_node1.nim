@@ -38,7 +38,7 @@ method ncProcessData(self: var NAPopulationNodeDP1, inputData: seq[byte]): seq[b
             self.population[j + offset] = self.population.naClone(j)
 
             # Now mutate all individuals of the current active population:
-            for k in 0..<self.population.numOfMutations:
+            for k in 0..<self.population.naGetNumberOfMutations():
                 self.population[j].naMutate()
             # Calculate the new fitness for the mutated individual:
             self.population[j].naCalculateFitness()
@@ -59,6 +59,7 @@ method ncProcessData(self: var NAPopulationNodeDP1, inputData: seq[byte]): seq[b
 
     let fitness = self.population[0].fitness
     ncDebug(fmt("Best fitness in this run: {fitness}"))
+    ncDebug(fmt("Best fitness: {self.population[0].fitness}, worst fitness: {self.population[offset - 2].fitness}"))
 
     return self.population[0].naToBytes()
 

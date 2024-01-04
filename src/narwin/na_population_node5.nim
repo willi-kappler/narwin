@@ -21,7 +21,8 @@ import na_population
 type
     NAPopulationNodeDP5 = ref object of NCNodeDataProcessor
         population: NAPopulation
-        fitnessFactor: float64
+        fitnessLimit: float64
+        fitnessRate: float64
 
 method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[byte] =
     ncDebug("ncProcessData()", 2)
@@ -38,27 +39,26 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
         tmpIndividual = self.population.naClone(j)
 
         # And mutate it:
-        for k in 0..<self.population.numOfMutations:
+        for k in 0..<self.population.naGetNumberOfMutations():
             tmpIndividual.naMutate()
         # Calculate the new fitness for the mutated individual:
         tmpIndividual.naCalculateFitness()
 
         # If the mutated individual is better than the original
         # it gets overwritten (killed) by the better one:
-        if tmpIndividual.fitness < self.population[j].fitness * self.fitnessFactor:
+        if tmpIndividual.fitness < self.fitnessLimit:
             self.population[j] = tmpIndividual.naClone()
             if tmpIndividual.fitness <= self.population.targetFitness:
                 ncDebug(fmt("Early exit at i: {i}"))
                 break
 
-        if self.fitnessFactor > 1.0:
-            self.fitnessFactor = self.fitnessFactor * 0.99
+            self.fitnessLimit = self.fitnessLimit * self.fitnessRate
 
     # Find the best and the worst individual at the end:
     self.population.findBestAndWorstIndividual()
     ncDebug(fmt("Best fitness: {self.population.bestFitness}, worst fitness: {self.population.worstFitness}"))
 
-    ncDebug(fmt("Fitness factor: {self.fitnessFactor}"))
+    ncDebug(fmt("Fitness factor: {self.fitnessLimit}"))
 
     return self.population[self.population.bestIndex].naToBytes()
 
@@ -72,8 +72,10 @@ proc naInitPopulationNodeDP5*(individual: NAIndividual, config: NAConfiguration)
     result.population[0] = individual.naClone()
     result.population[0].naCalculateFitness()
 
-    # TODO: Make this configurable
-    result.fitnessFactor = 10.0
+    result.fitnessLimit = result.population[0].fitness
+
+    assert config.fitnessRate < 1.0
+    result.fitnessRate = config.fitnessRate
 
     # Initialize the population with random individuals:
     for i in 1..<config.populationSize:
