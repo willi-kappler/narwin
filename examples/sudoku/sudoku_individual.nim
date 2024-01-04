@@ -12,7 +12,7 @@
 import std/json
 import std/jsonutils
 
-from std/random import rand, sample, shuffle
+from std/random import rand, shuffle
 from std/strformat import fmt
 #from std/sequtils import toSeq
 
@@ -87,6 +87,17 @@ proc checkBlock(self: SudokuIndividual, i, j: uint8): uint8 =
         for v in 0'u8..2:
             result += self.checkPos(i + u, j + v, inUse)
 
+proc reset(self: var SudokuIndividual) =
+    self.data2 = self.data1
+
+proc hasFreePlace(self: SudokuIndividual): bool =
+    result = false
+
+    for v in self.data2:
+        if v == 0:
+            result = true
+            break
+
 proc randomEmptyPosition1(self: SudokuIndividual): (uint8, uint8) =
     var col = randomIndex()
     var row = randomIndex()
@@ -96,6 +107,45 @@ proc randomEmptyPosition1(self: SudokuIndividual): (uint8, uint8) =
         row = randomIndex()
 
     return (col, row)
+
+proc randomEmptyPosition2(self: SudokuIndividual): (uint8, uint8) =
+    var col = randomIndex()
+    var row = randomIndex()
+
+    while self.getValue2(col, row) != 0:
+        col = randomIndex()
+        row = randomIndex()
+
+    return (col, row)
+
+proc isValid(self: SudokuIndividual, col, row, n: uint8): bool =
+    for col2 in 0'u8..8:
+        if self.getValue1(col2, row) == n:
+            return false
+
+    for row2 in 0'u8..8:
+        if self.getValue1(col, row2) == n:
+            return false
+
+    let col2 = (col div 3) * 3
+    let row2 = (row div 3) * 3
+
+    for u in 0'u8..2:
+        for v in 0'u8..2:
+            if self.getValue1(col2 + u, row2 + v) == n:
+                return false
+
+    return true
+
+proc getValidNumber(self: SudokuIndividual, col, row: uint8): uint8 =
+    var numbers: seq[uint8] = @[1, 2, 3, 4, 5, 6, 7, 8, 9]
+    shuffle(numbers)
+
+    for n in numbers:
+        if self.isValid(col, row, n):
+            return n
+
+    return 0
 
 proc randomValue2(self: SudokuIndividual, col, row: uint8): uint8 =
     let c1 = decIndex(col)
@@ -158,9 +208,7 @@ method naMutate*(self: var SudokuIndividual) =
         raise newException(ValueError, fmt("Unknown mutation operation: {operation}"))
 
 method naRandomize*(self: var SudokuIndividual) =
-    let last = self.data1.high
-
-    for i in 0..last:
+    for i in 0..self.data1.high:
         if self.data1[i] == 0:
             self.data2[i] = randomValue()
         else:
@@ -200,7 +248,7 @@ method naToJSON*(self: SudokuIndividual): JsonNode =
 
 proc newPuzzle*(): SudokuIndividual =
     let data: seq[uint8] = @[
-        5, 3, 0,   0, 0, 0,   0, 0, 2,
+        0, 3, 0,   0, 0, 0,   0, 0, 0,
         0, 0, 0,   1, 9, 5,   0, 0, 0,
         0, 0, 8,   0, 0, 0,   0, 6, 0,
 
@@ -210,7 +258,7 @@ proc newPuzzle*(): SudokuIndividual =
 
         0, 6, 0,   0, 0, 0,   2, 8, 0,
         0, 0, 0,   4, 1, 9,   0, 0, 5,
-        3, 0, 0,   0, 8, 0,   0, 7, 9
+        0, 0, 0,   0, 0, 0,   0, 7, 0
         ]
 
     result = SudokuIndividual(data1: data, data2: data)
