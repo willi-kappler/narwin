@@ -97,16 +97,6 @@ proc randomEmptyPosition1(self: SudokuIndividual): (uint8, uint8) =
 
     return (col, row)
 
-proc randomEmptyPosition2(self: SudokuIndividual): (uint8, uint8) =
-    var col = randomIndex()
-    var row = randomIndex()
-
-    while self.getValue2(col, row) != 0:
-        col = randomIndex()
-        row = randomIndex()
-
-    return (col, row)
-
 proc randomValue2(self: SudokuIndividual, col, row: uint8): uint8 =
     let c1 = decIndex(col)
     let c2 = incIndex(col)
@@ -130,62 +120,51 @@ proc swapValues(self: var SudokuIndividual, col1, row1, col2, row2: uint8) =
     self.setValue2(col1, row1, v2)
     self.setValue2(col2, row2, v1)
 
-proc numberOK(self: SudokuIndividual, col, row, n: uint8): bool =
-    for col2 in 0'u8..8:
-        if self.getValue2(col2, row) == n:
-            return false
+proc incValue(self: var SudokuIndividual, col, row: uint8) =
+    let n = self.getValue2(col, row)
 
-    for row2 in 0'u8..8:
-        if self.getValue2(col, row2) == n:
-            return false
+    if n == 9:
+        self.setValue2(col, row, 1)
+    else:
+        self.setValue2(col, row, n + 1)
 
-    let col2 = (col div 3) * 3
-    let row2 = (col div 3) * 3
+proc decValue(self: var SudokuIndividual, col, row: uint8) =
+    let n = self.getValue2(col, row)
 
-    for u in 0'u8..2:
-        for v in 0'u8..2:
-            if self.getValue2(col2 + u, row2 + v) == n:
-                return false
-
-    return true
-
-proc setRandomValidValue(self: var SudokuIndividual) =
-    let (col, row) = self.randomEmptyPosition1()
-
-    var numbers: seq[uint8] = @[1, 2, 3, 4, 5, 6, 7, 8, 9]
-    shuffle(numbers)
-
-    for v in numbers:
-        if self.numberOK(col, row, v):
-            self.setValue2(col, row, v)
-            break
+    if n <= 1:
+        self.setValue2(col, row, 9)
+    else:
+        self.setValue2(col, row, n - 1)
 
 method naMutate*(self: var SudokuIndividual) =
-    const maxOperation = 2
+    let (col, row) = self.randomEmptyPosition1()
+
+    const maxOperation = 4
     let operation = rand(maxOperation)
 
     case operation
     of 0:
-        let (col, row) = self.randomEmptyPosition1()
         self.setValue2(col, row, randomValue())
     of 1:
-        let (col, row) = self.randomEmptyPosition1()
-        let v = self.randomValue2(col, row)
-        self.setValue2(col, row, v)
+        self.setValue2(col, row, self.randomValue2(col, row))
+    of 2:
+        self.incValue(col, row)
+    of 3:
+        self.decValue(col, row)
     of maxOperation:
-        let (col1, row1) = self.randomEmptyPosition1()
         let (col2, row2) = self.randomEmptyPosition1()
-        self.swapValues(col1, row1, col2, row2)
+        self.swapValues(col, row, col2, row2)
     else:
         raise newException(ValueError, fmt("Unknown mutation operation: {operation}"))
 
 method naRandomize*(self: var SudokuIndividual) =
-    self.data2 = self.data1
+    let last = self.data1.high
 
-    let n = rand(19) + 1
-
-    for _ in 0..n:
-        self.setRandomValidValue()
+    for i in 0..last:
+        if self.data1[i] == 0:
+            self.data2[i] = randomValue()
+        else:
+            self.data2[i] = self.data1[i]
 
 method naCalculateFitness*(self: var SudokuIndividual) =
     # Fitness means number of errors, the lower the better
@@ -221,7 +200,7 @@ method naToJSON*(self: SudokuIndividual): JsonNode =
 
 proc newPuzzle*(): SudokuIndividual =
     let data: seq[uint8] = @[
-        0, 3, 0,   0, 0, 0,   0, 0, 0,
+        5, 3, 0,   0, 0, 0,   0, 0, 2,
         0, 0, 0,   1, 9, 5,   0, 0, 0,
         0, 0, 8,   0, 0, 0,   0, 6, 0,
 
@@ -231,7 +210,7 @@ proc newPuzzle*(): SudokuIndividual =
 
         0, 6, 0,   0, 0, 0,   2, 8, 0,
         0, 0, 0,   4, 1, 9,   0, 0, 5,
-        0, 0, 0,   0, 0, 0,   0, 7, 0
+        3, 0, 0,   0, 8, 0,   0, 7, 9
         ]
 
     result = SudokuIndividual(data1: data, data2: data)
