@@ -31,6 +31,9 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
 
     self.population.naResetOrAcepptBest(inputData)
 
+    if self.population.resetPopulation:
+        self.fitnessLimit = self.population[0].fitness
+
     # Pick a random individual and randomize it:
     self.population.naRandomizeAny()
 
