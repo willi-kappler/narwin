@@ -26,6 +26,7 @@ task checkAll, "run 'nim check' on all source files":
     exec "nim check na_population_node2.nim"
     exec "nim check na_population_node3.nim"
     exec "nim check na_population_node4.nim"
+    exec "nim check na_population_node5.nim"
     exec "nim check na_population_server.nim"
 
     #cd "private/"
