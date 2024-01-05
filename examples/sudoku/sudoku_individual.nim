@@ -164,6 +164,9 @@ proc randomValue2(self: SudokuIndividual, col, row: uint8): uint8 =
         result = randomValue()
 
 proc swapValues(self: var SudokuIndividual, col1, row1, col2, row2: uint8) =
+    if (col1 == col2) and (row1 == row2):
+        return
+
     let v1 = self.getValue2(col1, row1)
     let v2 = self.getValue2(col2, row2)
 
