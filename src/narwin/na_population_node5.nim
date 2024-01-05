@@ -23,8 +23,6 @@ type
         population: NAPopulation
         fitnessLimit: float64
         fitnessRate: float64
-        fitnessRate1: float64
-        fitnessRate2: float64
         limitTop: float64
         limitBottom: float64
         limitCounter: uint32
@@ -33,14 +31,6 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
     ncDebug("ncProcessData()", 2)
 
     var tmpIndividual = self.population.naClone(0)
-
-    self.population.naResetOrAcepptBest(inputData)
-
-    if self.population.resetPopulation:
-        self.fitnessLimit = self.population[0].fitness
-
-    # Pick a random individual and randomize it:
-    self.population.naRandomizeAny()
 
     var limitCounter: uint32 = 0
 
@@ -61,6 +51,8 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
             if tmpIndividual.fitness <= self.population.targetFitness:
                 ncDebug(fmt("Early exit at i: {i}"))
                 break
+        elif tmpIndividual.fitness < self.population[j].fitness:
+            self.population[j] = tmpIndividual.naClone()
 
         inc(limitCounter)
 
@@ -68,13 +60,8 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
             limitCounter = 0
             self.fitnessLimit = self.fitnessLimit * self.fitnessRate
 
-            if (self.fitnessRate < 1.0) and (self.fitnessLimit < self.limitBottom):
+            if (self.fitnessLimit < self.limitBottom):
                 ncDebug(fmt("Fitness limit: {self.fitnessLimit}, fitness rate: {self.fitnessRate}"))
-                self.fitnessRate = self.fitnessRate2
-                self.fitnessLimit = self.limitBottom
-            if (self.fitnessRate > 1.0) and (self.fitnessLimit > self.limitTop):
-                ncDebug(fmt("Fitness limit: {self.fitnessLimit}, fitness rate: {self.fitnessRate}"))
-                self.fitnessRate = self.fitnessRate1
                 self.fitnessLimit = self.limitTop
 
     # Find the best and the worst individual at the end:
@@ -98,8 +85,6 @@ proc naInitPopulationNodeDP5*(individual: NAIndividual, config: NAConfiguration)
     result.fitnessLimit = result.population[0].fitness
 
     assert (config.fitnessRate < 1.0) and (config.fitnessRate > 0.0)
-    result.fitnessRate1 = config.fitnessRate
-    result.fitnessRate2 = 2.0 - config.fitnessRate
     result.fitnessRate = config.fitnessRate
 
     assert (config.limitTop > config.limitBottom) and (config.limitBottom > 0.0)
