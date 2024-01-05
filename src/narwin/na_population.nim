@@ -115,6 +115,9 @@ proc naInitPopulation*(individual: NAIndividual, config: NAConfiguration): NAPop
     ncDebug(fmt("Accept new best from server: {config.acceptNewBest}"))
     ncDebug(fmt("Fixed mutation: {config.fixedMutation}"))
     ncDebug(fmt("Fitness rate: {config.fitnessRate}"))
+    ncDebug(fmt("Fitness limit top: {config.limitTop}"))
+    ncDebug(fmt("Fitness limit bottom: {config.limitBottom}"))
+    ncDebug(fmt("Fitness limit counter: {config.limitCounter}"))
 
     assert config.populationSize >= 5
     assert config.numOfMutations > 0

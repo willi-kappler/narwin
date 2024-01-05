@@ -23,6 +23,11 @@ type
         population: NAPopulation
         fitnessLimit: float64
         fitnessRate: float64
+        fitnessRate1: float64
+        fitnessRate2: float64
+        limitTop: float64
+        limitBottom: float64
+        limitCounter: uint32
 
 method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[byte] =
     ncDebug("ncProcessData()", 2)
@@ -36,6 +41,8 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
 
     # Pick a random individual and randomize it:
     self.population.naRandomizeAny()
+
+    var limitCounter: uint32 = 0
 
     for i in 0..<self.population.numOfIterations:
         let j = self.population.naGetRandomIndex()
@@ -55,7 +62,20 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
                 ncDebug(fmt("Early exit at i: {i}"))
                 break
 
+        inc(limitCounter)
+
+        if limitCounter >= self.limitCounter:
+            limitCounter = 0
             self.fitnessLimit = self.fitnessLimit * self.fitnessRate
+
+            if (self.fitnessRate < 1.0) and (self.fitnessLimit < self.limitBottom):
+                ncDebug(fmt("Fitness limit: {self.fitnessLimit}, fitness rate: {self.fitnessRate}"))
+                self.fitnessRate = self.fitnessRate2
+                self.fitnessLimit = self.limitBottom
+            if (self.fitnessRate > 1.0) and (self.fitnessLimit > self.limitTop):
+                ncDebug(fmt("Fitness limit: {self.fitnessLimit}, fitness rate: {self.fitnessRate}"))
+                self.fitnessRate = self.fitnessRate1
+                self.fitnessLimit = self.limitTop
 
     # Find the best and the worst individual at the end:
     self.population.findBestAndWorstIndividual()
@@ -77,8 +97,17 @@ proc naInitPopulationNodeDP5*(individual: NAIndividual, config: NAConfiguration)
 
     result.fitnessLimit = result.population[0].fitness
 
-    assert config.fitnessRate < 1.0
+    assert (config.fitnessRate < 1.0) and (config.fitnessRate > 0.0)
+    result.fitnessRate1 = config.fitnessRate
+    result.fitnessRate2 = 2.0 - config.fitnessRate
     result.fitnessRate = config.fitnessRate
+
+    assert (config.limitTop > config.limitBottom) and (config.limitBottom > 0.0)
+    result.limitTop = config.limitTop
+    result.limitBottom = config.limitBottom
+
+    assert config.limitCounter > 1
+    result.limitCounter = config.limitCounter
 
     # Initialize the population with random individuals:
     for i in 1..<config.populationSize:

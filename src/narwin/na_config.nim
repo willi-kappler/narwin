@@ -32,6 +32,9 @@ type
         populationKind*: uint8
         fixedMutation*: bool
         fitnessRate*: float64
+        limitTop*: float64
+        limitBottom*: float64
+        limitCounter*: uint32
 
 proc naShowHelpAndQuit*() =
     let path = getAppFilename()
@@ -52,6 +55,9 @@ proc naShowHelpAndQuit*() =
     echo("--reset: before each run randomize the whole population (false)")
     echo("--fixedmutation: use a fixed number of mutations for each iteration (false)")
     echo("--fitnessrate [float64]: the rate at which the fitness limit is decreased (0.999)")
+    echo("--limittop [float64]: the top limit for oscilating limit (10.0)")
+    echo("--limitbottom [float64]: the top limit for oscilating limit (1.0)")
+    echo("--limitcounter [uint32]: number of times to wait before the limit changes (100)")
 
     quit()
 
@@ -71,6 +77,9 @@ proc naConfigFromCmdLine*(): NAConfiguration =
     result.populationKind = 0
     result.fixedMutation = false
     result.fitnessRate = 0.999
+    result.limitTop = 10.0
+    result.limitBottom = 1.0
+    result.limitCounter = 10000
 
     var cmdParser = initOptParser()
     while true:
@@ -99,6 +108,12 @@ proc naConfigFromCmdLine*(): NAConfiguration =
                 result.fixedMutation = true
             elif cmdParser.key == "fitnessrate":
                 result.fitnessRate = parseFloat(cmdParser.val)
+            elif cmdParser.key == "limittop":
+                result.limitTop = parseFloat(cmdParser.val)
+            elif cmdParser.key == "limitbottom":
+                result.limitBottom = parseFloat(cmdParser.val)
+            elif cmdParser.key == "limitcounter":
+                result.limitCounter = uint32(parseUint(cmdParser.val))
             elif cmdParser.key == "k":
                 result.populationKind = uint8(parseUint(cmdParser.val))
             else:
