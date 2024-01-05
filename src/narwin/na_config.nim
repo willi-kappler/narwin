@@ -79,7 +79,7 @@ proc naConfigFromCmdLine*(): NAConfiguration =
     result.fitnessRate = 0.999
     result.limitTop = 10.0
     result.limitBottom = 1.0
-    result.limitCounter = 10000
+    result.limitCounter = 5000
 
     var cmdParser = initOptParser()
     while true:
