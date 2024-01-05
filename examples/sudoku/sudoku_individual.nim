@@ -186,10 +186,26 @@ proc decValue(self: var SudokuIndividual, col, row: uint8) =
     else:
         self.setValue2(col, row, n - 1)
 
+proc swapInCol(self: var SudokuIndividual, col, row1: uint8) =
+    var row2 = randomIndex()
+
+    while self.getValue1(col, row2) != 0:
+        row2 = randomIndex()
+
+    self.swapValues(col, row1, col, row2)
+
+proc swapInRow(self: var SudokuIndividual, col1, row: uint8) =
+    var col2 = randomIndex()
+
+    while self.getValue1(col2, row) != 0:
+        col2 = randomIndex()
+
+    self.swapValues(col1, row, col2, row)
+
 method naMutate*(self: var SudokuIndividual) =
     let (col, row) = self.randomEmptyPosition1()
 
-    const maxOperation = 4
+    const maxOperation = 6
     let operation = rand(maxOperation)
 
     case operation
@@ -201,6 +217,10 @@ method naMutate*(self: var SudokuIndividual) =
         self.incValue(col, row)
     of 3:
         self.decValue(col, row)
+    of 4:
+        self.swapInCol(col, row)
+    of 5:
+        self.swapInRow(col, row)
     of maxOperation:
         let (col2, row2) = self.randomEmptyPosition1()
         self.swapValues(col, row, col2, row2)
