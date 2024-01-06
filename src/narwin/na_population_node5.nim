@@ -63,11 +63,11 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
                         ncDebug(fmt("Early exit at i: {i}"))
                         break iterations
 
-                self.fitnessLimit = self.fitnessLimit - self.fitnessRate
+            self.fitnessLimit = self.fitnessLimit - self.fitnessRate
 
-                if (self.fitnessLimit < self.limitBottom):
-                    self.fitnessLimit = self.limitTop
-                    inc(limitCounter)
+            if (self.fitnessLimit < self.limitBottom):
+                self.fitnessLimit = self.limitTop
+                inc(limitCounter)
 
     ncDebug(fmt("Limit counter: {limitCounter}"))
     ncDebug(fmt("Best fitness: {bestIndividual.fitness}"))
