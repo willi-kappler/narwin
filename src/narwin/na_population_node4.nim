@@ -43,7 +43,7 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
                 tmpIndividual2 = self.population.naClone(j)
                 tmpIndividual3 = self.population.naClone(j)
 
-                for _ in 0..<self.population.naGetNumberOfMutations():
+                for _ in 0..<self.population.numOfMutations:
                     # Mutate it:
                     tmpIndividual1.naMutate()
                     tmpIndividual2.naMutate()
