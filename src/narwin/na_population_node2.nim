@@ -34,30 +34,31 @@ method ncProcessData(self: var NAPopulationNodeDP2, inputData: seq[byte]): seq[b
 
     var worstChanged = true
 
-    for i in 0..<self.population.numOfIterations:
-        for j in 0..<self.population.populationSize:
-            # Find the worst individual of this iteration:
-            if worstChanged:
-                self.population.findWorstIndividual()
+    block iterations:
+        for i in 0..<self.population.numOfIterations:
+            for j in 0..<self.population.populationSize:
+                # Find the worst individual of this iteration:
+                if worstChanged:
+                    self.population.findWorstIndividual()
 
-            tmpIndividual = self.population.naClone(j)
+                tmpIndividual = self.population.naClone(j)
 
-            # And mutate it:
-            for _ in 0..<self.population.naGetNumberOfMutations():
-                tmpIndividual.naMutate()
-            # Calculate the new fitness for the mutated individual:
-            tmpIndividual.naCalculateFitness()
+                # And mutate it:
+                for _ in 0..<self.population.naGetNumberOfMutations():
+                    tmpIndividual.naMutate()
+                # Calculate the new fitness for the mutated individual:
+                tmpIndividual.naCalculateFitness()
 
-            # If the mutated individual is better than the worst
-            # it gets overwritten (killed) by the better one:
-            if tmpIndividual.fitness < self.population.worstFitness:
-                self.population[self.population.worstIndex] = tmpIndividual.naClone()
-                if tmpIndividual.fitness <= self.population.targetFitness:
-                    ncDebug(fmt("Early exit at i: {i}"))
-                    break
-                worstChanged = true
-            else:
-                worstChanged = false
+                # If the mutated individual is better than the worst
+                # it gets overwritten (killed) by the better one:
+                if tmpIndividual.fitness < self.population.worstFitness:
+                    self.population[self.population.worstIndex] = tmpIndividual.naClone()
+                    if tmpIndividual.fitness <= self.population.targetFitness:
+                        ncDebug(fmt("Early exit at i: {i}"))
+                        break iterations
+                    worstChanged = true
+                else:
+                    worstChanged = false
 
     # Find the best and the worst individual at the end:
     self.population.findBestAndWorstIndividual()
