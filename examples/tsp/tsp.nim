@@ -27,7 +27,7 @@ when isMainModule:
     # Best fitness with city_positions1: 325.1787170723113
     # Possible good limit: 330.0
     #
-    # Best fitness with city_positions2: 7887.528337351338
+    # Best fitness with city_positions2: 7872.429256144669
     # Possible good limit: 7900.0
     let tsp = loadTSP("city_positions2.txt")
 
