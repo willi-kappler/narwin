@@ -30,6 +30,7 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
     ncDebug("ncProcessData()", 2)
 
     var tmpIndividual = self.population.naClone(0)
+    var bestIndividual = self.population.naClone(0)
 
     self.population.naResetOrAcepptBest(inputData)
 
@@ -49,8 +50,6 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
         # Calculate the new fitness for the mutated individual:
         tmpIndividual.naCalculateFitness()
 
-        # If the mutated individual is better than the original
-        # it gets overwritten (killed) by the better one:
         if tmpIndividual.fitness < self.fitnessLimit:
             self.population[j] = tmpIndividual.naClone()
             if tmpIndividual.fitness <= self.population.targetFitness:
@@ -59,19 +58,19 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
         elif tmpIndividual.fitness < self.population[j].fitness:
             self.population[j] = tmpIndividual.naClone()
 
+        if tmpIndividual.fitness < bestIndividual.fitness:
+            bestIndividual = tmpIndividual.naClone()
+
         self.fitnessLimit = self.fitnessLimit - self.fitnessRate
 
         if (self.fitnessLimit < self.limitBottom):
             ncDebug(fmt("Fitness limit: {self.fitnessLimit}, fitness rate: {self.fitnessRate}"))
             self.fitnessLimit = self.limitTop
 
-    # Find the best and the worst individual at the end:
-    self.population.findBestAndWorstIndividual()
-    ncDebug(fmt("Best fitness: {self.population.bestFitness}, worst fitness: {self.population.worstFitness}"))
-
+    ncDebug(fmt("Best fitness: {bestIndividual.fitness}"))
     ncDebug(fmt("Fitness factor: {self.fitnessLimit}"))
 
-    return self.population[self.population.bestIndex].naToBytes()
+    return bestIndividual.naToBytes()
 
 proc naInitPopulationNodeDP5*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP5 =
     ncDebug("naInitPopulationNodeDP5")
