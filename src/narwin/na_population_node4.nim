@@ -30,6 +30,10 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
     var tmpIndividual3 = self.population.naClone(0)
     var original = self.population.naClone(0)
 
+    var individual1Counter: uint32 = 0
+    var individual2Counter: uint32 = 0
+    var individual3Counter: uint32 = 0
+
     self.population.naResetOrAcepptBest(inputData)
 
     # Pick a random individual and randomize it:
@@ -56,18 +60,15 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
                     # Check if any is better than the current one:
                     # If the mutated individual is better than the original
                     # it gets overwritten (killed) by the better one:
-                    if (tmpIndividual1.fitness <= tmpIndividual2.fitness) and
-                    (tmpIndividual1.fitness <= tmpIndividual3.fitness):
-                        if tmpIndividual1.fitness < self.population[j].fitness:
-                            self.population[j] = tmpIndividual1.naClone()
-                    elif (tmpIndividual2.fitness <= tmpIndividual1.fitness) and
-                    (tmpIndividual2.fitness <= tmpIndividual3.fitness):
-                        if tmpIndividual2.fitness < self.population[j].fitness:
-                            self.population[j] = tmpIndividual2.naClone()
-                    elif (tmpIndividual3.fitness <= tmpIndividual1.fitness) and
-                    (tmpIndividual3.fitness <= tmpIndividual2.fitness):
-                        if tmpIndividual3.fitness < self.population[j].fitness:
-                            self.population[j] = tmpIndividual3.naClone()
+                    if tmpIndividual1.fitness < self.population[j].fitness:
+                        self.population[j] = tmpIndividual1.naClone()
+                        inc(individual1Counter)
+                    if tmpIndividual2.fitness < self.population[j].fitness:
+                        self.population[j] = tmpIndividual2.naClone()
+                        inc(individual2Counter)
+                    if tmpIndividual3.fitness < self.population[j].fitness:
+                        self.population[j] = tmpIndividual3.naClone()
+                        inc(individual3Counter)
 
                     # Reset first and second individual:
                     tmpIndividual1 = original.naClone()
@@ -80,6 +81,9 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
     # Find the best and the worst individual at the end:
     self.population.findBestAndWorstIndividual()
     ncDebug(fmt("Best fitness: {self.population.bestFitness}, worst fitness: {self.population.worstFitness}"))
+    ncDebug(fmt("Individual1 counter: {individual1Counter}"))
+    ncDebug(fmt("Individual2 counter: {individual2Counter}"))
+    ncDebug(fmt("Individual3 counter: {individual3Counter}"))
 
     return self.population[self.population.bestIndex].naToBytes()
 
