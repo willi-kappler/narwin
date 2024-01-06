@@ -32,10 +32,13 @@ method ncProcessData(self: var NAPopulationNodeDP2, inputData: seq[byte]): seq[b
     # Pick a random individual and randomize it:
     self.population.naRandomizeAny()
 
+    var worstChanged = true
+
     for i in 0..<self.population.numOfIterations:
         for j in 0..<self.population.populationSize:
             # Find the worst individual of this iteration:
-            self.population.findWorstIndividual()
+            if worstChanged:
+                self.population.findWorstIndividual()
 
             tmpIndividual = self.population.naClone(j)
 
@@ -52,6 +55,9 @@ method ncProcessData(self: var NAPopulationNodeDP2, inputData: seq[byte]): seq[b
                 if tmpIndividual.fitness <= self.population.targetFitness:
                     ncDebug(fmt("Early exit at i: {i}"))
                     break
+                worstChanged = true
+            else:
+                worstChanged = false
 
     # Find the best and the worst individual at the end:
     self.population.findBestAndWorstIndividual()
