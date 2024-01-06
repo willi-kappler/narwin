@@ -55,13 +55,18 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
             # Check if any is better than the current one:
             # If the mutated individual is better than the original
             # it gets overwritten (killed) by the better one:
-
-            if tmpIndividual1.fitness < self.population[j].fitness:
+            if (tmpIndividual1.fitness < tmpIndividual2.fitness) and
+               (tmpIndividual1.fitness <= tmpIndividual3.fitness):
                 self.population[j] = tmpIndividual1.naClone()
-            if tmpIndividual2.fitness < self.population[j].fitness:
+            elif (tmpIndividual2.fitness < tmpIndividual1.fitness) and
+               (tmpIndividual2.fitness <= tmpIndividual3.fitness):
                 self.population[j] = tmpIndividual2.naClone()
-            if tmpIndividual3.fitness < self.population[j].fitness:
+            elif (tmpIndividual3.fitness < tmpIndividual1.fitness) and
+               (tmpIndividual3.fitness <= tmpIndividual2.fitness):
                 self.population[j] = tmpIndividual3.naClone()
+            else:
+                # All three are equal:
+                self.population[j] = tmpIndividual1.naClone()
 
             # Reset first and second individual:
             tmpIndividual1 = original.naClone()
