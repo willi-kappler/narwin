@@ -31,6 +31,7 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
 
     var tmpIndividual = self.population.naClone(0)
     var bestIndividual = self.population.naClone(0)
+    var limitCounter: uint32 = 0
 
     self.population.naResetOrAcepptBest(inputData)
 
@@ -64,9 +65,10 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
         self.fitnessLimit = self.fitnessLimit - self.fitnessRate
 
         if (self.fitnessLimit < self.limitBottom):
-            ncDebug(fmt("Fitness limit: {self.fitnessLimit}, fitness rate: {self.fitnessRate}"))
             self.fitnessLimit = self.limitTop
+            inc(limitCounter)
 
+    ncDebug(fmt("Limit counter: {limitCounter}"))
     ncDebug(fmt("Best fitness: {bestIndividual.fitness}"))
     ncDebug(fmt("Fitness factor: {self.fitnessLimit}"))
 
