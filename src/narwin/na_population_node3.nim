@@ -33,22 +33,22 @@ method ncProcessData(self: var NAPopulationNodeDP3, inputData: seq[byte]): seq[b
     self.population.naRandomizeAny()
 
     for i in 0..<self.population.numOfIterations:
-        let j = self.population.naGetRandomIndex()
-        tmpIndividual = self.population.naClone(j)
+        for j in 0..<self.population.populationSize:
+            tmpIndividual = self.population.naClone(j)
 
-        # And mutate it:
-        for k in 0..<self.population.naGetNumberOfMutations():
-            tmpIndividual.naMutate()
-        # Calculate the new fitness for the mutated individual:
-        tmpIndividual.naCalculateFitness()
+            # And mutate it:
+            for _ in 0..<self.population.naGetNumberOfMutations():
+                tmpIndividual.naMutate()
+            # Calculate the new fitness for the mutated individual:
+            tmpIndividual.naCalculateFitness()
 
-        # If the mutated individual is better than the original
-        # it gets overwritten (killed) by the better one:
-        if tmpIndividual.fitness < self.population[j].fitness:
-            self.population[j] = tmpIndividual.naClone()
-            if tmpIndividual.fitness <= self.population.targetFitness:
-                ncDebug(fmt("Early exit at i: {i}"))
-                break
+            # If the mutated individual is better than the original
+            # it gets overwritten (killed) by the better one:
+            if tmpIndividual.fitness < self.population[j].fitness:
+                self.population[j] = tmpIndividual.naClone()
+                if tmpIndividual.fitness <= self.population.targetFitness:
+                    ncDebug(fmt("Early exit at i: {i}"))
+                    break
 
     # Find the best and the worst individual at the end:
     self.population.findBestAndWorstIndividual()

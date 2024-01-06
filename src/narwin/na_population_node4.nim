@@ -36,45 +36,45 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
     self.population.naRandomizeAny()
 
     for i in 0..<self.population.numOfIterations:
-        let j = self.population.naGetRandomIndex()
-        original = self.population.naClone(j)
-        tmpIndividual1 = self.population.naClone(j)
-        tmpIndividual2 = self.population.naClone(j)
-        tmpIndividual3 = self.population.naClone(j)
+        for j in 0..<self.population.populationSize:
+            original = self.population.naClone(j)
+            tmpIndividual1 = self.population.naClone(j)
+            tmpIndividual2 = self.population.naClone(j)
+            tmpIndividual3 = self.population.naClone(j)
 
-        for k in 0..<self.population.naGetNumberOfMutations():
-            # Mutate it:
-            tmpIndividual1.naMutate()
-            tmpIndividual2.naMutate()
-            tmpIndividual3.naMutate()
-            # Calculate the new fitness for the mutated individuals:
-            tmpIndividual1.naCalculateFitness()
-            tmpIndividual2.naCalculateFitness()
-            tmpIndividual3.naCalculateFitness()
+            for _ in 0..<self.population.naGetNumberOfMutations():
+                # Mutate it:
+                tmpIndividual1.naMutate()
+                tmpIndividual2.naMutate()
+                tmpIndividual3.naMutate()
+                # Calculate the new fitness for the mutated individuals:
+                tmpIndividual1.naCalculateFitness()
+                tmpIndividual2.naCalculateFitness()
+                tmpIndividual3.naCalculateFitness()
 
-            # Check if any is better than the current one:
-            # If the mutated individual is better than the original
-            # it gets overwritten (killed) by the better one:
-            if (tmpIndividual1.fitness < tmpIndividual2.fitness) and
-               (tmpIndividual1.fitness <= tmpIndividual3.fitness):
-                self.population[j] = tmpIndividual1.naClone()
-            elif (tmpIndividual2.fitness < tmpIndividual1.fitness) and
-               (tmpIndividual2.fitness <= tmpIndividual3.fitness):
-                self.population[j] = tmpIndividual2.naClone()
-            elif (tmpIndividual3.fitness < tmpIndividual1.fitness) and
-               (tmpIndividual3.fitness <= tmpIndividual2.fitness):
-                self.population[j] = tmpIndividual3.naClone()
-            else:
-                # All three are equal:
-                self.population[j] = tmpIndividual1.naClone()
+                # Check if any is better than the current one:
+                # If the mutated individual is better than the original
+                # it gets overwritten (killed) by the better one:
+                if (tmpIndividual1.fitness < tmpIndividual2.fitness) and
+                (tmpIndividual1.fitness <= tmpIndividual3.fitness):
+                    self.population[j] = tmpIndividual1.naClone()
+                elif (tmpIndividual2.fitness < tmpIndividual1.fitness) and
+                (tmpIndividual2.fitness <= tmpIndividual3.fitness):
+                    self.population[j] = tmpIndividual2.naClone()
+                elif (tmpIndividual3.fitness < tmpIndividual1.fitness) and
+                (tmpIndividual3.fitness <= tmpIndividual2.fitness):
+                    self.population[j] = tmpIndividual3.naClone()
+                else:
+                    # All three are equal:
+                    self.population[j] = tmpIndividual1.naClone()
 
-            # Reset first and second individual:
-            tmpIndividual1 = original.naClone()
-            tmpIndividual2 = self.population[j].naClone()
+                # Reset first and second individual:
+                tmpIndividual1 = original.naClone()
+                tmpIndividual2 = self.population[j].naClone()
 
-        if self.population[j].fitness <= self.population.targetFitness:
-            ncDebug(fmt("Early exit at i: {i}"))
-            break
+            if self.population[j].fitness <= self.population.targetFitness:
+                ncDebug(fmt("Early exit at i: {i}"))
+                break
 
     # Find the best and the worst individual at the end:
     self.population.findBestAndWorstIndividual()

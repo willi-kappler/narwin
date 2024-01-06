@@ -33,26 +33,25 @@ method ncProcessData(self: var NAPopulationNodeDP2, inputData: seq[byte]): seq[b
     self.population.naRandomizeAny()
 
     for i in 0..<self.population.numOfIterations:
-        # Find the worst individual of this iteration:
-        self.population.findWorstIndividual()
+        for j in 0..<self.population.populationSize:
+            # Find the worst individual of this iteration:
+            self.population.findWorstIndividual()
 
-        # Choose a random individual:
-        let j = self.population.naGetRandomIndex()
-        tmpIndividual = self.population.naClone(j)
+            tmpIndividual = self.population.naClone(j)
 
-        # And mutate it:
-        for j in 0..<self.population.naGetNumberOfMutations():
-            tmpIndividual.naMutate()
-        # Calculate the new fitness for the mutated individual:
-        tmpIndividual.naCalculateFitness()
+            # And mutate it:
+            for _ in 0..<self.population.naGetNumberOfMutations():
+                tmpIndividual.naMutate()
+            # Calculate the new fitness for the mutated individual:
+            tmpIndividual.naCalculateFitness()
 
-        # If the mutated individual is better than the worst
-        # it gets overwritten (killed) by the better one:
-        if tmpIndividual.fitness < self.population.worstFitness:
-            self.population[self.population.worstIndex] = tmpIndividual.naClone()
-            if tmpIndividual.fitness <= self.population.targetFitness:
-                ncDebug(fmt("Early exit at i: {i}"))
-                break
+            # If the mutated individual is better than the worst
+            # it gets overwritten (killed) by the better one:
+            if tmpIndividual.fitness < self.population.worstFitness:
+                self.population[self.population.worstIndex] = tmpIndividual.naClone()
+                if tmpIndividual.fitness <= self.population.targetFitness:
+                    ncDebug(fmt("Early exit at i: {i}"))
+                    break
 
     # Find the best and the worst individual at the end:
     self.population.findBestAndWorstIndividual()

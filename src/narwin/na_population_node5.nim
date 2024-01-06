@@ -42,31 +42,31 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
     self.population.naRandomizeAny()
 
     for i in 0..<self.population.numOfIterations:
-        let j = self.population.naGetRandomIndex()
-        tmpIndividual = self.population.naClone(j)
+        for j in 0..<self.population.populationSize:
+            tmpIndividual = self.population.naClone(j)
 
-        # And mutate it:
-        for k in 0..<self.population.naGetNumberOfMutations():
-            tmpIndividual.naMutate()
-        # Calculate the new fitness for the mutated individual:
-        tmpIndividual.naCalculateFitness()
+            # And mutate it:
+            for _ in 0..<self.population.naGetNumberOfMutations():
+                tmpIndividual.naMutate()
+            # Calculate the new fitness for the mutated individual:
+            tmpIndividual.naCalculateFitness()
 
-        if tmpIndividual.fitness < self.fitnessLimit:
-            self.population[j] = tmpIndividual.naClone()
-        elif tmpIndividual.fitness < self.population[j].fitness:
-            self.population[j] = tmpIndividual.naClone()
+            if tmpIndividual.fitness < self.fitnessLimit:
+                self.population[j] = tmpIndividual.naClone()
+            elif tmpIndividual.fitness < self.population[j].fitness:
+                self.population[j] = tmpIndividual.naClone()
 
-        if tmpIndividual.fitness < bestIndividual.fitness:
-            bestIndividual = tmpIndividual.naClone()
-            if tmpIndividual.fitness <= self.population.targetFitness:
-                ncDebug(fmt("Early exit at i: {i}"))
-                break
+            if tmpIndividual.fitness < bestIndividual.fitness:
+                bestIndividual = tmpIndividual.naClone()
+                if tmpIndividual.fitness <= self.population.targetFitness:
+                    ncDebug(fmt("Early exit at i: {i}"))
+                    break
 
-        self.fitnessLimit = self.fitnessLimit - self.fitnessRate
+            self.fitnessLimit = self.fitnessLimit - self.fitnessRate
 
-        if (self.fitnessLimit < self.limitBottom):
-            self.fitnessLimit = self.limitTop
-            inc(limitCounter)
+            if (self.fitnessLimit < self.limitBottom):
+                self.fitnessLimit = self.limitTop
+                inc(limitCounter)
 
     ncDebug(fmt("Limit counter: {limitCounter}"))
     ncDebug(fmt("Best fitness: {bestIndividual.fitness}"))
