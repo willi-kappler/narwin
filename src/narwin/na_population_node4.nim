@@ -30,9 +30,15 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
     var tmpIndividual3 = self.population.naClone(0)
     var original = self.population.naClone(0)
 
-    var individual1Counter: uint32 = 0
-    var individual2Counter: uint32 = 0
-    var individual3Counter: uint32 = 0
+    var limitActive = false
+    var limitCounterEnd = self.population.numOfIterations div 5
+
+    if limitCounterEnd < 5:
+        limitCounterEnd = 5
+
+    var limitCounter: uint32 = 0
+    var bestFitness: float64 = original.fitness
+    var limitFitness: float64 = bestFitness * 5.0
 
     self.population.naResetOrAcepptBest(inputData)
 
@@ -41,49 +47,65 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
 
     block iterations:
         for i in 0..<self.population.numOfIterations:
-            for j in 0..<self.population.populationSize:
-                original = self.population.naClone(j)
-                tmpIndividual1 = self.population.naClone(j)
-                tmpIndividual2 = self.population.naClone(j)
-                tmpIndividual3 = self.population.naClone(j)
+            if limitActive:
+                for j in 0..<self.population.populationSize:
+                    tmpIndividual1 = self.population.naClone(j)
 
-                for _ in 0..<self.population.numOfMutations:
-                    # Mutate it:
-                    tmpIndividual1.naMutate()
-                    tmpIndividual2.naMutate()
-                    tmpIndividual3.naMutate()
-                    # Calculate the new fitness for the mutated individuals:
+                    for _ in 0..<self.population.numOfMutations:
+                        tmpIndividual1.naMutate()
+
                     tmpIndividual1.naCalculateFitness()
-                    tmpIndividual2.naCalculateFitness()
-                    tmpIndividual3.naCalculateFitness()
 
-                    # Check if any is better than the current one:
-                    # If the mutated individual is better than the original
-                    # it gets overwritten (killed) by the better one:
-                    if tmpIndividual1.fitness < self.population[j].fitness:
+                    if tmpIndividual1.fitness < limitFitness:
                         self.population[j] = tmpIndividual1.naClone()
-                        inc(individual1Counter)
-                    if tmpIndividual2.fitness < self.population[j].fitness:
-                        self.population[j] = tmpIndividual2.naClone()
-                        inc(individual2Counter)
-                    if tmpIndividual3.fitness < self.population[j].fitness:
-                        self.population[j] = tmpIndividual3.naClone()
-                        inc(individual3Counter)
+            else:
+                for j in 0..<self.population.populationSize:
+                    original = self.population.naClone(j)
+                    tmpIndividual1 = self.population.naClone(j)
+                    tmpIndividual2 = self.population.naClone(j)
+                    tmpIndividual3 = self.population.naClone(j)
 
-                    # Reset first and second individual:
-                    tmpIndividual1 = self.population[j].naClone()
-                    tmpIndividual2 = original.naClone()
+                    for _ in 0..<self.population.numOfMutations:
+                        # Mutate all three:
+                        tmpIndividual1.naMutate()
+                        tmpIndividual2.naMutate()
+                        tmpIndividual3.naMutate()
+                        # Calculate the new fitness for the mutated individuals:
+                        tmpIndividual1.naCalculateFitness()
+                        tmpIndividual2.naCalculateFitness()
+                        tmpIndividual3.naCalculateFitness()
 
-                if self.population[j].fitness <= self.population.targetFitness:
-                    ncDebug(fmt("Early exit at i: {i}"))
-                    break iterations
+                        # Check if any is better than the current one:
+                        # If the mutated individual is better than the original
+                        # it gets overwritten (killed) by the better one:
+                        if tmpIndividual1.fitness < self.population[j].fitness:
+                            self.population[j] = tmpIndividual1.naClone()
+                        if tmpIndividual2.fitness < self.population[j].fitness:
+                            self.population[j] = tmpIndividual2.naClone()
+                        if tmpIndividual3.fitness < self.population[j].fitness:
+                            self.population[j] = tmpIndividual3.naClone()
+
+                        # Reset first and second individual:
+                        tmpIndividual1 = self.population[j].naClone()
+                        tmpIndividual2 = original.naClone()
+
+                    if self.population[j].fitness <= self.population.targetFitness:
+                        ncDebug(fmt("Early exit at i: {i}"))
+                        break iterations
+
+                    if self.population[j].fitness < bestFitness:
+                        bestFitness = self.population[j].fitness
+
+            inc(limitCounter)
+
+            if limitCounter > limitCounterEnd:
+                limitCounter = 0
+                limitFitness = bestFitness * 5.0
+                limitActive = not limitActive
 
     # Find the best and the worst individual at the end:
     self.population.findBestAndWorstIndividual()
     ncDebug(fmt("Best fitness: {self.population.bestFitness}, worst fitness: {self.population.worstFitness}"))
-    ncDebug(fmt("Individual1 counter: {individual1Counter}"))
-    ncDebug(fmt("Individual2 counter: {individual2Counter}"))
-    ncDebug(fmt("Individual3 counter: {individual3Counter}"))
 
     return self.population[self.population.bestIndex].naToBytes()
 
