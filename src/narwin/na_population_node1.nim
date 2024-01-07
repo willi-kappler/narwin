@@ -44,11 +44,6 @@ method ncProcessData(self: var NAPopulationNodeDP1, inputData: seq[byte]): seq[b
             # Calculate the new fitness for the mutated individual:
             self.population[j].naCalculateFitness()
 
-        # The last individual will be totally random.
-        # This helps a bit to escape a local minimum.
-        self.population[offset - 1].naRandomize()
-        self.population[offset - 1].naCalculateFitness()
-
         # Sort the whole population (new and old) by fitness:
         # All individuals that are not fit enough will be moved to position
         # above self.populationSize and will be overwritten in the next iteration.

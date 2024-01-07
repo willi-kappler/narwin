@@ -29,13 +29,11 @@ method ncProcessData(self: var NAPopulationNodeDP2, inputData: seq[byte]): seq[b
 
     self.population.naResetOrAcepptBest(inputData)
 
-    # Pick a random individual and randomize it:
-    self.population.naRandomizeAny()
-
     var worstChanged = true
 
     block iterations:
         for i in 0..<self.population.numOfIterations:
+            let numberOfMutations = self.population.naGetNumberOfMutations()
             for j in 0..<self.population.populationSize:
                 # Find the worst individual of this iteration:
                 if worstChanged:
@@ -44,7 +42,7 @@ method ncProcessData(self: var NAPopulationNodeDP2, inputData: seq[byte]): seq[b
                 tmpIndividual = self.population.naClone(j)
 
                 # And mutate it:
-                for _ in 0..<self.population.naGetNumberOfMutations():
+                for _ in 0..<numberOfMutations:
                     tmpIndividual.naMutate()
                 # Calculate the new fitness for the mutated individual:
                 tmpIndividual.naCalculateFitness()
