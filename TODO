@@ -4,6 +4,25 @@ TODO:
 - Then write test cases
 - Use compiler options: --styleCheck:usages --styleCheck:error
 
+
+
+- Try out different random number generators:
+  https://github.com/oprypin/nim-random
+  https://github.com/IcedQuinn/splitmix64
+  https://de.wikipedia.org/wiki/Xorshift
+  https://de.wikipedia.org/wiki/Multiply-with-carry#Complimentary_Multiply-with-carry
+  https://de.wikipedia.org/wiki/Well_Equidistributed_Long-period_Linear
+
+  https://github.com/obsidiandynamics/tinyrand
+  https://github.com/Absolucy/nanorand-rs
+  https://hg.sr.ht/~icefox/oorandom/browse/src/lib.rs?rev=tip
+  https://github.com/rust-random/rand?tab=readme-ov-file
+
+
+
+
+
+
 Done:
 
 - Add a first implementation
