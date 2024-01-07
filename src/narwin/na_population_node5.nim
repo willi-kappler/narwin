@@ -43,11 +43,12 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
 
     block iterations:
         for i in 0..<self.population.numOfIterations:
+            let numberOfMutations = self.population.naGetNumberOfMutations()
             for j in 0..<self.population.populationSize:
                 tmpIndividual = self.population.naClone(j)
 
                 # And mutate it:
-                for _ in 0..<self.population.naGetNumberOfMutations():
+                for _ in 0..<numberOfMutations:
                     tmpIndividual.naMutate()
                 # Calculate the new fitness for the mutated individual:
                 tmpIndividual.naCalculateFitness()
