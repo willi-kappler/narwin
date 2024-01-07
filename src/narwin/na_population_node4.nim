@@ -71,8 +71,8 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
                         inc(individual3Counter)
 
                     # Reset first and second individual:
-                    tmpIndividual1 = original.naClone()
-                    tmpIndividual2 = self.population[j].naClone()
+                    tmpIndividual1 = self.population[j].naClone()
+                    tmpIndividual2 = original.naClone()
 
                 if self.population[j].fitness <= self.population.targetFitness:
                     ncDebug(fmt("Early exit at i: {i}"))
