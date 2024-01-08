@@ -54,7 +54,6 @@ method ncProcessData(self: var NAPopulationNodeDP1, inputData: seq[byte]): seq[b
             break
 
     let fitness = self.population[0].fitness
-    ncDebug(fmt("Best fitness in this run: {fitness}"))
     ncDebug(fmt("Best fitness: {self.population[0].fitness}, worst fitness: {self.population[offset - 2].fitness}"))
 
     return self.population[0].naToBytes()
