@@ -231,11 +231,29 @@ method naMutate*(self: var SudokuIndividual) =
         raise newException(ValueError, fmt("Unknown mutation operation: {operation}"))
 
 method naRandomize*(self: var SudokuIndividual) =
-    for i in 0..self.data1.high:
-        if self.data1[i] == 0:
-            self.data2[i] = randomValue()
-        else:
-            self.data2[i] = self.data1[i]
+    let n = rand(2)
+
+    case n
+    of 0:
+        # Initialize with zeros:
+        self.data2 = self.data1
+    of 1:
+        # Initialize with random values:
+        for i in 0..self.data1.high:
+            if self.data1[i] == 0:
+                self.data2[i] = randomValue()
+            else:
+                self.data2[i] = self.data1[i]
+    of 2:
+        # Initialize with one specific value
+        let value = uint8(rand(8) + 1)
+        for i in 0..self.data1.high:
+            if self.data1[i] == 0:
+                self.data2[i] = value
+            else:
+                self.data2[i] = self.data1[i]
+    else:
+        raise newException(ValueError, fmt("Unknown initialisazion: {n}"))
 
 method naCalculateFitness*(self: var SudokuIndividual) =
     # Fitness means number of errors, the lower the better
