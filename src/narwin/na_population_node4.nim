@@ -39,6 +39,8 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
     let limitFactor = rand(4.0) + 1.0
     var limitFitness: float64 = self.bestFitness * limitFactor
 
+    ncDebug(fmt("Limit factor: {limitFactor}"))
+
     self.population.naResetOrAcepptBest(inputData)
 
     # Pick a random individual and randomize it:
@@ -105,6 +107,8 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
 
     # Find the best and the worst individual at the end:
     self.population.findBestAndWorstIndividual()
+    ncDebug(fmt("Limit fitness: {limitFitness}"))
+    ncDebug(fmt("Bist fitness 2: {self.bestFitness}"))
     ncDebug(fmt("Best fitness: {self.population.bestFitness}, worst fitness: {self.population.worstFitness}"))
 
     return self.population[self.population.bestIndex].naToBytes()
