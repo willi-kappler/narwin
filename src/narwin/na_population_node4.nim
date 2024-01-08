@@ -21,6 +21,8 @@ import na_population
 type
     NAPopulationNodeDP4 = ref object of NCNodeDataProcessor
         population: NAPopulation
+        bestFitness: float64
+        limitCounterEnd: uint32
 
 method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[byte] =
     ncDebug("ncProcessData()", 2)
@@ -31,14 +33,10 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
     var original = self.population.naClone(0)
 
     var limitActive = false
-    var limitCounterEnd = self.population.numOfIterations div 5
-
-    if limitCounterEnd < 5:
-        limitCounterEnd = 5
 
     var limitCounter: uint32 = 0
-    var bestFitness: float64 = original.fitness
-    var limitFitness: float64 = bestFitness * 5.0
+    let limitFactor = rand(4.0) + 1.0
+    var limitFitness: float64 = self.bestFitness * limitFactor
 
     self.population.naResetOrAcepptBest(inputData)
 
@@ -70,6 +68,7 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
                         tmpIndividual1.naMutate()
                         tmpIndividual2.naMutate()
                         tmpIndividual3.naMutate()
+
                         # Calculate the new fitness for the mutated individuals:
                         tmpIndividual1.naCalculateFitness()
                         tmpIndividual2.naCalculateFitness()
@@ -93,14 +92,14 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
                         ncDebug(fmt("Early exit at i: {i}"))
                         break iterations
 
-                    if self.population[j].fitness < bestFitness:
-                        bestFitness = self.population[j].fitness
+                    if self.population[j].fitness < self.bestFitness:
+                        self.bestFitness = self.population[j].fitness
 
             inc(limitCounter)
 
-            if limitCounter > limitCounterEnd:
+            if limitCounter > self.limitCounterEnd:
                 limitCounter = 0
-                limitFitness = bestFitness * 5.0
+                limitFitness = self.bestFitness * limitFactor
                 limitActive = not limitActive
 
     # Find the best and the worst individual at the end:
@@ -118,6 +117,12 @@ proc naInitPopulationNodeDP4*(individual: NAIndividual, config: NAConfiguration)
     result = NAPopulationNodeDP4(population: population)
     result.population[0] = individual.naClone()
     result.population[0].naCalculateFitness()
+
+    result.limitCounterEnd = result.population.numOfIterations div 5
+    if result.limitCounterEnd < 5:
+        result.limitCounterEnd = 5
+
+    result.bestFitness = result.population[0].fitness
 
     # Initialize the population with random individuals:
     for i in 1..<config.populationSize:
