@@ -83,6 +83,10 @@ proc naInitPopulationNodeDP5*(individual: NAIndividual, config: NAConfiguration)
     var population = naInitPopulation(individual, config)
     population.population = newSeq[NAIndividual](config.populationSize)
 
+    ncDebug(fmt("Fitness rate: {config.fitnessRate}"))
+    ncDebug(fmt("Fitness limit top: {config.limitTop}"))
+    ncDebug(fmt("Fitness limit bottom: {config.limitBottom}"))
+
     result = NAPopulationNodeDP5(population: population)
     result.population[0] = individual.naClone()
     result.population[0].naCalculateFitness()
