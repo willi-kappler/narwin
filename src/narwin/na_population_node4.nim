@@ -9,6 +9,7 @@
 
 # Nim std imports
 from std/strformat import fmt
+from std/random import rand
 
 # External imports
 import num_crunch
