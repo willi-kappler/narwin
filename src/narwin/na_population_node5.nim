@@ -44,6 +44,7 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
     block iterations:
         for i in 0..<self.population.numOfIterations:
             let numberOfMutations = self.population.naGetNumberOfMutations()
+
             for j in 0..<self.population.populationSize:
                 tmpIndividual = self.population.naClone(j)
 
