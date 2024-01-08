@@ -33,7 +33,7 @@ task runSudoku, "Runs the Sudoku example":
     exec "./sudoku -m=10 -p=200 -i=100000 -k=2 &"
     exec "sleep 1"
 
-    exec "./sudoku -m=20 -p=200 -i=100000 -k=3 &"
+    exec "./sudoku -m=20 -p=200 -i=10000 -k=3 &"
     exec "sleep 1"
 
     exec "./sudoku -m=10 -p=200 -i=100000 -k=4 --fitnessrate=0.001 &"
