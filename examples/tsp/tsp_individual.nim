@@ -16,6 +16,7 @@ from std/math import hypot
 from std/random import rand, shuffle
 from std/strutils import split, parseFloat
 from std/strformat import fmt
+from std/algorithm import sort, nextPermutation
 
 # External imports
 import num_crunch
@@ -26,6 +27,23 @@ import ../../src/narwin
 type
     TSPIndividual* = ref object of NAIndividual
         data: seq[(float64, float64)]
+
+proc naCalculateFitness2(self: var TSPIndividual): float64 =
+    var length: float64 = 0.0
+    let last = self.data.high
+
+    for i in 1..<last:
+        let dx = self.data[i - 1][0] - self.data[i][0]
+        let dy = self.data[i - 1][1] - self.data[i][1]
+        let d = hypot(dx, dy)
+        length += d
+
+    let dx = self.data[0][0] - self.data[last][0]
+    let dy = self.data[0][1] - self.data[last][1]
+    let d = hypot(dx, dy)
+    length += d
+
+    return length
 
 method naMutate*(self: var TSPIndividual) =
     let last = self.data.high
@@ -40,7 +58,7 @@ method naMutate*(self: var TSPIndividual) =
         swap(i, j)
 
     # Choose a random mutation operation
-    let operation = rand(5)
+    let operation = rand(6)
 
     case operation
     of 0:
@@ -83,14 +101,56 @@ method naMutate*(self: var TSPIndividual) =
 
         for k in 0..d:
             swap(self.data[i+k], self.data[j+k])
-
     of 5:
         # Swap positions along a line of indidices
 
         for k in countup(i, j, 2):
             if k + 1 <= last:
                 swap(self.data[k], self.data[k + 1])
+    of 6:
+        # Take four random positions and find the best order (permutation):
+        var indices = @[i, j, rand(last), rand(last)]
 
+        # The indices must be unique:
+        while (indices[0] == indices[2]) or
+              (indices[1] == indices[2]):
+            indices[2] = rand(last)
+
+        while (indices[0] == indices[3]) or
+              (indices[1] == indices[3]) or
+              (indices[2] == indices[3]):
+            indices[3] = rand(last)
+
+        let values = @[
+            self.data[indices[0]],
+            self.data[indices[1]],
+            self.data[indices[2]],
+            self.data[indices[3]],
+        ]
+
+        var bestFitness = self.naCalculateFitness2()
+        var bestOrder = indices
+
+        #ncDebug(fmt("Current order: {indices}"))
+
+        indices.sort()
+
+        while true:
+            for i in 0..3:
+                self.data[indices[i]] = values[i]
+
+            let fitness = self.naCalculateFitness2()
+            if fitness < bestFitness:
+                bestFitness = fitness
+                bestOrder = indices
+
+            if not indices.nextPermutation():
+                break
+
+        #ncDebug(fmt("Best order: {bestOrder}"))
+
+        for i in 0..3:
+            self.data[bestOrder[i]] = values[i]
     else:
         raise newException(ValueError, fmt("Unknown mutation operation: {operation}"))
 
@@ -98,21 +158,7 @@ method naRandomize*(self: var TSPIndividual) =
     shuffle(self.data)
 
 method naCalculateFitness*(self: var TSPIndividual) =
-    var length: float64 = 0.0
-    let last = self.data.high
-
-    for i in 1..<last:
-        let dx = self.data[i - 1][0] - self.data[i][0]
-        let dy = self.data[i - 1][1] - self.data[i][1]
-        let d = hypot(dx, dy)
-        length += d
-
-    let dx = self.data[0][0] - self.data[last][0]
-    let dy = self.data[0][1] - self.data[last][1]
-    let d = hypot(dx, dy)
-    length += d
-
-    self.fitness = length
+    self.fitness = self.naCalculateFitness2()
 
 method naClone*(self: TSPIndividual): NAIndividual =
     result = TSPIndividual(data: self.data)
