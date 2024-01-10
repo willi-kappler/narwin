@@ -33,6 +33,7 @@ method ncProcessData(self: var NAPopulationNodeDP6, inputData: seq[byte]): seq[b
     ncDebug(fmt("Limit factor: {limitFactor}"))
 
     self.population.naResetOrAcepptBest(inputData)
+    self.population.naRandomizeAny()
 
     block iterations:
         for i in 0..<self.population.numOfIterations:
