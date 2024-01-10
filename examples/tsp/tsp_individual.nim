@@ -45,6 +45,37 @@ proc naCalculateFitness2(self: var TSPIndividual): float64 =
 
     return length
 
+proc naCheckPermutations(self: var TSPIndividual, indices: var seq[int]) =
+        let values = @[
+            self.data[indices[0]],
+            self.data[indices[1]],
+            self.data[indices[2]],
+            self.data[indices[3]],
+            self.data[indices[4]]
+        ]
+
+        let numOfValues = values.high
+
+        var bestFitness = self.naCalculateFitness2()
+        var bestPermutation = indices
+
+        indices.sort()
+
+        while true:
+            for i in 0..numOfValues:
+                self.data[indices[i]] = values[i]
+
+            let fitness = self.naCalculateFitness2()
+            if fitness < bestFitness:
+                bestFitness = fitness
+                bestPermutation = indices
+
+            if not indices.nextPermutation():
+                break
+
+        for i in 0..numOfValues:
+            self.data[bestPermutation[i]] = values[i]
+
 method naMutate*(self: var TSPIndividual) =
     let last = self.data.high
     var i = rand(last)
@@ -108,49 +139,40 @@ method naMutate*(self: var TSPIndividual) =
             if k + 1 <= last:
                 swap(self.data[k], self.data[k + 1])
     of 6:
-        # Take four random positions and find the best order (permutation):
-        var indices = @[i, j, rand(last), rand(last)]
+        if rand(100) == 0:
+            # This is CPU intensive, so don't do it too often.
+            # Take 5 random positions and find the best order (permutation):
+            var indices = @[i, j, rand(last), rand(last), rand(last)]
 
-        # The indices must be unique:
-        while (indices[0] == indices[2]) or
-              (indices[1] == indices[2]):
-            indices[2] = rand(last)
+            # The indices must be unique:
+            while (indices[0] == indices[2]) or
+                (indices[1] == indices[2]):
+                indices[2] = rand(last)
 
-        while (indices[0] == indices[3]) or
-              (indices[1] == indices[3]) or
-              (indices[2] == indices[3]):
-            indices[3] = rand(last)
+            while (indices[0] == indices[3]) or
+                (indices[1] == indices[3]) or
+                (indices[2] == indices[3]):
+                indices[3] = rand(last)
 
-        let values = @[
-            self.data[indices[0]],
-            self.data[indices[1]],
-            self.data[indices[2]],
-            self.data[indices[3]],
-        ]
+            while (indices[0] == indices[4]) or
+                (indices[1] == indices[4]) or
+                (indices[2] == indices[4]) or
+                (indices[3] == indices[4]):
+                indices[4] = rand(last)
 
-        var bestFitness = self.naCalculateFitness2()
-        var bestOrder = indices
+            self.naCheckPermutations(indices)
+        else:
+            swap(self.data[i], self.data[j])
+    of 7:
+        if rand(100) == 0:
+            # This is CPU intensive, so don't do it too often.
+            i = rand(last - 5)
 
-        #ncDebug(fmt("Current order: {indices}"))
+            var indices = @[i, i + 1, i + 2, i + 3, i + 4]
 
-        indices.sort()
-
-        while true:
-            for i in 0..3:
-                self.data[indices[i]] = values[i]
-
-            let fitness = self.naCalculateFitness2()
-            if fitness < bestFitness:
-                bestFitness = fitness
-                bestOrder = indices
-
-            if not indices.nextPermutation():
-                break
-
-        #ncDebug(fmt("Best order: {bestOrder}"))
-
-        for i in 0..3:
-            self.data[bestOrder[i]] = values[i]
+            self.naCheckPermutations(indices)
+        else:
+            swap(self.data[i], self.data[j])
     else:
         raise newException(ValueError, fmt("Unknown mutation operation: {operation}"))
 
