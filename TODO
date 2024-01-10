@@ -27,7 +27,7 @@ Done:
 
 - Add a first implementation
 - Add a first example
-- Add na_population, refactor na_population_node1 - 3
+- Add na_population, refactor na_population_node 1 to 3
 - Add option for random amount of mutation: let m = rand(self.numOfMutations - 1) + 1
 
 
