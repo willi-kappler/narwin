@@ -1,10 +1,11 @@
 TODO:
 
-- Refactor code to make it testable
-- Then write test cases
+- Refactor code to make it testable.
+- Then write test cases.
 - Use compiler options: --styleCheck:usages --styleCheck:error
-
-
+- Allow to load saved individuals at startup.
+- Allow to use just one set of mutation operation for one population.
+- Share optimal solutions between different servers.
 
 - Try out different random number generators:
   https://github.com/oprypin/nim-random
@@ -25,9 +26,9 @@ TODO:
 
 Done:
 
-- Add a first implementation
-- Add a first example
-- Add na_population, refactor na_population_node 1 to 3
-- Add option for random amount of mutation: let m = rand(self.numOfMutations - 1) + 1
+- Add a first implementation.
+- Add a first example.
+- Add na_population, refactor na_population_node 1 to 3.
+- Add option for random amount of mutation: let m = rand(self.numOfMutations - 1) + 1.
 
 
