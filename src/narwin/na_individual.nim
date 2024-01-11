@@ -14,7 +14,7 @@ type
     NAIndividual* = ref object of RootObj
         fitness*: float64
 
-method naMutate*(self: var NAIndividual) {.base.} =
+method naMutate*(self: var NAIndividual, operations: seq[uint32] = @[]) {.base.} =
     quit("You must override this method: naMutate")
 
 method naRandomize*(self: var NAIndividual) {.base.} =
@@ -34,6 +34,9 @@ method naFromBytes*(self: var NAIndividual, data: seq[byte]) {.base, gcsafe.} =
 
 method naToJSON*(self: NAIndividual): JsonNode {.base, gcsafe.} =
     quit("You must override this method: naToJSON")
+
+method naFromJSON*(self: NAIndividual, data: JsonNode): NAIndividual {.base, gcsafe.} =
+    quit("You must override this method: naFromJSON")
 
 proc naNewRandomIndividual*(self: NAIndividual): NAIndividual =
     result = self.naClone()
