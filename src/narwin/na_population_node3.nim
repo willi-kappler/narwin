@@ -40,7 +40,7 @@ method ncProcessData(self: var NAPopulationNodeDP3, inputData: seq[byte]): seq[b
 
                 # And mutate it:
                 for _ in 0..<numberOfMutations:
-                    tmpIndividual.naMutate()
+                    tmpIndividual.naMutate(self.population.operations)
                 # Calculate the new fitness for the mutated individual:
                 tmpIndividual.naCalculateFitness()
 

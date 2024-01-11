@@ -34,6 +34,7 @@ type
         fitnessRate*: float64
         limitTop*: float64
         limitBottom*: float64
+        operations*: seq[uint32]
 
 proc naShowHelpAndQuit*() =
     let path = getAppFilename()
@@ -77,6 +78,7 @@ proc naConfigFromCmdLine*(): NAConfiguration =
     result.fitnessRate = 0.1
     result.limitTop = 10.0
     result.limitBottom = 1.0
+    result.operations = @[]
 
     var cmdParser = initOptParser()
     while true:

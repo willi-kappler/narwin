@@ -36,6 +36,7 @@ type
         worstIndex*: uint32
         worstFitness*: float64
         fixedMutation*: bool
+        operations*: seq[uint32]
 
 proc findWorstIndividual*(self: var NAPopulation) =
     self.worstFitness = self.population[0].fitness
@@ -139,4 +140,5 @@ proc naInitPopulation*(individual: NAIndividual, config: NAConfiguration): NAPop
     result.bestFitness = maximumPositiveValue(float64)
     result.worstIndex = 0
     result.worstFitness = 0.0
+    result.operations = config.operations
 

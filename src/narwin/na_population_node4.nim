@@ -53,7 +53,7 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
                     tmpIndividual1 = self.population.naClone(j)
 
                     for _ in 0..<self.population.numOfMutations:
-                        tmpIndividual1.naMutate()
+                        tmpIndividual1.naMutate(self.population.operations)
 
                     tmpIndividual1.naCalculateFitness()
 
@@ -68,9 +68,9 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
 
                     for _ in 0..<self.population.numOfMutations:
                         # Mutate all three:
-                        tmpIndividual1.naMutate()
-                        tmpIndividual2.naMutate()
-                        tmpIndividual3.naMutate()
+                        tmpIndividual1.naMutate(self.population.operations)
+                        tmpIndividual2.naMutate(self.population.operations)
+                        tmpIndividual3.naMutate(self.population.operations)
 
                         # Calculate the new fitness for the mutated individuals:
                         tmpIndividual1.naCalculateFitness()

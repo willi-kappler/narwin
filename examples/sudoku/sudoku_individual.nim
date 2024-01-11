@@ -12,7 +12,7 @@
 import std/json
 import std/jsonutils
 
-from std/random import rand, shuffle
+from std/random import rand, shuffle, sample
 from std/strformat import fmt
 #from std/sequtils import toSeq
 
@@ -259,11 +259,20 @@ proc randomizeRow(self: var SudokuIndividual, row: uint8) =
         if self.getValue1(col, row) == 0:
             self.setValue2(col, row, randomValue())
 
-method naMutate*(self: var SudokuIndividual) =
+method naMutate*(self: var SudokuIndividual, operations: seq[uint32]) =
     let (col, row) = self.randomEmptyPosition1()
 
     const maxOperation = 10
-    let operation = rand(maxOperation)
+    var operation: uint32
+    var probability = 100
+
+    if operations.len() == 0:
+        operation = uint32(rand(maxOperation))
+    elif operations.len() == 1:
+        operation = operations[0]
+        probability = 1
+    else:
+        operation = sample(operations)
 
     case operation
     of 0:
@@ -279,7 +288,7 @@ method naMutate*(self: var SudokuIndividual) =
     of 5:
         self.swapInRow(col, row)
     of 6:
-        if rand(100) == 0:
+        if rand(probability) == 0:
             self.permutateValues(col, row)
         else:
             self.setValue2(col, row, randomValue())
@@ -336,6 +345,9 @@ method naFromBytes*(self: var SudokuIndividual, data: seq[byte]) =
 
 method naToJSON*(self: SudokuIndividual): JsonNode =
     self.toJson()
+
+method naFromJSON*(self: SudokuIndividual, data: JsonNode): NAIndividual =
+    return data.jsonTo(SudokuIndividual)
 
 proc newPuzzle*(): SudokuIndividual =
     let data: seq[uint8] = @[

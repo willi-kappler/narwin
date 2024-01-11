@@ -44,7 +44,7 @@ method ncProcessData(self: var NAPopulationNodeDP6, inputData: seq[byte]): seq[b
                 tmpIndividual = self.population.naClone(j)
 
                 for _ in 0..<numberOfMutations:
-                    tmpIndividual.naMutate()
+                    tmpIndividual.naMutate(self.population.operations)
 
                 tmpIndividual.naCalculateFitness()
 
