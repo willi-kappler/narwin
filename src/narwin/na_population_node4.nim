@@ -88,7 +88,8 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
                             self.population[j] = tmpIndividual3.naClone()
 
                         # Reset first and second individual:
-                        tmpIndividual1 = self.population[j].naClone()
+                        if self.population[j].fitness < tmpIndividual1.fitness:
+                            tmpIndividual1 = self.population[j].naClone()
                         tmpIndividual2 = original.naClone()
 
                     if self.population[j].fitness <= self.population.targetFitness:
