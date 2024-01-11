@@ -249,10 +249,20 @@ proc permutateValues(self: var SudokuIndividual, col1, row1: uint8) =
     self.setValue2(col1, row1, bestValue1)
     self.setValue2(col2, row2, bestValue2)
 
+proc randomizeCol(self: var SudokuIndividual, col: uint8) =
+    for row in 0u8..8:
+        if self.getValue1(col, row) == 0:
+            self.setValue2(col, row, randomValue())
+
+proc randomizeRow(self: var SudokuIndividual, row: uint8) =
+    for col in 0u8..8:
+        if self.getValue1(col, row) == 0:
+            self.setValue2(col, row, randomValue())
+
 method naMutate*(self: var SudokuIndividual) =
     let (col, row) = self.randomEmptyPosition1()
 
-    const maxOperation = 7
+    const maxOperation = 10
     let operation = rand(maxOperation)
 
     case operation
@@ -273,6 +283,13 @@ method naMutate*(self: var SudokuIndividual) =
             self.permutateValues(col, row)
         else:
             self.setValue2(col, row, randomValue())
+    of 7:
+        self.randomizeCol(col)
+    of 8:
+        self.randomizeRow(row)
+    of 9:
+        self.randomizeCol(col)
+        self.randomizeRow(row)
     of maxOperation:
         let (col2, row2) = self.randomEmptyPosition1()
         self.swapValues(col, row, col2, row2)
