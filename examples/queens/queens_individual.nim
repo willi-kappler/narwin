@@ -12,7 +12,7 @@
 import std/json
 import std/jsonutils
 
-from std/random import rand, shuffle
+from std/random import rand, sample
 from std/strformat import fmt
 
 # External imports
@@ -47,14 +47,21 @@ proc hasCollision(self: QueensIndividual, index1: uint8, index2: uint8): bool =
 
     return hasCollision(r1, c1, r2, c2)
 
-method naMutate*(self: var QueensIndividual) =
+method naMutate*(self: var QueensIndividual, operations: seq[uint32]) =
     let last = self.data.high
 
     # Select one of the queens randomly:
     let i = rand(last)
 
     # Choose mutation operation:
-    let operation = rand(1)
+    var operation: uint32
+
+    if operations.len() == 0:
+        operation = uint32(rand(1))
+    elif operations.len() == 1:
+        operation = operations[0]
+    else:
+        operation = sample(operations)
 
     case operation
     of 0:
@@ -122,6 +129,9 @@ method naFromBytes*(self: var QueensIndividual, data: seq[byte]) =
 
 method naToJSON*(self: QueensIndividual): JsonNode =
     self.toJson()
+
+method naFromJSON*(self: QueensIndividual, data: JsonNode): NAIndividual =
+    return data.jsonTo(QueensIndividual)
 
 proc newBoard*(): QueensIndividual =
     result = QueensIndividual(data: @[
