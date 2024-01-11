@@ -31,6 +31,7 @@ type
         newFitnessCounter: uint32
         saveNewFitness: bool
         sameFitness: bool
+        shareOnyBest: bool
 
 proc naSaveData(fileName: string, individual: NAIndividual) =
     let outFile = open(fileName, mode = fmWrite)
@@ -40,6 +41,17 @@ proc naSaveData(fileName: string, individual: NAIndividual) =
     outFile.write($converted)
     outFile.close()
 
+proc naLoadData(self: NAPopulationServerDP, fileName: string): NAIndividual =
+    let inFile = open(fileName, mode = fmRead)
+    let data = inFile.readAll()
+    inFile.close()
+
+    return self.population[0].naFromJson(parseJson(data))
+
+proc naLoadIntoPosition*(self: var NAPopulationServerDP, fileName: string, index: int) =
+    let individual = self.naLoadData(fileName)
+    self.population[index] = individual.naclone()
+
 method ncIsFinished(self: var NAPopulationServerDP): bool =
     return self.population[0].fitness <= self.targetFitness
 
@@ -47,11 +59,14 @@ method ncGetInitData(self: var NAPopulationServerDP): seq[byte] =
     @[]
 
 method ncGetNewData(self: var NAPopulationServerDP, n: NCNodeID): seq[byte] {.gcsafe.} =
-    # Pick a random individual from the current population of best
-    # individuals and return it to the node.
-    # (avoid to get stuck in a local minimum)
-    let last = self.population.high
-    let i = rand(last)
+    var i = 0
+
+    if not self.shareOnyBest:
+        # Pick a random individual from the current population of best
+        # individuals and return it to the node.
+        # (avoid to get stuck in a local minimum)
+        i = rand(self.population.high)
+
     return self.population[i].naToBytes()
 
 method ncCollectData(self: var NAPopulationServerDP, n: NCNodeID, data: seq[byte]) {.gcsafe.} =
@@ -107,6 +122,7 @@ proc naInitPopulationServerDP*(
     result.resultFilename = config.resultFilename
     result.saveNewFitness = config.saveNewFitness
     result.sameFitness = config.sameFitness
+    result.shareOnyBest = config.shareOnyBest
 
     result.population[0] = individual.naClone()
     result.population[0].naCalculateFitness()

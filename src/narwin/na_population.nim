@@ -8,11 +8,12 @@
 ##
 
 # Nim std imports
+import std/json
+
 from std/strformat import fmt
 from std/random import randomize, rand
 from std/algorithm import sort
-from fenv import maximumPositiveValue
-
+from std/fenv import maximumPositiveValue
 
 # External imports
 import num_crunch
@@ -106,6 +107,17 @@ proc `[]`*(self: var NAPopulation, index: uint32): var NAIndividual =
 
 proc `[]=`*(self: var NAPopulation, index: uint32, individual: NAIndividual) =
     self.population[index] = individual.naClone()
+
+proc naLoadData(self: NAPopulation, fileName: string): NAIndividual =
+    let inFile = open(fileName, mode = fmRead)
+    let data = inFile.readAll()
+    inFile.close()
+
+    return self.population[0].naFromJson(parseJson(data))
+
+proc naLoadIntoPosition*(self: var NAPopulation, fileName: string, index: int) =
+    let individual = self.naLoadData(fileName)
+    self.population[index] = individual.naclone()
 
 proc naInitPopulation*(individual: NAIndividual, config: NAConfiguration): NAPopulation =
     ncDebug(fmt("Population size: {config.populationSize}"))

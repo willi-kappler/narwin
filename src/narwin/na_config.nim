@@ -22,6 +22,7 @@ type
         resultFilename*: string
         saveNewFitness*: bool
         sameFitness*: bool
+        shareOnyBest*: bool
 
         # Node:
         populationSize*: uint32
@@ -46,6 +47,7 @@ proc naShowHelpAndQuit*() =
     echo("-t [float64]: target fitness (0.0)")
     echo("--file: output filename for the result (optimal solution)")
     echo("--samefitness: allow individuals with the same fitness in the global population (false)")
+    echo("--sharebest: only share the best individual with the other nodes instead of randomly pick one (true)")
     # TODO: option for save new fitness
 
     echo("-p [uint32]: population size (10)")
@@ -67,6 +69,7 @@ proc naConfigFromCmdLine*(): NAConfiguration =
     result.resultFilename = "best_result.json"
     result.saveNewFitness = true
     result.sameFitness = false
+    result.shareOnyBest = true
 
     result.populationSize = 10
     result.numOfMutations = 10
@@ -103,6 +106,8 @@ proc naConfigFromCmdLine*(): NAConfiguration =
                 result.resetPopulation = true
             elif cmdParser.key == "samefitness":
                 result.sameFitness = true
+            elif cmdParser.key == "sharebest":
+                result.shareOnyBest = true
             elif cmdParser.key == "fixedmutation":
                 result.fixedMutation = true
             elif cmdParser.key == "fitnessrate":
