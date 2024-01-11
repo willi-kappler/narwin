@@ -27,24 +27,6 @@ type
         data1: seq[uint8]
         data2: seq[uint8]
 
-proc randomValue(): uint8 =
-    uint8(rand(8) + 1)
-
-proc randomIndex(): uint8 =
-    uint8(rand(8))
-
-proc decIndex(i: uint8): uint8 =
-    if i == 0:
-        return 8
-    else:
-        return i - 1
-
-proc incIndex(i: uint8): uint8 =
-    if i == 8:
-        return 0
-    else:
-        return i + 1
-
 proc getValue1(self: SudokuIndividual, col, row: uint8): uint8 =
     self.data1[(row * 9) + col]
 
@@ -53,6 +35,9 @@ proc getValue2(self: SudokuIndividual, col, row: uint8): uint8 =
 
 proc setValue2(self: var SudokuIndividual, col, row, val: uint8) =
     self.data2[(row * 9) + col] = val
+
+proc reset(self: var SudokuIndividual) =
+    self.data2 = self.data1
 
 proc checkPos(self: SudokuIndividual, col, row: uint8, inUse: var set[uint8]): uint8 =
     let n = self.getValue2(col, row)
@@ -87,8 +72,42 @@ proc checkBlock(self: SudokuIndividual, i, j: uint8): uint8 =
         for v in 0'u8..2:
             result += self.checkPos(i + u, j + v, inUse)
 
-proc reset(self: var SudokuIndividual) =
-    self.data2 = self.data1
+proc calculateFitness2(self: SudokuIndividual): float64 =
+    # Fitness means number of errors, the lower the better
+    var errors: uint16 = 0
+
+    # Check rows:
+    for row in 0'u8..8:
+        errors += self.checkRow(row)
+
+    # Check column:
+    for col in 0'u8..8:
+        errors += self.checkCol(col)
+
+    # Check each block:
+    for i in countup(0'u8, 6'u8, 3'u8):
+        for j in countup(0'u8, 6'u8, 3'u8):
+            errors += self.checkBlock(i, j)
+
+    return float64(errors)
+
+proc randomValue(): uint8 =
+    uint8(rand(8) + 1)
+
+proc randomIndex(): uint8 =
+    uint8(rand(8))
+
+proc decIndex(i: uint8): uint8 =
+    if i == 0:
+        return 8
+    else:
+        return i - 1
+
+proc incIndex(i: uint8): uint8 =
+    if i == 8:
+        return 0
+    else:
+        return i + 1
 
 proc hasFreePlace(self: SudokuIndividual): bool =
     result = false
@@ -205,10 +224,35 @@ proc swapInRow(self: var SudokuIndividual, col1, row: uint8) =
 
     self.swapValues(col1, row, col2, row)
 
+proc permutateValues(self: var SudokuIndividual, col1, row1: uint8) =
+    var (col2, row2) = self.randomEmptyPosition1()
+
+    while (col1 == col2) and (row1 == row2):
+        (col2, row2) = self.randomEmptyPosition1()
+
+    var bestValue1 = self.getValue2(col1, row1)
+    var bestValue2 = self.getValue2(col2, row2)
+    var bestFitness = self.calculateFitness2()
+
+    for i in 1u8..9:
+        for j in 1u8..9:
+            self.setValue2(col1, row1, i)
+            self.setValue2(col2, row2, j)
+
+            let fitness = self.calculateFitness2()
+
+            if fitness < bestFitness:
+                bestFitness = fitness
+                bestValue1 = i
+                bestValue2 = j
+
+    self.setValue2(col1, row1, bestValue1)
+    self.setValue2(col2, row2, bestValue2)
+
 method naMutate*(self: var SudokuIndividual) =
     let (col, row) = self.randomEmptyPosition1()
 
-    const maxOperation = 6
+    const maxOperation = 7
     let operation = rand(maxOperation)
 
     case operation
@@ -224,6 +268,11 @@ method naMutate*(self: var SudokuIndividual) =
         self.swapInCol(col, row)
     of 5:
         self.swapInRow(col, row)
+    of 6:
+        if rand(100) == 0:
+            self.permutateValues(col, row)
+        else:
+            self.setValue2(col, row, randomValue())
     of maxOperation:
         let (col2, row2) = self.randomEmptyPosition1()
         self.swapValues(col, row, col2, row2)
@@ -256,23 +305,7 @@ method naRandomize*(self: var SudokuIndividual) =
         raise newException(ValueError, fmt("Unknown initialisazion: {n}"))
 
 method naCalculateFitness*(self: var SudokuIndividual) =
-    # Fitness means number of errors, the lower the better
-    var errors: uint16 = 0
-
-    # Check rows:
-    for row in 0'u8..8:
-        errors += self.checkRow(row)
-
-    # Check column:
-    for col in 0'u8..8:
-        errors += self.checkCol(col)
-
-    # Check each block:
-    for i in countup(0'u8, 6'u8, 3'u8):
-        for j in countup(0'u8, 6'u8, 3'u8):
-            errors += self.checkBlock(i, j)
-
-    self.fitness = float64(errors)
+    self.fitness = self.calculateFitness2()
 
 method naClone*(self: SudokuIndividual): NAIndividual =
     result = SudokuIndividual(data1: self.data1, data2: self.data2)
