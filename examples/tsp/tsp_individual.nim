@@ -13,7 +13,7 @@ import std/json
 import std/jsonutils
 
 from std/math import hypot
-from std/random import rand, shuffle
+from std/random import rand, shuffle, sample
 from std/strutils import split, parseFloat
 from std/strformat import fmt
 from std/algorithm import sort, nextPermutation
@@ -76,7 +76,7 @@ proc naCheckPermutations(self: var TSPIndividual, indices: var seq[int]) =
         for i in 0..numOfValues:
             self.data[bestPermutation[i]] = values[i]
 
-method naMutate*(self: var TSPIndividual) =
+method naMutate*(self: var TSPIndividual, operations: seq[uint32]) =
     let last = self.data.high
     var i = rand(last)
     var j = rand(last)
@@ -89,7 +89,17 @@ method naMutate*(self: var TSPIndividual) =
         swap(i, j)
 
     # Choose a random mutation operation
-    let operation = rand(6)
+    const maxOperation = 7
+    var operation: uint32
+    var probablility = 100
+
+    if operations.len() == 0:
+        operation = uint32(rand(maxOperation))
+    elif operations.len() == 1:
+        operation = operations[0]
+        probablility = 1
+    else:
+        operation = sample(operations)
 
     case operation
     of 0:
@@ -139,7 +149,7 @@ method naMutate*(self: var TSPIndividual) =
             if k + 1 <= last:
                 swap(self.data[k], self.data[k + 1])
     of 6:
-        if rand(100) == 0:
+        if rand(probablility) == 0:
             # This is CPU intensive, so don't do it too often.
             # Take 5 random positions and find the best order (permutation):
             var indices = @[i, j, rand(last), rand(last), rand(last)]
@@ -163,8 +173,8 @@ method naMutate*(self: var TSPIndividual) =
             self.naCheckPermutations(indices)
         else:
             swap(self.data[i], self.data[j])
-    of 7:
-        if rand(100) == 0:
+    of maxOperation:
+        if rand(probablility) == 0:
             # This is CPU intensive, so don't do it too often.
             i = rand(last - 5)
 
@@ -194,6 +204,9 @@ method naFromBytes*(self: var TSPIndividual, data: seq[byte]) =
 
 method naToJSON*(self: TSPIndividual): JsonNode =
     self.toJson()
+
+method naFromJSON*(self: TSPIndividual, data: JsonNode): NAIndividual =
+    return data.jsonTo(TSPIndividual)
 
 proc loadTSP*(fileName: string): TSPIndividual =
     result = TSPIndividual(data: @[])
