@@ -22,6 +22,7 @@ type
     NAPopulationNodeDP4 = ref object of NCNodeDataProcessor
         population: NAPopulation
         population2: seq[NAIndividual]
+        population3: seq[NAIndividual]
 
 method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[byte] =
     ncDebug("ncProcessData()", 2)
@@ -33,11 +34,12 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
     # The second population gets only reset once when processing the data:
     for i in 0..<self.population.populationSize:
         self.population2[i] = self.population[i]
+        self.population3[i] = self.population[i]
 
     block iterations:
         for i in 0..<self.population.numOfIterations:
             for j in 0..<self.population.populationSize:
-                # Mutate and check for first population
+                # Mutate and check first population:
                 tmpIndividual = self.population.naClone(j)
                 tmpIndividual.naMutate(self.population.operations)
                 tmpIndividual.naCalculateFitness()
@@ -45,13 +47,20 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
                 if tmpIndividual < self.population[j]:
                     self.population[j] = tmpIndividual
 
-                # Mutate and check for second population
+                # Mutate and check second population:
                 tmpIndividual = self.population2[j].naClone()
                 tmpIndividual.naMutate(self.population.operations)
                 tmpIndividual.naCalculateFitness()
 
                 if tmpIndividual < self.population[j]:
                     self.population[j] = tmpIndividual
+
+                # Mutate and check second population:
+                self.population3[j].naMutate(self.population.operations)
+                self.population3[j].naCalculateFitness()
+
+                if self.population3[j] < self.population[j]:
+                    self.population[j] = self.population3[j]
 
                 if self.population[j] <= self.population.targetFitness:
                     ncDebug(fmt("Early exit at i: {i}"))
@@ -70,6 +79,7 @@ proc naInitPopulationNodeDP4*(individual: NAIndividual, config: NAConfiguration)
     var population = naInitPopulation(individual, config, initPopulation)
 
     result.population2 = newSeq[NAIndividual](config.populationSize)
+    result.population3 = newSeq[NAIndividual](config.populationSize)
 
     result = NAPopulationNodeDP4(population: population)
 
