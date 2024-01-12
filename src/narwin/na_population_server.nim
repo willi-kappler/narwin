@@ -45,7 +45,7 @@ proc naLoadIntoPosition*(self: var NAPopulationServerDP, fileName: string, index
     self.population[index] = individual.naClone()
 
 method ncIsFinished(self: var NAPopulationServerDP): bool =
-    return self.population[0].fitness <= self.targetFitness
+    return self.population[0] <= self.targetFitness
 
 method ncGetInitData(self: var NAPopulationServerDP): seq[byte] =
     @[]

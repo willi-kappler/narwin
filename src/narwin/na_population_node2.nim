@@ -49,9 +49,9 @@ method ncProcessData(self: var NAPopulationNodeDP2, inputData: seq[byte]): seq[b
 
                 # If the mutated individual is better than the worst
                 # it gets overwritten (killed) by the better one:
-                if tmpIndividual.fitness < self.population.worstFitness:
+                if tmpIndividual < self.population.worstFitness:
                     self.population[self.population.worstIndex] = tmpIndividual
-                    if tmpIndividual.fitness <= self.population.targetFitness:
+                    if tmpIndividual <= self.population.targetFitness:
                         ncDebug(fmt("Early exit at i: {i}"))
                         break iterations
                     worstChanged = true

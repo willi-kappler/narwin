@@ -50,3 +50,12 @@ proc naLoadData*(self: NAIndividual, fileName: string): NAIndividual =
 
     return self.naFromJson(parseJson(data))
 
+proc `<`*(self: NAIndividual, other: NAIndividual): bool =
+    self.fitness < other.fitness
+
+proc `<`*(self: NAIndividual, fitness: float64): bool =
+    self.fitness < fitness
+
+proc `<=`*(self: NAIndividual, fitness: float64): bool =
+    self.fitness <= fitness
+

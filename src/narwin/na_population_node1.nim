@@ -49,7 +49,7 @@ method ncProcessData(self: var NAPopulationNodeDP1, inputData: seq[byte]): seq[b
         # above self.populationSize and will be overwritten in the next iteration.
         self.population.naSort()
 
-        if self.population[0].fitness <= self.population.targetFitness:
+        if self.population[0] <= self.population.targetFitness:
             ncDebug(fmt("Early exit at i: {i}"))
             break
 

@@ -57,7 +57,7 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
 
                     tmpIndividual1.naCalculateFitness()
 
-                    if tmpIndividual1.fitness < limitFitness:
+                    if tmpIndividual1 < limitFitness:
                         self.population[j] = tmpIndividual1
             else:
                 for j in 0..<self.population.populationSize:
@@ -80,23 +80,23 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
                         # Check if any is better than the current one:
                         # If the mutated individual is better than the original
                         # it gets overwritten (killed) by the better one:
-                        if tmpIndividual1.fitness < self.population[j].fitness:
+                        if tmpIndividual1 < self.population[j]:
                             self.population[j] = tmpIndividual1
-                        if tmpIndividual2.fitness < self.population[j].fitness:
+                        if tmpIndividual2 < self.population[j]:
                             self.population[j] = tmpIndividual2
-                        if tmpIndividual3.fitness < self.population[j].fitness:
+                        if tmpIndividual3 < self.population[j]:
                             self.population[j] = tmpIndividual3
 
                         # Reset first and second individual:
-                        if self.population[j].fitness < tmpIndividual1.fitness:
+                        if self.population[j] < tmpIndividual1:
                             tmpIndividual1 = self.population[j].naClone()
                         tmpIndividual2 = original.naClone()
 
-                    if self.population[j].fitness <= self.population.targetFitness:
+                    if self.population[j] <= self.population.targetFitness:
                         ncDebug(fmt("Early exit at i: {i}"))
                         break iterations
 
-                    if self.population[j].fitness < self.bestFitness:
+                    if self.population[j] < self.bestFitness:
                         self.bestFitness = self.population[j].fitness
 
             inc(limitCounter)

@@ -54,14 +54,14 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
                 # Calculate the new fitness for the mutated individual:
                 tmpIndividual.naCalculateFitness()
 
-                if tmpIndividual.fitness < self.fitnessLimit:
+                if tmpIndividual < self.fitnessLimit:
                     self.population[j] = tmpIndividual
-                elif tmpIndividual.fitness < self.population[j].fitness:
+                elif tmpIndividual < self.population[j]:
                     self.population[j] = tmpIndividual
 
-                if tmpIndividual.fitness < bestIndividual.fitness:
+                if tmpIndividual < bestIndividual:
                     bestIndividual = tmpIndividual.naClone()
-                    if tmpIndividual.fitness <= self.population.targetFitness:
+                    if tmpIndividual <= self.population.targetFitness:
                         ncDebug(fmt("Early exit at i: {i}"))
                         break iterations
 

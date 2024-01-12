@@ -48,16 +48,16 @@ method ncProcessData(self: var NAPopulationNodeDP6, inputData: seq[byte]): seq[b
 
                 tmpIndividual.naCalculateFitness()
 
-                if tmpIndividual.fitness < fitnessLimit:
+                if tmpIndividual < fitnessLimit:
                     self.population[j] = tmpIndividual
-                elif tmpIndividual.fitness < self.population[j].fitness:
+                elif tmpIndividual < self.population[j]:
                     self.population[j] = tmpIndividual
 
-                if tmpIndividual.fitness <= self.population.targetFitness:
+                if tmpIndividual <= self.population.targetFitness:
                     ncDebug(fmt("Early exit at i: {i}"))
                     break iterations
 
-                if tmpIndividual.fitness < self.bestFitness:
+                if tmpIndividual < self.bestFitness:
                     self.bestFitness = tmpIndividual.fitness
                     if j > 0:
                         self.population[j] = tmpIndividual
