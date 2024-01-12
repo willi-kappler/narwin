@@ -64,7 +64,7 @@ proc naShowHelpAndQuit*() =
     echo("--limittop [float64]: the top limit for oscilating limit (10.0)")
     echo("--limitbottom [float64]: the top limit for oscilating limit (1.0)")
 
-    echo("--loadIndividual [string]: loads the given individual into the population (node) or list of best (server)")
+    echo("--loadindividual [string]: loads the given individual into the population (node) or list of best (server)")
 
     quit()
 
