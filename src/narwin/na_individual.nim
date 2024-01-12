@@ -8,7 +8,7 @@
 ##
 
 # Nim std imports
-from std/json import JsonNode
+import std/json
 
 type
     NAIndividual* = ref object of RootObj
@@ -42,4 +42,11 @@ proc naNewRandomIndividual*(self: NAIndividual): NAIndividual =
     result = self.naClone()
     result.naRandomize()
     result.naCalculateFitness()
+
+proc naLoadData*(self: NAIndividual, fileName: string): NAIndividual =
+    let inFile = open(fileName, mode = fmRead)
+    let data = inFile.readAll()
+    inFile.close()
+
+    return self.naFromJson(parseJson(data))
 

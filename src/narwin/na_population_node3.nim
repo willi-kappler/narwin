@@ -47,7 +47,7 @@ method ncProcessData(self: var NAPopulationNodeDP3, inputData: seq[byte]): seq[b
                 # If the mutated individual is better than the original
                 # it gets overwritten (killed) by the better one:
                 if tmpIndividual.fitness < self.population[j].fitness:
-                    self.population[j] = tmpIndividual.naClone()
+                    self.population[j] = tmpIndividual
                     if tmpIndividual.fitness <= self.population.targetFitness:
                         ncDebug(fmt("Early exit at i: {i}"))
                         break iterations
@@ -61,14 +61,8 @@ method ncProcessData(self: var NAPopulationNodeDP3, inputData: seq[byte]): seq[b
 proc naInitPopulationNodeDP3*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP3 =
     ncDebug("naInitPopulationNodeDP3")
 
-    var population = naInitPopulation(individual, config)
-    population.population = newSeq[NAIndividual](config.populationSize)
+    let initPopulation = newSeq[NAIndividual](config.populationSize)
+    var population = naInitPopulation(individual, config, initPopulation)
 
     result = NAPopulationNodeDP3(population: population)
-    result.population[0] = individual.naClone()
-    result.population[0].naCalculateFitness()
-
-    # Initialize the population with random individuals:
-    for i in 1..<config.populationSize:
-        result.population[i] = individual.naNewRandomIndividual()
 

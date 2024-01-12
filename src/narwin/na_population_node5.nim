@@ -55,9 +55,9 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
                 tmpIndividual.naCalculateFitness()
 
                 if tmpIndividual.fitness < self.fitnessLimit:
-                    self.population[j] = tmpIndividual.naClone()
+                    self.population[j] = tmpIndividual
                 elif tmpIndividual.fitness < self.population[j].fitness:
-                    self.population[j] = tmpIndividual.naClone()
+                    self.population[j] = tmpIndividual
 
                 if tmpIndividual.fitness < bestIndividual.fitness:
                     bestIndividual = tmpIndividual.naClone()
@@ -80,16 +80,14 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
 proc naInitPopulationNodeDP5*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP5 =
     ncDebug("naInitPopulationNodeDP5")
 
-    var population = naInitPopulation(individual, config)
-    population.population = newSeq[NAIndividual](config.populationSize)
-
     ncDebug(fmt("Fitness rate: {config.fitnessRate}"))
     ncDebug(fmt("Fitness limit top: {config.limitTop}"))
     ncDebug(fmt("Fitness limit bottom: {config.limitBottom}"))
 
+    let initPopulation = newSeq[NAIndividual](config.populationSize)
+    var population = naInitPopulation(individual, config, initPopulation)
+
     result = NAPopulationNodeDP5(population: population)
-    result.population[0] = individual.naClone()
-    result.population[0].naCalculateFitness()
 
     result.fitnessLimit = result.population[0].fitness
 
@@ -99,8 +97,4 @@ proc naInitPopulationNodeDP5*(individual: NAIndividual, config: NAConfiguration)
     assert (config.limitTop > config.limitBottom) and (config.limitBottom > 0.0)
     result.limitTop = config.limitTop
     result.limitBottom = config.limitBottom
-
-    # Initialize the population with random individuals:
-    for i in 1..<config.populationSize:
-        result.population[i] = individual.naNewRandomIndividual()
 

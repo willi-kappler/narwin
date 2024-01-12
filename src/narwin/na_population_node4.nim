@@ -58,7 +58,7 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
                     tmpIndividual1.naCalculateFitness()
 
                     if tmpIndividual1.fitness < limitFitness:
-                        self.population[j] = tmpIndividual1.naClone()
+                        self.population[j] = tmpIndividual1
             else:
                 for j in 0..<self.population.populationSize:
                     original = self.population.naClone(j)
@@ -81,11 +81,11 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
                         # If the mutated individual is better than the original
                         # it gets overwritten (killed) by the better one:
                         if tmpIndividual1.fitness < self.population[j].fitness:
-                            self.population[j] = tmpIndividual1.naClone()
+                            self.population[j] = tmpIndividual1
                         if tmpIndividual2.fitness < self.population[j].fitness:
-                            self.population[j] = tmpIndividual2.naClone()
+                            self.population[j] = tmpIndividual2
                         if tmpIndividual3.fitness < self.population[j].fitness:
-                            self.population[j] = tmpIndividual3.naClone()
+                            self.population[j] = tmpIndividual3
 
                         # Reset first and second individual:
                         if self.population[j].fitness < tmpIndividual1.fitness:
@@ -117,20 +117,14 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
 proc naInitPopulationNodeDP4*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP4 =
     ncDebug("naInitPopulationNodeDP4")
 
-    var population = naInitPopulation(individual, config)
-    population.population = newSeq[NAIndividual](config.populationSize)
+    let initPopulation = newSeq[NAIndividual](config.populationSize)
+    var population = naInitPopulation(individual, config, initPopulation)
 
     result = NAPopulationNodeDP4(population: population)
-    result.population[0] = individual.naClone()
-    result.population[0].naCalculateFitness()
 
     result.limitCounterEnd = result.population.numOfIterations div 5
     if result.limitCounterEnd < 5:
         result.limitCounterEnd = 5
 
     result.bestFitness = result.population[0].fitness
-
-    # Initialize the population with random individuals:
-    for i in 1..<config.populationSize:
-        result.population[i] = individual.naNewRandomIndividual()
 

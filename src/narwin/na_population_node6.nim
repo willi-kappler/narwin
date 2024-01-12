@@ -49,9 +49,9 @@ method ncProcessData(self: var NAPopulationNodeDP6, inputData: seq[byte]): seq[b
                 tmpIndividual.naCalculateFitness()
 
                 if tmpIndividual.fitness < fitnessLimit:
-                    self.population[j] = tmpIndividual.naClone()
+                    self.population[j] = tmpIndividual
                 elif tmpIndividual.fitness < self.population[j].fitness:
-                    self.population[j] = tmpIndividual.naClone()
+                    self.population[j] = tmpIndividual
 
                 if tmpIndividual.fitness <= self.population.targetFitness:
                     ncDebug(fmt("Early exit at i: {i}"))
@@ -60,7 +60,7 @@ method ncProcessData(self: var NAPopulationNodeDP6, inputData: seq[byte]): seq[b
                 if tmpIndividual.fitness < self.bestFitness:
                     self.bestFitness = tmpIndividual.fitness
                     if j > 0:
-                        self.population[j] = tmpIndividual.naClone()
+                        self.population[j] = tmpIndividual
 
     # Find the best and the worst individual at the end:
     self.population.findBestAndWorstIndividual()
@@ -72,15 +72,9 @@ method ncProcessData(self: var NAPopulationNodeDP6, inputData: seq[byte]): seq[b
 proc naInitPopulationNodeDP6*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP6 =
     ncDebug("naInitPopulationNodeDP6")
 
-    var population = naInitPopulation(individual, config)
-    population.population = newSeq[NAIndividual](config.populationSize)
+    let initPopulation = newSeq[NAIndividual](config.populationSize)
+    var population = naInitPopulation(individual, config, initPopulation)
 
     result = NAPopulationNodeDP6(population: population)
-    result.population[0] = individual.naClone()
-    result.population[0].naCalculateFitness()
     result.bestFitness = result.population[0].fitness
-
-    # Initialize the population with random individuals:
-    for i in 1..<config.populationSize:
-        result.population[i] = individual.naNewRandomIndividual()
 

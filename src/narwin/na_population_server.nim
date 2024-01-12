@@ -8,7 +8,6 @@
 ##
 
 # Nim std imports
-#import std/options
 import std/json
 
 from std/strformat import fmt
@@ -33,7 +32,7 @@ type
         sameFitness: bool
         shareOnyBest: bool
 
-proc naSaveData(fileName: string, individual: NAIndividual) =
+proc naSaveData*(fileName: string, individual: NAIndividual) =
     let outFile = open(fileName, mode = fmWrite)
     # Convert individual into a JSON object:
     let converted = individual.naToJSON()
@@ -41,16 +40,9 @@ proc naSaveData(fileName: string, individual: NAIndividual) =
     outFile.write($converted)
     outFile.close()
 
-proc naLoadData(self: NAPopulationServerDP, fileName: string): NAIndividual =
-    let inFile = open(fileName, mode = fmRead)
-    let data = inFile.readAll()
-    inFile.close()
-
-    return self.population[0].naFromJson(parseJson(data))
-
 proc naLoadIntoPosition*(self: var NAPopulationServerDP, fileName: string, index: int) =
-    let individual = self.naLoadData(fileName)
-    self.population[index] = individual.naclone()
+    let individual = self.population[0].naLoadData(fileName)
+    self.population[index] = individual.naClone()
 
 method ncIsFinished(self: var NAPopulationServerDP): bool =
     return self.population[0].fitness <= self.targetFitness
@@ -124,8 +116,14 @@ proc naInitPopulationServerDP*(
     result.sameFitness = config.sameFitness
     result.shareOnyBest = config.shareOnyBest
 
-    result.population[0] = individual.naClone()
-    result.population[0].naCalculateFitness()
+    let inputFileName = config.loadIndividual
+
+    if inputFileName.len() > 0:
+        result.naLoadIntoPosition(inputFileName, 0)
+    else:
+        result.population[0] = individual.naClone()
+        result.population[0].naCalculateFitness()
+
     for i in 1..<config.populationSize:
         result.population[i] = individual.naNewRandomIndividual()
 

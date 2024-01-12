@@ -11,7 +11,7 @@
 import std/parseopt
 
 from std/strformat import fmt
-from std/strutils import parseUint, parseFloat
+from std/strutils import parseUint, parseFloat, parseBool
 from os import getAppFilename, splitPath
 
 type
@@ -37,6 +37,9 @@ type
         limitBottom*: float64
         operations*: seq[uint32]
 
+        # Both:
+        loadIndividual*: string
+
 proc naShowHelpAndQuit*() =
     let path = getAppFilename()
     let name = splitPath(path)[1]
@@ -45,9 +48,10 @@ proc naShowHelpAndQuit*() =
     echo(fmt("{name}: this starts in 'node mode' and tries to connect to the server"))
     echo(fmt("{name} --server: this starts in 'server mode' and waits for nodes to connect"))
     echo("-t [float64]: target fitness (0.0)")
-    echo("--file: output filename for the result (optimal solution)")
+    echo("--file [string]: output filename for the result (optimal solution)")
+    echo("--savenewfitness [bool]: If set everytime a new best fintess is found it will be saved (true)")
     echo("--samefitness: allow individuals with the same fitness in the global population (false)")
-    echo("--sharebest: only share the best individual with the other nodes instead of randomly pick one (true)")
+    echo("--sharebest [bool]: only share the best individual with the other nodes instead of randomly pick one (true)")
     # TODO: option for save new fitness
 
     echo("-p [uint32]: population size (10)")
@@ -59,6 +63,8 @@ proc naShowHelpAndQuit*() =
     echo("--fitnessrate [float64]: the rate at which the fitness limit is decreased (0.999)")
     echo("--limittop [float64]: the top limit for oscilating limit (10.0)")
     echo("--limitbottom [float64]: the top limit for oscilating limit (1.0)")
+
+    echo("--loadIndividual [string]: loads the given individual into the population (node) or list of best (server)")
 
     quit()
 
@@ -83,6 +89,8 @@ proc naConfigFromCmdLine*(): NAConfiguration =
     result.limitBottom = 1.0
     result.operations = @[]
 
+    result.loadIndividual = ""
+
     var cmdParser = initOptParser()
     while true:
         cmdParser.next()
@@ -102,12 +110,16 @@ proc naConfigFromCmdLine*(): NAConfiguration =
                 result.numOfMutations = uint32(parseUint(cmdParser.val))
             elif cmdParser.key == "i":
                 result.numOfIterations = uint32(parseUint(cmdParser.val))
+            elif cmdParser.key == "k":
+                result.populationKind = uint8(parseUint(cmdParser.val))
             elif cmdParser.key == "reset":
                 result.resetPopulation = true
+            elif cmdParser.key == "savenewfitness":
+                result.saveNewFitness = parseBool(cmdParser.val)
             elif cmdParser.key == "samefitness":
                 result.sameFitness = true
             elif cmdParser.key == "sharebest":
-                result.shareOnyBest = true
+                result.shareOnyBest = parseBool(cmdParser.val)
             elif cmdParser.key == "fixedmutation":
                 result.fixedMutation = true
             elif cmdParser.key == "fitnessrate":
@@ -116,8 +128,8 @@ proc naConfigFromCmdLine*(): NAConfiguration =
                 result.limitTop = parseFloat(cmdParser.val)
             elif cmdParser.key == "limitbottom":
                 result.limitBottom = parseFloat(cmdParser.val)
-            elif cmdParser.key == "k":
-                result.populationKind = uint8(parseUint(cmdParser.val))
+            elif cmdParser.key == "loadindividual":
+                result.loadIndividual = cmdParser.val
             else:
                 naShowHelpAndQuit()
         of cmdArgument:

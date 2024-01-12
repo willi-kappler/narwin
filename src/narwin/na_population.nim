@@ -8,7 +8,7 @@
 ##
 
 # Nim std imports
-import std/json
+#import std/json
 
 from std/strformat import fmt
 from std/random import randomize, rand
@@ -108,18 +108,11 @@ proc `[]`*(self: var NAPopulation, index: uint32): var NAIndividual =
 proc `[]=`*(self: var NAPopulation, index: uint32, individual: NAIndividual) =
     self.population[index] = individual.naClone()
 
-proc naLoadData(self: NAPopulation, fileName: string): NAIndividual =
-    let inFile = open(fileName, mode = fmRead)
-    let data = inFile.readAll()
-    inFile.close()
-
-    return self.population[0].naFromJson(parseJson(data))
-
 proc naLoadIntoPosition*(self: var NAPopulation, fileName: string, index: int) =
-    let individual = self.naLoadData(fileName)
+    let individual = self.population[0].naLoadData(fileName)
     self.population[index] = individual.naclone()
 
-proc naInitPopulation*(individual: NAIndividual, config: NAConfiguration): NAPopulation =
+proc naInitPopulation*(individual: NAIndividual, config: NAConfiguration, initPopulation: seq[NAIndividual]): NAPopulation =
     ncDebug(fmt("Population size: {config.populationSize}"))
     ncDebug(fmt("Number of mutations: {config.numOfMutations}"))
     ncDebug(fmt("Number of iterations: {config.numOfIterations}"))
@@ -153,4 +146,19 @@ proc naInitPopulation*(individual: NAIndividual, config: NAConfiguration): NAPop
     result.worstIndex = 0
     result.worstFitness = 0.0
     result.operations = config.operations
+    result.population = initPopulation
+
+    let fileName = config.loadIndividual
+    if fileName.len() > 0:
+        let newIndividual = individual.naLoadData(fileName)
+        result.population[0] = newIndividual
+    else:
+        result.population[0] = individual.naClone()
+        result.population[0].naCalculateFitness()
+
+    # Initialize the population with random individuals:
+    for i in 1..result.population.high:
+        result.population[i] = individual.naNewRandomIndividual()
+
+    result.naSort()
 
