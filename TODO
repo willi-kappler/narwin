@@ -4,7 +4,6 @@ TODO:
 - Then write test cases.
 - Use compiler options: --styleCheck:usages --styleCheck:error
 - Share optimal solutions between different servers.
-- Refactor: individual1.fitness < individual2.fitness to individual1 < individual2
 
 
 - Try out different random number generators:
@@ -33,5 +32,6 @@ Done:
 - Allow to use just one set of mutation operation for one population.
 - Add option to always send the best global individual to each population
 - Allow to load saved individuals at startup.
+- Refactor: individual1.fitness < individual2.fitness to individual1 < individual2
 
 
