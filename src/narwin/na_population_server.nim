@@ -42,7 +42,7 @@ proc naSaveData*(fileName: string, individual: NAIndividual) =
 
 proc naLoadIntoPosition*(self: var NAPopulationServerDP, fileName: string, index: int) =
     let individual = self.population[0].naLoadData(fileName)
-    self.population[index] = individual.naClone()
+    self.population[index] = individual.naclone()
 
 method ncIsFinished(self: var NAPopulationServerDP): bool =
     return self.population[0] <= self.targetFitness
@@ -119,7 +119,12 @@ proc naInitPopulationServerDP*(
     let inputFileName = config.loadIndividual
 
     if inputFileName.len() > 0:
-        result.naLoadIntoPosition(inputFileName, 0)
+        ncDebug(fmt("Load individual from file: {inputFileName}"))
+
+        let newIndividual = individual.naLoadData(inputFileName)
+        result.population[0] = newIndividual.naClone()
+
+        ncDebug(fmt("With fitness: {newIndividual.fitness}"))
     else:
         result.population[0] = individual.naClone()
         result.population[0].naCalculateFitness()
