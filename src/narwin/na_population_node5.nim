@@ -8,7 +8,10 @@
 ##
 
 # Nim std imports
+import std/deques
+
 from std/strformat import fmt
+from std/random import randomize, rand
 
 # External imports
 import num_crunch
@@ -16,85 +19,76 @@ import num_crunch
 # Local imports
 import na_config
 import na_individual
-import na_population
 
 type
     NAPopulationNodeDP5 = ref object of NCNodeDataProcessor
-        population: NAPopulation
-        fitnessLimit: float64
-        fitnessRate: float64
-        limitTop: float64
-        limitBottom: float64
+        population: Deque[NAIndividual]
+        reset: bool
+        acceptNewBest: bool
+        resetPopulation: bool
+        populationSize: uint32
+        numOfIterations: uint32
+        targetFitness: float64
 
 method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[byte] =
     ncDebug("ncProcessData()", 2)
 
-    var tmpIndividual = self.population.naClone(0)
-    var bestIndividual = self.population.naClone(0)
-    var limitCounter: uint32 = 0
+    var tmpIndividual = self.population[0].naClone()
 
-    self.population.naResetOrAcepptBest(inputData)
-
-    if self.population.resetPopulation:
-        self.fitnessLimit = self.population[0].fitness
-
-    # Pick a random individual and randomize it:
-    self.population.naRandomizeAny()
+    if self.resetPopulation:
+        for i in 0..<self.populationSize:
+            self.population[i].naRandomize()
+            self.population[i].naCalculateFitness()
+    elif self.acceptNewBest:
+        self.population[1].naFromBytes(inputData)
 
     block iterations:
-        for i in 0..<self.population.numOfIterations:
-            let numberOfMutations = self.population.naGetNumberOfMutations()
+        for i in 0..<self.numOfIterations:
+            for j in 0..<self.populationSize:
+                let index = rand(int(self.populationSize) - 1)
 
-            for j in 0..<self.population.populationSize:
-                tmpIndividual = self.population.naClone(j)
-
-                # And mutate it:
-                for _ in 0..<numberOfMutations:
-                    tmpIndividual.naMutate(self.population.operations)
-                # Calculate the new fitness for the mutated individual:
+                tmpIndividual = self.population[index].naClone()
+                tmpIndividual.naMutate()
                 tmpIndividual.naCalculateFitness()
 
-                if tmpIndividual < self.fitnessLimit:
-                    self.population[j] = tmpIndividual
-                elif tmpIndividual < self.population[j]:
-                    self.population[j] = tmpIndividual
+                # Move the best one to the first position:
+                if tmpIndividual < self.population[0]:
+                    self.population.addFirst(tmpIndividual)
 
-                if tmpIndividual < bestIndividual:
-                    bestIndividual = tmpIndividual.naClone()
-                    if tmpIndividual <= self.population.targetFitness:
+                    if tmpIndividual <= self.targetFitness:
                         ncDebug(fmt("Early exit at i: {i}"))
                         break iterations
 
-            self.fitnessLimit = self.fitnessLimit - self.fitnessRate
+                    # Remove last (worst) individual:
+                    self.population.shrink(fromLast = 1)
 
-            if (self.fitnessLimit < self.limitBottom):
-                self.fitnessLimit = self.limitTop
-                inc(limitCounter)
+    ncDebug(fmt("Best fitness: {self.population[0].fitness}, worst fitness: {self.population[^1].fitness}"))
 
-    ncDebug(fmt("Limit counter: {limitCounter}"))
-    ncDebug(fmt("Best fitness: {bestIndividual.fitness}"))
-    ncDebug(fmt("Fitness limit: {self.fitnessLimit}"))
+    return self.population[0].naToBytes()
 
-    return bestIndividual.naToBytes()
 
 proc naInitPopulationNodeDP5*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP5 =
     ncDebug("naInitPopulationNodeDP5")
 
-    ncDebug(fmt("Fitness rate: {config.fitnessRate}"))
-    ncDebug(fmt("Fitness limit top: {config.limitTop}"))
-    ncDebug(fmt("Fitness limit bottom: {config.limitBottom}"))
+    randomize()
 
-    let initPopulation = newSeq[NAIndividual](config.populationSize)
-    var population = naInitPopulation(individual, config, initPopulation)
+    assert config.populationSize > 1
+    assert config.numOfIterations > 0
 
-    result = NAPopulationNodeDP5(population: population)
+    result.populationSize = config.populationSize
+    result.numOfIterations = config.numOfIterations
+    result.targetFitness = config.targetFitness
 
-    result.fitnessLimit = result.population[0].fitness
+    if config.resetPopulation:
+        result.acceptNewBest = false
+    else:
+        result.acceptNewBest = config.acceptNewBest
 
-    assert config.fitnessRate > 0.0
-    result.fitnessRate = config.fitnessRate
+    result.resetPopulation = config.resetPopulation
 
-    assert (config.limitTop > config.limitBottom) and (config.limitBottom > 0.0)
-    result.limitTop = config.limitTop
-    result.limitBottom = config.limitBottom
+    result.population = initDeque[NAIndividual](int(config.populationSize))
+
+    for i in 0..<config.populationSize:
+        result.population.addLast(individual.naNewRandomIndividual())
+
 

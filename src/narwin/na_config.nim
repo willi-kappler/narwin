@@ -26,15 +26,10 @@ type
 
         # Node:
         populationSize*: uint32
-        numOfMutations*: uint32
         numOfIterations*: uint32
         acceptNewBest*: bool
         resetPopulation*: bool
         populationKind*: uint8
-        fixedMutation*: bool
-        fitnessRate*: float64
-        limitTop*: float64
-        limitBottom*: float64
         operations*: seq[uint32]
 
         # Both:
@@ -55,14 +50,9 @@ proc naShowHelpAndQuit*() =
     # TODO: option for save new fitness
 
     echo("-p [uint32]: population size (10)")
-    echo("-m [uint32]: number of mutations per iteration (10)")
     echo("-i [uint32]: number of iterations (1000)")
     echo("-k [uint8]: population kind (0)")
     echo("--reset: before each run randomize the whole population (false)")
-    echo("--fixedmutation: use a fixed number of mutations for each iteration (false)")
-    echo("--fitnessrate [float64]: the rate at which the fitness limit is decreased (0.999)")
-    echo("--limittop [float64]: the top limit for oscilating limit (10.0)")
-    echo("--limitbottom [float64]: the top limit for oscilating limit (1.0)")
 
     echo("--loadindividual [string]: loads the given individual into the population (node) or list of best (server)")
 
@@ -78,15 +68,10 @@ proc naConfigFromCmdLine*(): NAConfiguration =
     result.shareOnyBest = true
 
     result.populationSize = 10
-    result.numOfMutations = 10
     result.numOfIterations = 1000
     result.acceptNewBest = true
     result.resetPopulation = false
-    result.populationKind = 0
-    result.fixedMutation = false
-    result.fitnessRate = 0.1
-    result.limitTop = 10.0
-    result.limitBottom = 1.0
+    result.populationKind = 1
     result.operations = @[]
 
     result.loadIndividual = ""
@@ -106,8 +91,6 @@ proc naConfigFromCmdLine*(): NAConfiguration =
                 result.resultFilename = cmdParser.val
             elif cmdParser.key == "p":
                 result.populationSize = uint32(parseUint(cmdParser.val))
-            elif cmdParser.key == "m":
-                result.numOfMutations = uint32(parseUint(cmdParser.val))
             elif cmdParser.key == "i":
                 result.numOfIterations = uint32(parseUint(cmdParser.val))
             elif cmdParser.key == "k":
@@ -120,14 +103,6 @@ proc naConfigFromCmdLine*(): NAConfiguration =
                 result.sameFitness = true
             elif cmdParser.key == "sharebest":
                 result.shareOnyBest = parseBool(cmdParser.val)
-            elif cmdParser.key == "fixedmutation":
-                result.fixedMutation = true
-            elif cmdParser.key == "fitnessrate":
-                result.fitnessRate = parseFloat(cmdParser.val)
-            elif cmdParser.key == "limittop":
-                result.limitTop = parseFloat(cmdParser.val)
-            elif cmdParser.key == "limitbottom":
-                result.limitBottom = parseFloat(cmdParser.val)
             elif cmdParser.key == "loadindividual":
                 result.loadIndividual = cmdParser.val
             else:

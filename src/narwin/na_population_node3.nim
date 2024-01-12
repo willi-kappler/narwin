@@ -29,24 +29,14 @@ method ncProcessData(self: var NAPopulationNodeDP3, inputData: seq[byte]): seq[b
 
     self.population.naResetOrAcepptBest(inputData)
 
-    # Pick a random individual and randomize it:
-    self.population.naRandomizeAny()
-
     block iterations:
         for i in 0..<self.population.numOfIterations:
-            let numberOfMutations = self.population.naGetNumberOfMutations()
             for j in 0..<self.population.populationSize:
                 tmpIndividual = self.population.naClone(j)
-
-                # And mutate it:
-                for _ in 0..<numberOfMutations:
-                    tmpIndividual.naMutate(self.population.operations)
-                # Calculate the new fitness for the mutated individual:
+                tmpIndividual.naMutate(self.population.operations)
                 tmpIndividual.naCalculateFitness()
 
-                # If the mutated individual is better than the original
-                # it gets overwritten (killed) by the better one:
-                if tmpIndividual < self.population[j].fitness:
+                if tmpIndividual < self.population[j]:
                     self.population[j] = tmpIndividual
                     if tmpIndividual <= self.population.targetFitness:
                         ncDebug(fmt("Early exit at i: {i}"))

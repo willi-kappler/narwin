@@ -9,7 +9,6 @@
 
 # Nim std imports
 from std/strformat import fmt
-from std/random import rand
 
 # External imports
 import num_crunch
@@ -28,24 +27,18 @@ method ncProcessData(self: var NAPopulationNodeDP6, inputData: seq[byte]): seq[b
     ncDebug("ncProcessData()", 2)
 
     var tmpIndividual = self.population.naClone(0)
-    let populationSize = float64(self.population.populationSize)
-    let limitFactor = rand(4.0) + 1.0
-    ncDebug(fmt("Limit factor: {limitFactor}"))
 
     self.population.naResetOrAcepptBest(inputData)
-    self.population.naRandomizeAny()
+
+    var fitnessLimit: float64
 
     block iterations:
         for i in 0..<self.population.numOfIterations:
-            let numberOfMutations = self.population.naGetNumberOfMutations()
+            fitnessLimit = self.bestFitness
 
             for j in 0..<self.population.populationSize:
-                let fitnessLimit = self.bestFitness * (1.0 + (float64(j) * limitFactor / populationSize))
                 tmpIndividual = self.population.naClone(j)
-
-                for _ in 0..<numberOfMutations:
-                    tmpIndividual.naMutate(self.population.operations)
-
+                tmpIndividual.naMutate(self.population.operations)
                 tmpIndividual.naCalculateFitness()
 
                 if tmpIndividual < fitnessLimit:
@@ -53,18 +46,20 @@ method ncProcessData(self: var NAPopulationNodeDP6, inputData: seq[byte]): seq[b
                 elif tmpIndividual < self.population[j]:
                     self.population[j] = tmpIndividual
 
-                if tmpIndividual <= self.population.targetFitness:
-                    ncDebug(fmt("Early exit at i: {i}"))
-                    break iterations
-
                 if tmpIndividual < self.bestFitness:
                     self.bestFitness = tmpIndividual.fitness
                     if j > 0:
-                        self.population[j] = tmpIndividual
+                        self.population[0] = tmpIndividual
 
+                    if tmpIndividual <= self.population.targetFitness:
+                        ncDebug(fmt("Early exit at i: {i}, j: {j}"))
+                        break iterations
+
+                fitnessLimit = fitnessLimit * 1.1
+
+    ncDebug(fmt("Best limit: {self.bestFitness}"))
     # Find the best and the worst individual at the end:
     self.population.findBestAndWorstIndividual()
-    ncDebug(fmt("Best fitness 2: {self.bestFitness}"))
     ncDebug(fmt("Best fitness: {self.population.bestFitness}, worst fitness: {self.population.worstFitness}"))
 
     return self.population[self.population.bestIndex].naToBytes()

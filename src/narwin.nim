@@ -33,17 +33,17 @@ export num_crunch
 
 proc naGetPopulationNodeDP*(individual: NAIndividual, config: NAConfiguration): NCNodeDataProcessor =
     case config.populationKind:
-    of 0:
-        return naInitPopulationNodeDP1(individual, config)
     of 1:
-        return naInitPopulationNodeDP2(individual, config)
+        return naInitPopulationNodeDP1(individual, config)
     of 2:
-        return naInitPopulationNodeDP3(individual, config)
+        return naInitPopulationNodeDP2(individual, config)
     of 3:
-        return naInitPopulationNodeDP4(individual, config)
+        return naInitPopulationNodeDP3(individual, config)
     of 4:
-        return naInitPopulationNodeDP5(individual, config)
+        return naInitPopulationNodeDP4(individual, config)
     of 5:
+        return naInitPopulationNodeDP5(individual, config)
+    of 6:
         return naInitPopulationNodeDP6(individual, config)
     else:
         raise newException(ValueError, fmt("Unknown population kind: {config.populationKind}"))
