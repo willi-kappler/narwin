@@ -20,23 +20,11 @@ task runSudoku, "Runs the Sudoku example":
     exec "./sudoku --server &"
     exec "sleep 5"
 
-    # Start four nodes
+    # Start three nodes
     exec "./sudoku -m=5 -p=200 -i=100000 -k=0 &"
     exec "sleep 1"
 
     exec "./sudoku -m=5 -p=200 -i=100000 -k=0 --reset &"
-    exec "sleep 1"
-
-    exec "./sudoku -m=10 -p=200 -i=100000 -k=1 &"
-    exec "sleep 1"
-
-    exec "./sudoku -m=10 -p=200 -i=100000 -k=2 &"
-    exec "sleep 1"
-
-    exec "./sudoku -m=20 -p=200 -i=10000 -k=3 &"
-    exec "sleep 1"
-
-    exec "./sudoku -m=10 -p=200 -i=100000 -k=4 --fitnessrate=0.001 &"
     exec "sleep 1"
 
     exec "./sudoku -m=10 -p=200 -i=100000 -k=5 &"
