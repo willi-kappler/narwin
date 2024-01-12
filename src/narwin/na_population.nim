@@ -150,8 +150,12 @@ proc naInitPopulation*(individual: NAIndividual, config: NAConfiguration, initPo
 
     let fileName = config.loadIndividual
     if fileName.len() > 0:
+        ncDebug(fmt("Load individual from file: {fileName}"))
+
         let newIndividual = individual.naLoadData(fileName)
         result.population[0] = newIndividual
+
+        ncDebug(fmt("With fitness: {newIndividual.fitness}"))
     else:
         result.population[0] = individual.naClone()
         result.population[0].naCalculateFitness()
