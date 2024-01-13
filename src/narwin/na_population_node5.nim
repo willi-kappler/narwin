@@ -45,7 +45,7 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
 
     block iterations:
         for i in 0..<self.numOfIterations:
-            for j in 0..<self.populationSize:
+            for _ in 0..<self.populationSize:
                 let index = rand(int(self.populationSize) - 1)
 
                 tmpIndividual = self.population[index].naClone()
@@ -76,6 +76,8 @@ proc naInitPopulationNodeDP5*(individual: NAIndividual, config: NAConfiguration)
     assert config.populationSize > 1
     assert config.numOfIterations > 0
 
+    result = NAPopulationNodeDP5()
+
     result.populationSize = config.populationSize
     result.numOfIterations = config.numOfIterations
     result.targetFitness = config.targetFitness
@@ -90,7 +92,7 @@ proc naInitPopulationNodeDP5*(individual: NAIndividual, config: NAConfiguration)
 
     result.population = initDeque[NAIndividual](int(config.populationSize))
 
-    for i in 0..<config.populationSize:
+    for _ in 0..<config.populationSize:
         result.population.addLast(individual.naNewRandomIndividual())
 
 
