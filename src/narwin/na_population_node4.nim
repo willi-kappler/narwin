@@ -33,8 +33,8 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
 
     # The second and third population get only reset once when processing the data:
     for i in 0..<self.population.populationSize:
-        self.population2[i] = self.population[i]
-        self.population3[i] = self.population[i]
+        self.population2[i] = self.population[i].naClone()
+        self.population3[i] = self.population[i].naClone()
 
     block iterations:
         for i in 0..<self.population.numOfIterations:
