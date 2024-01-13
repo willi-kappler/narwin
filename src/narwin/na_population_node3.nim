@@ -9,6 +9,7 @@
 
 # Nim std imports
 from std/strformat import fmt
+from std/math import sin
 
 # External imports
 import num_crunch
@@ -21,32 +22,49 @@ import na_population
 type
     NAPopulationNodeDP3 = ref object of NCNodeDataProcessor
         population: NAPopulation
+        dt: float64
+        amplitude: float64
+        base: float64
+        currentBest: NAIndividual
 
 method ncProcessData(self: var NAPopulationNodeDP3, inputData: seq[byte]): seq[byte] =
     ncDebug("ncProcessData()", 2)
 
     var tmpIndividual = self.population.naClone(0)
+    var fitnessLimit: float64 = 0.0
+    var t: float64 = 0.0
 
     self.population.naResetOrAcepptBest(inputData)
 
     block iterations:
         for i in 0..<self.population.numOfIterations:
+            fitnessLimit = self.base + (self.amplitude * sin(t))
+
             for j in 0..<self.population.populationSize:
                 tmpIndividual = self.population.naClone(j)
                 tmpIndividual.naMutate(self.population.operations)
                 tmpIndividual.naCalculateFitness()
 
-                if tmpIndividual < self.population[j]:
+                if tmpIndividual < fitnessLimit:
                     self.population[j] = tmpIndividual
+                elif tmpIndividual < self.population[j]:
+                    self.population[j] = tmpIndividual
+
+                if tmpIndividual < self.currentBest:
+                    self.currentBest = tmpIndividual.naClone()
+
                     if tmpIndividual <= self.population.targetFitness:
                         ncDebug(fmt("Early exit at i: {i}"))
                         break iterations
 
+            t = t + self.dt
+
+    ncDebug(fmt("Current best: {self.currentBest.fitness}"))
     # Find the best and the worst individual at the end:
     self.population.findBestAndWorstIndividual()
     ncDebug(fmt("Best fitness: {self.population.bestFitness}, worst fitness: {self.population.worstFitness}"))
 
-    return self.population[self.population.bestIndex].naToBytes()
+    return self.currentBest.naToBytes()
 
 proc naInitPopulationNodeDP3*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP3 =
     ncDebug("naInitPopulationNodeDP3")
@@ -55,4 +73,8 @@ proc naInitPopulationNodeDP3*(individual: NAIndividual, config: NAConfiguration)
     var population = naInitPopulation(individual, config, initPopulation)
 
     result = NAPopulationNodeDP3(population: population)
+    result.dt = 0.001
+    result.amplitude = 1000.0
+    result.base = 8000.0
+    result.currentBest = result.population.naClone(0)
 
