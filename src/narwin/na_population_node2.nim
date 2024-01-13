@@ -29,27 +29,21 @@ method ncProcessData(self: var NAPopulationNodeDP2, inputData: seq[byte]): seq[b
 
     self.population.naResetOrAcepptBest(inputData)
 
-    var worstChanged = true
-
     block iterations:
         for i in 0..<self.population.numOfIterations:
             for j in 0..<self.population.populationSize:
-                # Find the worst individual of this iteration:
-                if worstChanged:
-                    self.population.findWorstIndividual()
-
                 tmpIndividual = self.population.naClone(j)
                 tmpIndividual.naMutate(self.population.operations)
                 tmpIndividual.naCalculateFitness()
 
-                if tmpIndividual < self.population.worstFitness:
-                    self.population[self.population.worstIndex] = tmpIndividual
+                # The best one is at position 0:
+                if tmpIndividual < self.population[0]:
+                    self.population[0] = tmpIndividual
                     if tmpIndividual <= self.population.targetFitness:
                         ncDebug(fmt("Early exit at i: {i}"))
                         break iterations
-                    worstChanged = true
-                else:
-                    worstChanged = false
+                elif tmpIndividual < self.population[j]:
+                    self.population[j] = tmpIndividual
 
     # Find the best and the worst individual at the end:
     self.population.findBestAndWorstIndividual()
