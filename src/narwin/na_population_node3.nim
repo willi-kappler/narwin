@@ -30,8 +30,8 @@ type
 method ncProcessData(self: var NAPopulationNodeDP3, inputData: seq[byte]): seq[byte] =
     ncDebug("ncProcessData()", 2)
 
-    var tmpIndividual = self.population.naClone(0)
-    var fitnessLimit: float64 = 0.0
+    var tmpIndividual: NAIndividual
+    var fitnessLimit: float64
     var t: float64 = 0.0
 
     self.population.naResetOrAcepptBest(inputData)

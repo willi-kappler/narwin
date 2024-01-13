@@ -34,7 +34,7 @@ type
 method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[byte] =
     ncDebug("ncProcessData()", 2)
 
-    var tmpIndividual = self.population[0].naClone()
+    var tmpIndividual: NAIndividual
 
     if self.resetPopulation:
         for i in 0..<self.populationSize:

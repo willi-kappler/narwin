@@ -21,12 +21,12 @@ import na_population
 type
     NAPopulationNodeDP6 = ref object of NCNodeDataProcessor
         population: NAPopulation
-        bestFitness: float64
+        limitFactor: float64
 
 method ncProcessData(self: var NAPopulationNodeDP6, inputData: seq[byte]): seq[byte] =
     ncDebug("ncProcessData()", 2)
 
-    var tmpIndividual = self.population.naClone(0)
+    var tmpIndividual: NAIndividual
 
     self.population.naResetOrAcepptBest(inputData)
 
@@ -34,7 +34,7 @@ method ncProcessData(self: var NAPopulationNodeDP6, inputData: seq[byte]): seq[b
 
     block iterations:
         for i in 0..<self.population.numOfIterations:
-            fitnessLimit = self.bestFitness
+            fitnessLimit = self.population[0].fitness
 
             for j in 0..<self.population.populationSize:
                 tmpIndividual = self.population.naClone(j)
@@ -46,23 +46,20 @@ method ncProcessData(self: var NAPopulationNodeDP6, inputData: seq[byte]): seq[b
                 elif tmpIndividual < self.population[j]:
                     self.population[j] = tmpIndividual
 
-                if tmpIndividual < self.bestFitness:
-                    self.bestFitness = tmpIndividual.fitness
-                    if j > 0:
-                        self.population[0] = tmpIndividual
+                if tmpIndividual < self.population[0].fitness:
+                    self.population[0] = tmpIndividual
 
                     if tmpIndividual <= self.population.targetFitness:
                         ncDebug(fmt("Early exit at i: {i}, j: {j}"))
                         break iterations
 
-                fitnessLimit = fitnessLimit * 1.1
+                fitnessLimit = fitnessLimit * self.limitFactor
 
-    ncDebug(fmt("Best limit: {self.bestFitness}"))
     # Find the best and the worst individual at the end:
     self.population.findBestAndWorstIndividual()
     ncDebug(fmt("Best fitness: {self.population.bestFitness}, worst fitness: {self.population.worstFitness}"))
 
-    return self.population[self.population.bestIndex].naToBytes()
+    return self.population[0].naToBytes()
 
 proc naInitPopulationNodeDP6*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP6 =
     ncDebug("naInitPopulationNodeDP6")
@@ -71,5 +68,6 @@ proc naInitPopulationNodeDP6*(individual: NAIndividual, config: NAConfiguration)
     var population = naInitPopulation(individual, config, initPopulation)
 
     result = NAPopulationNodeDP6(population: population)
-    result.bestFitness = result.population[0].fitness
+    result.limitFactor = 1.01
+
 
