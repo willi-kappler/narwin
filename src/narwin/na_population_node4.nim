@@ -31,7 +31,7 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
 
     self.population.naResetOrAcepptBest(inputData)
 
-    # The second population gets only reset once when processing the data:
+    # The second and third population get only reset once when processing the data:
     for i in 0..<self.population.populationSize:
         self.population2[i] = self.population[i]
         self.population3[i] = self.population[i]
@@ -55,7 +55,7 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
                 if tmpIndividual < self.population[j]:
                     self.population[j] = tmpIndividual
 
-                # Mutate and check second population:
+                # Mutate and check third population:
                 self.population3[j].naMutate(self.population.operations)
                 self.population3[j].naCalculateFitness()
 
@@ -78,8 +78,8 @@ proc naInitPopulationNodeDP4*(individual: NAIndividual, config: NAConfiguration)
     let initPopulation = newSeq[NAIndividual](config.populationSize)
     var population = naInitPopulation(individual, config, initPopulation)
 
+    result = NAPopulationNodeDP4(population: population)
+
     result.population2 = newSeq[NAIndividual](config.populationSize)
     result.population3 = newSeq[NAIndividual](config.populationSize)
-
-    result = NAPopulationNodeDP4(population: population)
 
