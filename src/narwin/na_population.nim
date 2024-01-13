@@ -76,9 +76,8 @@ proc naResetOrAcepptBest*(self: var NAPopulation, inputData: seq[byte]) =
     if self.resetPopulation:
         self.naResetPopulation()
     elif self.acceptNewBest:
-        let index = self.populationSize - 1
-        self.population[index].naFromBytes(inputData)
-        ncDebug(fmt("Accept individual from server with fitness: {self.population[index].fitness}"))
+        self.population[0].naFromBytes(inputData)
+        ncDebug(fmt("Accept individual from server with fitness: {self.population[0].fitness}"))
 
 proc naClone*(self: NAPopulation, index: uint32): NAIndividual =
     self.population[index].naClone()
