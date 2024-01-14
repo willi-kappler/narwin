@@ -69,6 +69,14 @@ method ncProcessData(self: var NAPopulationNodeDP3, inputData: seq[byte]): seq[b
 proc naInitPopulationNodeDP3*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP3 =
     ncDebug("naInitPopulationNodeDP3")
 
+    assert config.dt > 0.0
+    assert config.amplitude > 0.0
+    assert config.base >= 0.0
+
+    ncDebug(fmt("Dt: {config.dt}"))
+    ncDebug(fmt("Amplitude: {config.amplitude}"))
+    ncDebug(fmt("Base: {config.base}"))
+
     let initPopulation = newSeq[NAIndividual](config.populationSize)
     var population = naInitPopulation(individual, config, initPopulation)
 
