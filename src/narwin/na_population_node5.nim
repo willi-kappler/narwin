@@ -42,6 +42,7 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
             self.population[i].naCalculateFitness()
     elif self.acceptNewBest:
         self.population[0].naFromBytes(inputData)
+        ncDebug(fmt("Accept individual from server with fitness: {self.population[0].fitness}"))
 
     block iterations:
         for i in 0..<self.numOfIterations:
