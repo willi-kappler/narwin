@@ -40,6 +40,10 @@ type
         # Population 6:
         limitFactor*: float64
 
+        # Population 7:
+        maxReset*: uint32
+
+
         # Both:
         loadIndividual*: string
 
@@ -63,10 +67,11 @@ proc naShowHelpAndQuit*() =
     echo("-i [uint32]: number of iterations (1000)")
     echo("-k [uint8]: population kind (0)")
     echo("--reset: before each run randomize the whole population (false)")
-    echo("-dt [float64]: Time step for population 3 (0.01)")
-    echo("-amplitude [float64]: Amplitude for population 3 (1.0)")
-    echo("-base [float64]: Base for population 3 (1.0)")
-    echo("-limitfactor [float64]: Factor for limit change for population 6 (1.01)")
+    echo("--dt [float64]: Time step for population 3 (0.01)")
+    echo("--amplitude [float64]: Amplitude for population 3 (1.0)")
+    echo("--base [float64]: Base for population 3 (1.0)")
+    echo("--limitfactor [float64]: Factor for limit change for population 6 (1.01)")
+    echo("--maxreset [uint32]: maxiumum number of iteration with the same fitness befor randomizing the whole population. For population 7 (100)")
 
     echo("--loadindividual [string]: loads the given individual into the population (node) or list of best (server)")
 
@@ -92,6 +97,7 @@ proc naConfigFromCmdLine*(): NAConfiguration =
     result.amplitude = 1.0
     result.base = 1.0
     result.limitFactor = 1.01
+    result.maxReset = 100
 
     result.loadIndividual = ""
 
@@ -132,6 +138,8 @@ proc naConfigFromCmdLine*(): NAConfiguration =
                 result.base = parseFloat(cmdParser.val)
             elif cmdParser.key == "limitfactor":
                 result.limitFactor = parseFloat(cmdParser.val)
+            elif cmdParser.key == "maxreset":
+                result.maxReset = uint32(parseUint(cmdParser.val))
             else:
                 naShowHelpAndQuit()
         of cmdArgument:

@@ -22,6 +22,7 @@ import narwin/na_population_node3
 import narwin/na_population_node4
 import narwin/na_population_node5
 import narwin/na_population_node6
+import narwin/na_population_node7
 import narwin/na_population_server
 
 export na_config
@@ -45,6 +46,8 @@ proc naGetPopulationNodeDP*(individual: NAIndividual, config: NAConfiguration): 
         return naInitPopulationNodeDP5(individual, config)
     of 6:
         return naInitPopulationNodeDP6(individual, config)
+    of 7:
+        return naInitPopulationNodeDP7(individual, config)
     else:
         raise newException(ValueError, fmt("Unknown population kind: {config.populationKind}"))
 
