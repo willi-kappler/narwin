@@ -64,6 +64,9 @@ method ncProcessData(self: var NAPopulationNodeDP6, inputData: seq[byte]): seq[b
 proc naInitPopulationNodeDP6*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP6 =
     ncDebug("naInitPopulationNodeDP6")
 
+    assert config.limitFactor > 1.0
+    ncDebug(fmt("Limit factor: {config.limitFactor}"))
+
     let initPopulation = newSeq[NAIndividual](config.populationSize)
     var population = naInitPopulation(individual, config, initPopulation)
 
