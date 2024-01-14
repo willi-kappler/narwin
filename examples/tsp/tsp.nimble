@@ -17,17 +17,17 @@ task checkAll, "run 'nim check' on all source files":
 task runTSP, "Runs the TSP example":
     #exec "nim c tsp.nim"
     exec "nim c -d:release tsp.nim"
-    exec "./tsp --server &"
+    exec "./tsp --server -t=8000.0 &"
     exec "sleep 5"
 
-    # Start three nodes
+    # Start six nodes
     exec "./tsp -p=200 -i=100000 -k=1 &"
     exec "sleep 1"
 
     exec "./tsp -p=200 -i=100000 -k=2 &"
     exec "sleep 1"
 
-    exec "./tsp -p=200 -i=100000 -k=3 &"
+    exec "./tsp -p=200 -i=100000 -k=3 --dt=0.01 --amplitude=1000.0 --base=8000.0 &"
     exec "sleep 1"
 
     exec "./tsp -p=200 -i=100000 -k=4 &"
@@ -36,7 +36,7 @@ task runTSP, "Runs the TSP example":
     exec "./tsp -p=200 -i=100000 -k=5 &"
     exec "sleep 1"
 
-    exec "./tsp -p=200 -i=100000 -k=6 &"
+    exec "./tsp -p=200 -i=100000 -k=6 --limitfactor=1.01 &"
 
 task cleanTSP, "Clean up after calculation":
     exec "rm -f tsp"
