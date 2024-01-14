@@ -36,9 +36,6 @@ proc getValue2(self: SudokuIndividual, col, row: uint8): uint8 =
 proc setValue2(self: var SudokuIndividual, col, row, val: uint8) =
     self.data2[(row * 9) + col] = val
 
-proc reset(self: var SudokuIndividual) =
-    self.data2 = self.data1
-
 proc checkPos(self: SudokuIndividual, col, row: uint8, inUse: var set[uint8]): uint8 =
     let n = self.getValue2(col, row)
     if (n == 0) or (n in inUse):
@@ -109,14 +106,6 @@ proc incIndex(i: uint8): uint8 =
     else:
         return i + 1
 
-proc hasFreePlace(self: SudokuIndividual): bool =
-    result = false
-
-    for v in self.data2:
-        if v == 0:
-            result = true
-            break
-
 proc randomEmptyPosition1(self: SudokuIndividual): (uint8, uint8) =
     var col = randomIndex()
     var row = randomIndex()
@@ -126,45 +115,6 @@ proc randomEmptyPosition1(self: SudokuIndividual): (uint8, uint8) =
         row = randomIndex()
 
     return (col, row)
-
-proc randomEmptyPosition2(self: SudokuIndividual): (uint8, uint8) =
-    var col = randomIndex()
-    var row = randomIndex()
-
-    while self.getValue2(col, row) != 0:
-        col = randomIndex()
-        row = randomIndex()
-
-    return (col, row)
-
-proc isValid(self: SudokuIndividual, col, row, n: uint8): bool =
-    for col2 in 0'u8..8:
-        if self.getValue1(col2, row) == n:
-            return false
-
-    for row2 in 0'u8..8:
-        if self.getValue1(col, row2) == n:
-            return false
-
-    let col2 = (col div 3) * 3
-    let row2 = (row div 3) * 3
-
-    for u in 0'u8..2:
-        for v in 0'u8..2:
-            if self.getValue1(col2 + u, row2 + v) == n:
-                return false
-
-    return true
-
-proc getValidNumber(self: SudokuIndividual, col, row: uint8): uint8 =
-    var numbers: seq[uint8] = @[1, 2, 3, 4, 5, 6, 7, 8, 9]
-    shuffle(numbers)
-
-    for n in numbers:
-        if self.isValid(col, row, n):
-            return n
-
-    return 0
 
 proc randomValue2(self: SudokuIndividual, col, row: uint8): uint8 =
     let c1 = decIndex(col)
