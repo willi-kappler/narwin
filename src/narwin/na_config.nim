@@ -32,6 +32,14 @@ type
         populationKind*: uint8
         operations*: seq[uint32]
 
+        # Population 3:
+        dt*: float64
+        amplitude*: float64
+        base*: float64
+
+        # Population 6:
+        limitFactor*: float64
+
         # Both:
         loadIndividual*: string
 
@@ -39,6 +47,7 @@ proc naShowHelpAndQuit*() =
     let path = getAppFilename()
     let name = splitPath(path)[1]
 
+    # Server:
     echo("Use --server to start in 'server mode' otherwise start in 'node mode':")
     echo(fmt("{name}: this starts in 'node mode' and tries to connect to the server"))
     echo(fmt("{name} --server: this starts in 'server mode' and waits for nodes to connect"))
@@ -49,10 +58,15 @@ proc naShowHelpAndQuit*() =
     echo("--sharebest [bool]: only share the best individual with the other nodes instead of randomly pick one (true)")
     # TODO: option for save new fitness
 
+    # Node:
     echo("-p [uint32]: population size (10)")
     echo("-i [uint32]: number of iterations (1000)")
     echo("-k [uint8]: population kind (0)")
     echo("--reset: before each run randomize the whole population (false)")
+    echo("-dt [float64]: Time step for population 3 (0.01)")
+    echo("-amplitude [float64]: Amplitude for population 3 (1.0)")
+    echo("-base [float64]: Base for population 3 (1.0)")
+    echo("-limitfactor [float64]: Factor for limit change for population 6 (1.01)")
 
     echo("--loadindividual [string]: loads the given individual into the population (node) or list of best (server)")
 
@@ -73,6 +87,11 @@ proc naConfigFromCmdLine*(): NAConfiguration =
     result.resetPopulation = false
     result.populationKind = 1
     result.operations = @[]
+
+    result.dt = 0.001
+    result.amplitude = 1.0
+    result.base = 1.0
+    result.limitFactor = 1.01
 
     result.loadIndividual = ""
 
@@ -105,6 +124,14 @@ proc naConfigFromCmdLine*(): NAConfiguration =
                 result.shareOnyBest = parseBool(cmdParser.val)
             elif cmdParser.key == "loadindividual":
                 result.loadIndividual = cmdParser.val
+            elif cmdParser.key == "dt":
+                result.dt = parseFloat(cmdParser.val)
+            elif cmdParser.key == "amplitude":
+                result.amplitude = parseFloat(cmdParser.val)
+            elif cmdParser.key == "base":
+                result.base = parseFloat(cmdParser.val)
+            elif cmdParser.key == "limitfactor":
+                result.limitFactor = parseFloat(cmdParser.val)
             else:
                 naShowHelpAndQuit()
         of cmdArgument:

@@ -68,6 +68,6 @@ proc naInitPopulationNodeDP6*(individual: NAIndividual, config: NAConfiguration)
     var population = naInitPopulation(individual, config, initPopulation)
 
     result = NAPopulationNodeDP6(population: population)
-    result.limitFactor = 1.01
+    result.limitFactor = config.limitFactor
 
 

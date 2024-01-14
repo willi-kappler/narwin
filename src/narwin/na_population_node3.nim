@@ -73,8 +73,8 @@ proc naInitPopulationNodeDP3*(individual: NAIndividual, config: NAConfiguration)
     var population = naInitPopulation(individual, config, initPopulation)
 
     result = NAPopulationNodeDP3(population: population)
-    result.dt = 0.001
-    result.amplitude = 1000.0
-    result.base = 8000.0
+    result.dt = config.dt
+    result.amplitude = config.amplitude
+    result.base = config.base
     result.currentBest = result.population.naClone(0)
 
