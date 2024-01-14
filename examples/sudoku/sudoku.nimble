@@ -20,7 +20,7 @@ task runSudoku, "Runs the Sudoku example":
     exec "./sudoku --server &"
     exec "sleep 5"
 
-    # Start six nodes
+    # Start seven nodes
     exec "./sudoku -p=200 -i=100000 -k=1 &"
     exec "sleep 1"
 
@@ -30,7 +30,7 @@ task runSudoku, "Runs the Sudoku example":
     exec "./sudoku -p=200 -i=100000 -k=2 &"
     exec "sleep 1"
 
-    exec "./sudoku -p=200 -i=100000 -k=3 &"
+    exec "./sudoku -p=200 -i=100000 -k=3 --dt=0.01 --amplitude=2.0 --base=2.0 &"
     exec "sleep 1"
 
     exec "./sudoku -p=200 -i=100000 -k=4 &"
@@ -39,8 +39,37 @@ task runSudoku, "Runs the Sudoku example":
     exec "./sudoku -p=200 -i=100000 -k=5 &"
     exec "sleep 1"
 
-    exec "./sudoku -p=200 -i=100000 -k=6 &"
+    exec "./sudoku -p=200 -i=100000 -k=6 --limitfactor=1.01 &"
+
+task runSudoku2, "Runs the Sudoku example":
+    #exec "nim c sudoku.nim"
+    exec "nim c -d:release sudoku.nim"
+    exec "./sudoku --server &"
+    exec "sleep 5"
+
+    # Start eight nodes
+    exec "./sudoku -p=200 -i=100000 -k=2 &"
     exec "sleep 1"
+
+    exec "./sudoku -p=200 -i=100000 -k=2 --reset &"
+    exec "sleep 1"
+
+    exec "./sudoku -p=200 -i=100000 -k=3 --dt=0.01 --amplitude=4.0 --base=4.0 &"
+    exec "sleep 1"
+
+    exec "./sudoku -p=200 -i=100000 -k=3 --dt=0.001 --amplitude=4.0 --base=4.0 &"
+    exec "sleep 1"
+
+    exec "./sudoku -p=200 -i=100000 -k=3 --dt=0.01 --amplitude=8.0 --base=8.0 &"
+    exec "sleep 1"
+
+    exec "./sudoku -p=200 -i=100000 -k=3 --dt=0.001 --amplitude=8.0 --base=8.0 &"
+    exec "sleep 1"
+
+    exec "./sudoku -p=200 -i=100000 -k=6 --limitfactor=1.01 &"
+    exec "sleep 1"
+
+    exec "./sudoku -p=200 -i=100000 -k=6 --limitfactor=1.001 &"
 
 task cleanSudoku, "Clean up after calculation":
     exec "rm -f sudoku"
