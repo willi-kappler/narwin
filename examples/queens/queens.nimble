@@ -20,11 +20,8 @@ task runQueens, "Runs the Queens example":
     exec "./queens --server &"
     exec "sleep 5"
 
-    # Start two nodes
-    exec "./queens -m=10 -p=200 -i=10000 -k=0 &"
-    exec "sleep 1"
-
-    exec "./queens -m=10 -p=200 -i=10000 -k=5 &"
+    # Start one nodes
+    exec "./queens -p=200 -i=10000 -k=1 &"
 
 task cleanQueens, "Clean up after calculation":
     exec "rm -f queens"
