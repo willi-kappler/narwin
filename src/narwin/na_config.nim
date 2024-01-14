@@ -42,6 +42,7 @@ type
 
         # Population 7:
         maxReset*: uint32
+        maxMutation*: uint32
 
 
         # Both:
@@ -72,6 +73,7 @@ proc naShowHelpAndQuit*() =
     echo("--base [float64]: Base for population 3 (1.0)")
     echo("--limitfactor [float64]: Factor for limit change for population 6 (1.01)")
     echo("--maxreset [uint32]: maxiumum number of iteration with the same fitness befor randomizing the whole population. For population 7 (100)")
+    echo("--maxmutation [uint32]: maxiumum number of mutations to try. For population 7 (100)")
 
     echo("--loadindividual [string]: loads the given individual into the population (node) or list of best (server)")
 
@@ -98,6 +100,7 @@ proc naConfigFromCmdLine*(): NAConfiguration =
     result.base = 1.0
     result.limitFactor = 1.01
     result.maxReset = 100
+    result.maxMutation = 10
 
     result.loadIndividual = ""
 
@@ -140,6 +143,8 @@ proc naConfigFromCmdLine*(): NAConfiguration =
                 result.limitFactor = parseFloat(cmdParser.val)
             elif cmdParser.key == "maxreset":
                 result.maxReset = uint32(parseUint(cmdParser.val))
+            elif cmdParser.key == "maxmutation":
+                result.maxMutation = uint32(parseUint(cmdParser.val))
             else:
                 naShowHelpAndQuit()
         of cmdArgument:
