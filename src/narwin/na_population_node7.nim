@@ -30,6 +30,7 @@ method ncProcessData(self: var NAPopulationNodeDP7, inputData: seq[byte]): seq[b
     var resetCounter: uint32 = 0
     var numOfResets: uint32 = 0
     var tmpIndividual: NAIndividual
+    var bestIndividual = self.population.naClone(0)
     self.prevBestFitness = 0.0
 
     block iterations:
@@ -61,15 +62,18 @@ method ncProcessData(self: var NAPopulationNodeDP7, inputData: seq[byte]): seq[b
                         if tmpIndividual <= self.population.targetFitness:
                             ncDebug(fmt("Early exit at i: {i}"))
                             break iterations
+                        elif tmpIndividual < bestIndividual:
+                            bestIndividual = tmpIndividual.naClone()
                     elif tmpIndividual < self.population[j]:
                         self.population[j] = tmpIndividual
 
     ncDebug(fmt("Number of resets: {numOfResets}"))
+    ncDebug(fmt("Best individual: {bestIndividual.fitness}"))
     # Find the best and the worst individual at the end:
     self.population.findBestAndWorstIndividual()
     ncDebug(fmt("Best fitness: {self.population[0].fitness}, worst fitness: {self.population.worstFitness}"))
 
-    return self.population[0].naToBytes()
+    return bestIndividual.naToBytes()
 
 proc naInitPopulationNodeDP7*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP7 =
     ncDebug("naInitPopulationNodeDP7")
