@@ -38,20 +38,22 @@ method ncProcessData(self: var NAPopulationNodeDP6, inputData: seq[byte]): seq[b
 
             for j in 0..<self.population.populationSize:
                 tmpIndividual = self.population.naClone(j)
-                tmpIndividual.naMutate(self.population.operations)
-                tmpIndividual.naCalculateFitness()
 
-                if tmpIndividual < fitnessLimit:
-                    self.population[j] = tmpIndividual
-                elif tmpIndividual < self.population[j]:
-                    self.population[j] = tmpIndividual
+                for _ in 0..<self.population.numOfMutations:
+                    tmpIndividual.naMutate(self.population.operations)
+                    tmpIndividual.naCalculateFitness()
 
-                if tmpIndividual < self.population[0].fitness:
-                    self.population[0] = tmpIndividual
+                    if tmpIndividual < fitnessLimit:
+                        self.population[j] = tmpIndividual
+                    elif tmpIndividual < self.population[j]:
+                        self.population[j] = tmpIndividual
 
-                    if tmpIndividual <= self.population.targetFitness:
-                        ncDebug(fmt("Early exit at i: {i}, j: {j}"))
-                        break iterations
+                    if tmpIndividual < self.population[0]:
+                        self.population[0] = tmpIndividual
+
+                        if tmpIndividual <= self.population.targetFitness:
+                            ncDebug(fmt("Early exit at i: {i}, j: {j}"))
+                            break iterations
 
                 fitnessLimit = fitnessLimit * self.limitFactor
 

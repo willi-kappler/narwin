@@ -27,6 +27,7 @@ type
         population*: seq[NAIndividual]
         populationSize*: uint32
         numOfIterations*: uint32
+        numOfMutations*: uint32
         acceptNewBest*: bool
         resetPopulation*: bool
         targetFitness*: float64
@@ -67,13 +68,13 @@ proc naSort*(self: var NAPopulation) =
         return cmp(a.fitness, b.fitness)
 
 proc naResetPopulation*(self: var NAPopulation) =
-    ncDebug("Reset the whole population to random values")
     for i in 0..<self.populationSize:
         self.population[i].naRandomize()
         self.population[i].naCalculateFitness()
 
 proc naResetOrAcepptBest*(self: var NAPopulation, inputData: seq[byte]) =
     if self.resetPopulation:
+        ncDebug("Reset the whole population to random values")
         self.naResetPopulation()
     elif self.acceptNewBest:
         self.population[0].naFromBytes(inputData)
@@ -95,18 +96,21 @@ proc naLoadIntoPosition*(self: var NAPopulation, fileName: string, index: int) =
 proc naInitPopulation*(individual: NAIndividual, config: NAConfiguration, initPopulation: seq[NAIndividual]): NAPopulation =
     ncDebug(fmt("Population size: {config.populationSize}"))
     ncDebug(fmt("Number of iterations: {config.numOfIterations}"))
+    ncDebug(fmt("Number of mutations: {config.numOfMutations}"))
     ncDebug(fmt("Target fitness: {config.targetFitness}"))
     ncDebug(fmt("Reset population: {config.resetPopulation}"))
     ncDebug(fmt("Accept new best from server: {config.acceptNewBest}"))
 
     assert config.populationSize > 1
     assert config.numOfIterations > 0
+    assert config.numOfMutations > 0
 
     # Init random number generator
     randomize()
 
     result.populationSize = config.populationSize
     result.numOfIterations = config.numOfIterations
+    result.numOfMutations = config.numOfMutations
     result.targetFitness = config.targetFitness
 
     if config.resetPopulation:

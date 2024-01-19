@@ -23,12 +23,12 @@ type
         population: NAPopulation
         maxReset: uint32
         prevBestFitness: float64
-        maxMutation: uint32
 
 method ncProcessData(self: var NAPopulationNodeDP7, inputData: seq[byte]): seq[byte] =
     ncDebug("ncProcessData()", 2)
 
     var resetCounter: uint32 = 0
+    var numOfResets: uint32 = 0
     var tmpIndividual: NAIndividual
     self.prevBestFitness = 0.0
 
@@ -40,8 +40,8 @@ method ncProcessData(self: var NAPopulationNodeDP7, inputData: seq[byte]): seq[b
             if self.prevBestFitness == self.population[0].fitness:
                 inc(resetCounter)
                 if resetCounter >= self.maxReset:
-                    ncDebug(fmt("Reset population, stuck at fitness: {self.prevBestFitness}"))
                     resetCounter = 0
+                    inc(numOfResets)
                     self.prevBestFitness = 0.0
                     self.population.naResetPopulation()
             else:
@@ -51,7 +51,7 @@ method ncProcessData(self: var NAPopulationNodeDP7, inputData: seq[byte]): seq[b
             for j in 0..<self.population.populationSize:
                 tmpIndividual = self.population.naClone(j)
 
-                for _ in 0..<self.maxMutation:
+                for _ in 0..<self.population.numOfMutations:
                     tmpIndividual.naMutate(self.population.operations)
                     tmpIndividual.naCalculateFitness()
 
@@ -64,6 +64,7 @@ method ncProcessData(self: var NAPopulationNodeDP7, inputData: seq[byte]): seq[b
                     elif tmpIndividual < self.population[j]:
                         self.population[j] = tmpIndividual
 
+    ncDebug(fmt("Number of resets: {numOfResets}"))
     # Find the best and the worst individual at the end:
     self.population.findBestAndWorstIndividual()
     ncDebug(fmt("Best fitness: {self.population[0].fitness}, worst fitness: {self.population.worstFitness}"))
@@ -76,14 +77,10 @@ proc naInitPopulationNodeDP7*(individual: NAIndividual, config: NAConfiguration)
     assert config.maxReset > 10
     ncDebug(fmt("Max reset: {config.maxReset}"))
 
-    assert config.maxMutation > 1
-    ncDebug(fmt("Max mutation: {config.maxMutation}"))
-
     let initPopulation = newSeq[NAIndividual](config.populationSize)
     var population = naInitPopulation(individual, config, initPopulation)
 
     result = NAPopulationNodeDP7(population: population)
     result.maxReset = config.maxReset
     result.prevBestFitness = 0.0
-    result.maxMutation = config.maxMutation
 

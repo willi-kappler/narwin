@@ -28,6 +28,7 @@ type
         resetPopulation: bool
         populationSize: uint32
         numOfIterations: uint32
+        numOfMutations: uint32
         targetFitness: float64
         operations: seq[uint32]
 
@@ -50,19 +51,21 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
                 let index = rand(int(self.populationSize) - 1)
 
                 tmpIndividual = self.population[index].naClone()
-                tmpIndividual.naMutate(self.operations)
-                tmpIndividual.naCalculateFitness()
 
-                # Move the best one to the first position:
-                if tmpIndividual < self.population[0]:
-                    self.population.addFirst(tmpIndividual)
+                for _ in 0..<self.numOfMutations:
+                    tmpIndividual.naMutate(self.operations)
+                    tmpIndividual.naCalculateFitness()
 
-                    if tmpIndividual <= self.targetFitness:
-                        ncDebug(fmt("Early exit at i: {i}"))
-                        break iterations
+                    # Move the best one to the first position:
+                    if tmpIndividual < self.population[0]:
+                        self.population.addFirst(tmpIndividual)
 
-                    # Remove last (worst) individual:
-                    self.population.shrink(fromLast = 1)
+                        if tmpIndividual <= self.targetFitness:
+                            ncDebug(fmt("Early exit at i: {i}"))
+                            break iterations
+
+                        # Remove last (worst) individual:
+                        self.population.shrink(fromLast = 1)
 
     ncDebug(fmt("Best fitness: {self.population[0].fitness}, worst fitness: {self.population[^1].fitness}"))
 
@@ -76,11 +79,13 @@ proc naInitPopulationNodeDP5*(individual: NAIndividual, config: NAConfiguration)
 
     assert config.populationSize > 1
     assert config.numOfIterations > 0
+    assert config.numOfMutations > 0
 
     result = NAPopulationNodeDP5()
 
     result.populationSize = config.populationSize
     result.numOfIterations = config.numOfIterations
+    result.numOfMutations = config.numOfMutations
     result.targetFitness = config.targetFitness
     result.operations = config.operations
 

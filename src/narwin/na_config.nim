@@ -27,6 +27,7 @@ type
         # Node:
         populationSize*: uint32
         numOfIterations*: uint32
+        numOfMutations*: uint32
         acceptNewBest*: bool
         resetPopulation*: bool
         populationKind*: uint8
@@ -42,7 +43,6 @@ type
 
         # Population 7:
         maxReset*: uint32
-        maxMutation*: uint32
 
 
         # Both:
@@ -66,6 +66,7 @@ proc naShowHelpAndQuit*() =
     # Node:
     echo("-p [uint32]: population size (10)")
     echo("-i [uint32]: number of iterations (1000)")
+    echo("-m [uint32]: number of mutatons (10)")
     echo("-k [uint8]: population kind (0)")
     echo("--reset: before each run randomize the whole population (false)")
     echo("--dt [float64]: Time step for population 3 (0.01)")
@@ -90,6 +91,7 @@ proc naConfigFromCmdLine*(): NAConfiguration =
 
     result.populationSize = 10
     result.numOfIterations = 1000
+    result.numOfMutations = 10
     result.acceptNewBest = true
     result.resetPopulation = false
     result.populationKind = 1
@@ -100,7 +102,6 @@ proc naConfigFromCmdLine*(): NAConfiguration =
     result.base = 1.0
     result.limitFactor = 1.01
     result.maxReset = 100
-    result.maxMutation = 10
 
     result.loadIndividual = ""
 
@@ -121,6 +122,8 @@ proc naConfigFromCmdLine*(): NAConfiguration =
                 result.populationSize = uint32(parseUint(cmdParser.val))
             elif cmdParser.key == "i":
                 result.numOfIterations = uint32(parseUint(cmdParser.val))
+            elif cmdParser.key == "m":
+                result.numOfMutations = uint32(parseUint(cmdParser.val))
             elif cmdParser.key == "k":
                 result.populationKind = uint8(parseUint(cmdParser.val))
             elif cmdParser.key == "reset":
@@ -143,8 +146,6 @@ proc naConfigFromCmdLine*(): NAConfiguration =
                 result.limitFactor = parseFloat(cmdParser.val)
             elif cmdParser.key == "maxreset":
                 result.maxReset = uint32(parseUint(cmdParser.val))
-            elif cmdParser.key == "maxmutation":
-                result.maxMutation = uint32(parseUint(cmdParser.val))
             else:
                 naShowHelpAndQuit()
         of cmdArgument:
