@@ -88,11 +88,11 @@ method ncCollectData(self: var NAPopulationServerDP, n: NCNodeID, data: seq[byte
         if newFitness < bestFitness:
             ncInfo(fmt("Current best fitness: {bestFitness}"))
             ncInfo(fmt("New best fitness: {newFitness}, node: {n}"))
+            ncDebug(fmt("Worst fitness: {self.population[last].fitness}"))
 
             if self.saveNewFitness:
                 naSaveData(fmt("{self.newFitnessCounter}_{self.resultFilename}"), self.population[0])
-
-            inc(self.newFitnessCounter)
+                inc(self.newFitnessCounter)
 
 method ncMaybeDeadNode(self: var NAPopulationServerDP, n: NCNodeID) =
     # Not needed for narwin
