@@ -76,6 +76,29 @@ proc naCheckPermutations(self: var TSPIndividual, indices: var seq[int]) =
         for i in 0..numOfValues:
             self.data[bestPermutation[i]] = values[i]
 
+proc findOptimumForPosition(self: var TSPIndividual, index: int) =
+    var bestFitness: float64 = self.fitness
+    var bestIndex: int = index
+
+    for i in 0..self.data.high:
+        if i != index:
+            # Make a change:
+            swap(self.data[i], self.data[index])
+
+            # Recalculate fitness:
+            let fitness = self.naCalculateFitness2()
+
+            # Undo the change:
+            swap(self.data[i], self.data[index])
+
+            if fitness < bestFitness:
+                bestIndex = i
+                bestFitness = fitness
+
+    # Now do the change for real:
+    if bestIndex != index:
+        swap(self.data[bestIndex], self.data[index])
+
 method naMutate*(self: var TSPIndividual, operations: seq[uint32]) =
     let last = self.data.high
     var i = rand(last)
@@ -89,7 +112,7 @@ method naMutate*(self: var TSPIndividual, operations: seq[uint32]) =
         swap(i, j)
 
     # Choose a random mutation operation
-    const maxOperation = 7
+    const maxOperation = 8
     var operation: uint32
     var probablility = 100
 
@@ -173,7 +196,7 @@ method naMutate*(self: var TSPIndividual, operations: seq[uint32]) =
             self.naCheckPermutations(indices)
         else:
             swap(self.data[i], self.data[j])
-    of maxOperation:
+    of 7:
         if rand(probablility) == 0:
             # This is CPU intensive, so don't do it too often.
             i = rand(last - 5)
@@ -183,6 +206,11 @@ method naMutate*(self: var TSPIndividual, operations: seq[uint32]) =
             self.naCheckPermutations(indices)
         else:
             swap(self.data[i], self.data[j])
+    of maxOperation:
+        if rand(probablility) == 0:
+            # This is CPU intensive, so don't do it too often.
+            i = rand(last)
+            self.findOptimumForPosition(i)
     else:
         raise newException(ValueError, fmt("Unknown mutation operation: {operation}"))
 
