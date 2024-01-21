@@ -42,8 +42,13 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
             self.population[i].naRandomize()
             self.population[i].naCalculateFitness()
     elif self.acceptNewBest:
-        self.population[0].naFromBytes(inputData)
-        ncDebug(fmt("Accept individual from server with fitness: {self.population[0].fitness}"))
+        tmpIndividual = self.population[0].naClone()
+        tmpIndividual.naFromBytes(inputData)
+        if tmpIndividual < self.population[0]:
+            self.population.addFirst(tmpIndividual)
+            ncDebug(fmt("Accept individual from server with fitness: {tmpIndividual.fitness}"))
+            # Remove last (worst) individual:
+            self.population.shrink(fromLast = 1)
 
     block iterations:
         for i in 0..<self.numOfIterations:
@@ -73,7 +78,8 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
 
 
 proc naInitPopulationNodeDP5*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP5 =
-    ncDebug("naInitPopulationNodeDP5")
+    ncInfo("naInitPopulationNodeDP5")
+    ncInfo("Push the best on onto the front of the queue. Remove the last (worst) one.")
 
     randomize()
 
