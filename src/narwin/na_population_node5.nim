@@ -38,6 +38,7 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
     var tmpIndividual: NAIndividual
 
     if self.resetPopulation:
+        ncDebug("Reset the whole population to a random state.")
         for i in 0..<self.populationSize:
             self.population[i].naRandomize()
             self.population[i].naCalculateFitness()
@@ -45,8 +46,9 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
         tmpIndividual = self.population[0].naClone()
         tmpIndividual.naFromBytes(inputData)
         if tmpIndividual < self.population[0]:
-            self.population.addFirst(tmpIndividual)
+            self.population.addFirst(tmpIndividual.naClone())
             ncDebug(fmt("Accept individual from server with fitness: {tmpIndividual.fitness}"))
+            ncDebug(fmt("Previous fitness: {self.population[1].fitness}"))
             # Remove last (worst) individual:
             self.population.shrink(fromLast = 1)
 
@@ -63,7 +65,9 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
 
                     # Move the best one to the first position:
                     if tmpIndividual < self.population[0]:
-                        self.population.addFirst(tmpIndividual)
+                        self.population.addFirst(tmpIndividual.naClone())
+
+                        #ncDebug(fmt("pop[0]: {self.population[0].fitness}, pop[1]: {self.population[1].fitness}"))
 
                         if tmpIndividual <= self.targetFitness:
                             ncDebug(fmt("Early exit at i: {i}"))
