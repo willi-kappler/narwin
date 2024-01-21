@@ -60,8 +60,7 @@ proc naShowHelpAndQuit*() =
     echo("--file [string]: output filename for the result (optimal solution)")
     echo("--savenewfitness [bool]: If set everytime a new best fintess is found it will be saved (true)")
     echo("--samefitness: allow individuals with the same fitness in the global population (false)")
-    echo("--sharebest [bool]: only share the best individual with the other nodes instead of randomly pick one (true)")
-    # TODO: option for save new fitness
+    echo("--sharebest [bool]: only share the best individual with the other nodes instead of randomly pick one (false)")
 
     # Node:
     echo("-p [uint32]: population size (10)")
@@ -87,7 +86,7 @@ proc naConfigFromCmdLine*(): NAConfiguration =
     result.resultFilename = "best_result.json"
     result.saveNewFitness = true
     result.sameFitness = false
-    result.shareOnyBest = true
+    result.shareOnyBest = false
 
     result.populationSize = 10
     result.numOfIterations = 1000
@@ -133,7 +132,7 @@ proc naConfigFromCmdLine*(): NAConfiguration =
             elif cmdParser.key == "samefitness":
                 result.sameFitness = true
             elif cmdParser.key == "sharebest":
-                result.shareOnyBest = parseBool(cmdParser.val)
+                result.shareOnyBest = true
             elif cmdParser.key == "loadindividual":
                 result.loadIndividual = cmdParser.val
             elif cmdParser.key == "dt":
