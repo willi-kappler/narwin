@@ -76,7 +76,8 @@ method ncProcessData(self: var NAPopulationNodeDP7, inputData: seq[byte]): seq[b
     return bestIndividual.naToBytes()
 
 proc naInitPopulationNodeDP7*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP7 =
-    ncDebug("naInitPopulationNodeDP7")
+    ncInfo("naInitPopulationNodeDP7")
+    ncInfo("The best individual is at index 0, if stuck with the same fitness for too long, reset the whole population.")
 
     assert config.maxReset > 10
     ncDebug(fmt("Max reset: {config.maxReset}"))
