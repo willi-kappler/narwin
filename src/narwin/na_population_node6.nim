@@ -64,7 +64,8 @@ method ncProcessData(self: var NAPopulationNodeDP6, inputData: seq[byte]): seq[b
     return self.population[0].naToBytes()
 
 proc naInitPopulationNodeDP6*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP6 =
-    ncDebug("naInitPopulationNodeDP6")
+    ncInfo("naInitPopulationNodeDP6")
+    ncInfo("Increase the limit factor by index, best individual is at index 0.")
 
     assert config.limitFactor > 1.0
     ncDebug(fmt("Limit factor: {config.limitFactor}"))
