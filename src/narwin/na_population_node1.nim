@@ -56,7 +56,9 @@ method ncProcessData(self: var NAPopulationNodeDP1, inputData: seq[byte]): seq[b
     return self.population[0].naToBytes()
 
 proc naInitPopulationNodeDP1*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP1 =
-    ncDebug("naInitPopulationNodeDP1")
+    ncInfo("naInitPopulationNodeDP1")
+    ncInfo("Clone population and mutate individuals in place. Then sort population by fitness.")
+    ncInfo("The worst individuals are overwritten.")
 
     let initPopulation = newSeq[NAIndividual](2 * config.populationSize)
     var population = naInitPopulation(individual, config, initPopulation)
