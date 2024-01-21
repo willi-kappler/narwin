@@ -69,7 +69,8 @@ method ncProcessData(self: var NAPopulationNodeDP3, inputData: seq[byte]): seq[b
     return self.currentBest.naToBytes()
 
 proc naInitPopulationNodeDP3*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP3 =
-    ncDebug("naInitPopulationNodeDP3")
+    ncInfo("naInitPopulationNodeDP3")
+    ncInfo("The fitness limit is changed usind a sine wave.")
 
     assert config.dt > 0.0
     assert config.amplitude > 0.0
