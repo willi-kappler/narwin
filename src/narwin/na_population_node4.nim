@@ -73,7 +73,10 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
     return self.population[self.population.bestIndex].naToBytes()
 
 proc naInitPopulationNodeDP4*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP4 =
-    ncDebug("naInitPopulationNodeDP4")
+    ncInfo("naInitPopulationNodeDP4")
+    ncInfo("Use three populations, the first one mutates a clone and keeps the best one.")
+    ncInfo("The second one resets at each iteration.")
+    ncInfo("The third one resets at the beginning of the function call before the iteration begins.")
 
     let initPopulation = newSeq[NAIndividual](config.populationSize)
     var population = naInitPopulation(individual, config, initPopulation)
