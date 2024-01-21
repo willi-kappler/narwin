@@ -81,6 +81,13 @@ proc naInitPopulationNodeDP5*(individual: NAIndividual, config: NAConfiguration)
     ncInfo("naInitPopulationNodeDP5")
     ncInfo("Push the best on onto the front of the queue. Remove the last (worst) one.")
 
+    ncDebug(fmt("Population size: {config.populationSize}"))
+    ncDebug(fmt("Number of iterations: {config.numOfIterations}"))
+    ncDebug(fmt("Number of mutations: {config.numOfMutations}"))
+    ncDebug(fmt("Target fitness: {config.targetFitness}"))
+    ncDebug(fmt("Reset population: {config.resetPopulation}"))
+    ncDebug(fmt("Accept new best from server: {config.acceptNewBest}"))
+
     randomize()
 
     assert config.populationSize > 1
