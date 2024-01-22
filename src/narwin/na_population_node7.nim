@@ -22,34 +22,36 @@ type
     NAPopulationNodeDP7 = ref object of NCNodeDataProcessor
         population: NAPopulation
         maxReset: uint32
-        prevBestFitness: float64
+        individualCounter: seq[uint32]
+        individualFitness: seq[float64]
 
 method ncProcessData(self: var NAPopulationNodeDP7, inputData: seq[byte]): seq[byte] =
     ncDebug("ncProcessData()", 2)
 
-    var resetCounter: uint32 = 0
-    var numOfResets: uint32 = 0
     var tmpIndividual: NAIndividual
     var bestIndividual = self.population.naClone(0)
-    self.prevBestFitness = 0.0
+
+    for i in 0..<self.population.populationSize:
+        self.individualCounter[i] = 0
+        self.individualFitness[i] = self.population[i].fitness
 
     block iterations:
         for i in 0..<self.population.numOfIterations:
-            # Check if the best fitness hasn't change.
-            # If yes it seems this individual is stuck in a local minimum.
-            # Reset the whole population then.
-            if self.prevBestFitness == self.population[0].fitness:
-                inc(resetCounter)
-                if resetCounter >= self.maxReset:
-                    resetCounter = 0
-                    inc(numOfResets)
-                    self.prevBestFitness = 0.0
-                    self.population.naResetPopulation()
-            else:
-                self.prevBestFitness = self.population[0].fitness
-                resetCounter = 0
-
             for j in 0..<self.population.populationSize:
+                # Check if the current fitness hasn't changes.
+                # If it is still the same reset the individual
+                # after the counter is up to the maximum.
+                if self.population[j].fitness == self.individualFitness[j]:
+                    inc(self.individualCounter[j])
+                    if self.individualCounter[j] > self.maxReset:
+                        self.individualCounter[j] = 0
+                        self.individualFitness[j] = 0.0
+                        self.population[j].naRandomize()
+                        self.population[j].naCalculateFitness()
+                else:
+                    self.individualCounter[j] = 0
+                    self.individualFitness[j] = self.population[j].fitness
+
                 tmpIndividual = self.population.naClone(j)
 
                 for _ in 0..<self.population.numOfMutations:
@@ -67,7 +69,6 @@ method ncProcessData(self: var NAPopulationNodeDP7, inputData: seq[byte]): seq[b
                     elif tmpIndividual < self.population[j]:
                         self.population[j] = tmpIndividual
 
-    ncDebug(fmt("Number of resets: {numOfResets}"))
     ncDebug(fmt("Best individual: {bestIndividual.fitness}"))
     # Find the best and the worst individual at the end:
     self.population.findBestAndWorstIndividual()
@@ -77,7 +78,7 @@ method ncProcessData(self: var NAPopulationNodeDP7, inputData: seq[byte]): seq[b
 
 proc naInitPopulationNodeDP7*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP7 =
     ncInfo("naInitPopulationNodeDP7")
-    ncInfo("The best individual is at index 0, if stuck with the same fitness for too long, reset the whole population.")
+    ncInfo("The best individual is at index 0, if stuck with the same fitness for too long, each individual will be reset individually.")
 
     assert config.maxReset > 10
     ncDebug(fmt("Max reset: {config.maxReset}"))
@@ -87,5 +88,11 @@ proc naInitPopulationNodeDP7*(individual: NAIndividual, config: NAConfiguration)
 
     result = NAPopulationNodeDP7(population: population)
     result.maxReset = config.maxReset
-    result.prevBestFitness = 0.0
+
+    result.individualCounter = newSeq[uint32](config.populationSize)
+    result.individualFitness = newSeq[float64](config.populationSize)
+
+    for i in 0..<config.populationSize:
+        result.individualCounter[i] = 0
+        result.individualFitness[i] = 0.0
 
