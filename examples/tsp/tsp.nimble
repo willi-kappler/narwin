@@ -167,16 +167,16 @@ task runTSP7, "Runs the TSP example":
     exec "sleep 5"
 
     # Start some nodes:
-    exec "./tsp -p=200 -i=100000 -k=7 --maxreset=100 &"
+    exec "./tsp -p=200 -i=100000 -k=7 --maxreset=10000 -m=10 &"
     exec "sleep 1"
 
-    exec "./tsp -p=200 -i=100000 -k=7 --maxreset=100 -m=20 &"
+    exec "./tsp -p=200 -i=200000 -k=7 --maxreset=20000 -m=10 &"
     exec "sleep 1"
 
-    exec "./tsp -p=200 -i=100000 -k=7 --maxreset=1000 &"
+    exec "./tsp -p=200 -i=300000 -k=7 --maxreset=30000 -m=10 &"
     exec "sleep 1"
 
-    exec "./tsp -p=200 -i=100000 -k=7 --maxreset=10000 &"
+    exec "./tsp -p=200 -i=400000 -k=7 --maxreset=40000 -m=10 &"
 
 task cleanTSP, "Clean up after calculation":
     exec "rm -f tsp"
