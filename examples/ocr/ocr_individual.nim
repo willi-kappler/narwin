@@ -24,18 +24,65 @@ import ../../src/narwin
 type
     OCRIndividual* = ref object of NAIndividual
         data: bool
+        line1: string
+        line2: string
+
+const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 "
 
 method naMutate*(self: var OCRIndividual, operations: seq[uint32]) =
-    discard
+    const maxOperation: int = 7
+
+    let l1 = self.line1.high
+    let l2 = self.line2.high
+    let l3 = chars.high
+
+    let operation = rand(maxOperation)
+
+    case operation
+    of 0:
+        # Change on char at line 1
+        let i = rand(l1)
+        let c = rand(l3)
+        self.line1[i] = chars[c]
+    of 1:
+        # Change on char at line 2
+        let i = rand(l2)
+        let c = rand(l3)
+        self.line2[i] = chars[c]
+    of 2:
+        # Add one char at line 1
+        discard
+    of 3:
+        # Add one char at line 2
+        discard
+    of 4:
+        # Remove one char at line 1
+        discard
+    of 5:
+        # Remove one char at line 2
+        discard
+    of 6:
+        # Swap two chars at line 1
+        discard
+    of maxOperation:
+        # Swap two chars at line 2
+        discard
+    else:
+        raise newException(ValueError, fmt("Unknown mutation operation: {operation}"))
 
 method naRandomize*(self: var OCRIndividual) =
-    discard
+    let l1 = rand(8) + 2
+    let l2 = rand(8) + 2
 
 method naCalculateFitness*(self: var OCRIndividual) =
     discard
 
 method naClone*(self: OCRIndividual): NAIndividual =
-    result = OCRIndividual(data: self.data)
+    result = OCRIndividual(
+        data: self.data,
+        line1: self.line1,
+        line2: self.line2
+    )
     result.fitness = self.fitness
 
 method naToBytes*(self: OCRIndividual): seq[byte] =
@@ -52,4 +99,6 @@ method naFromJSON*(self: OCRIndividual, data: JsonNode): NAIndividual =
 
 proc loadImage*(fileName: string): OCRIndividual =
     result = OCRIndividual(data: true)
+    result.line1 = ""
+    result.line2 = ""
 
