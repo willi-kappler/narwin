@@ -47,7 +47,13 @@ task runTSPAll, "Runs the TSP example":
     exec "./tsp -p=200 -i=100000 -k=1 &"
     exec "sleep 1"
 
+    exec "./tsp -p=200 -i=100000 -k=1 -reset &"
+    exec "sleep 1"
+
     exec "./tsp -p=200 -i=10000 -k=2 &"
+    exec "sleep 1"
+
+    exec "./tsp -p=200 -i=10000 -k=2 --reset &"
     exec "sleep 1"
 
     exec "./tsp -p=200 -i=10000 -k=3 --dt=0.001 --amplitude=1000.0 --base=8000.0 &"
@@ -62,7 +68,7 @@ task runTSPAll, "Runs the TSP example":
     exec "./tsp -p=200 -i=10000 -k=6 --limitfactor=1.01 &"
     exec "sleep 1"
 
-    exec "./tsp -p=200 -i=10000 -k=7 --maxreset=1000 &"
+    exec "./tsp -p=200 -i=100000 -k=7 --maxreset=10000 &"
 
 task runTSP1, "Runs the TSP example":
     # Start the server:
