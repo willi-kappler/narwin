@@ -25,7 +25,6 @@ type
         dt: float64
         amplitude: float64
         base: float64
-        currentBest: NAIndividual
 
 method ncProcessData(self: var NAPopulationNodeDP3, inputData: seq[byte]): seq[byte] =
     ncDebug("ncProcessData()", 2)
@@ -33,6 +32,7 @@ method ncProcessData(self: var NAPopulationNodeDP3, inputData: seq[byte]): seq[b
     var tmpIndividual: NAIndividual
     var fitnessLimit: float64
     var t: float64 = 0.0
+    var currentBest = self.population.naClone(0)
 
     self.population.naResetOrAcepptBest(inputData)
 
@@ -52,8 +52,8 @@ method ncProcessData(self: var NAPopulationNodeDP3, inputData: seq[byte]): seq[b
                     elif tmpIndividual < self.population[j]:
                         self.population[j] = tmpIndividual
 
-                    if tmpIndividual < self.currentBest:
-                        self.currentBest = tmpIndividual.naClone()
+                    if tmpIndividual < currentBest:
+                        currentBest = tmpIndividual.naClone()
 
                         if tmpIndividual <= self.population.targetFitness:
                             ncDebug(fmt("Early exit at i: {i}"))
@@ -61,16 +61,16 @@ method ncProcessData(self: var NAPopulationNodeDP3, inputData: seq[byte]): seq[b
 
             t = t + self.dt
 
-    ncDebug(fmt("Current best: {self.currentBest.fitness}"))
+    ncDebug(fmt("Current best: {currentBest.fitness}"))
     # Find the best and the worst individual at the end:
     self.population.findBestAndWorstIndividual()
     ncDebug(fmt("Best fitness: {self.population.bestFitness}, worst fitness: {self.population.worstFitness}"))
 
-    return self.currentBest.naToBytes()
+    return currentBest.naToBytes()
 
 proc naInitPopulationNodeDP3*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP3 =
     ncInfo("naInitPopulationNodeDP3")
-    ncInfo("The fitness limit is changed usind a sine wave.")
+    ncInfo("The fitness limit is changed using a sine wave.")
 
     assert config.dt > 0.0
     assert config.amplitude > 0.0
@@ -87,5 +87,4 @@ proc naInitPopulationNodeDP3*(individual: NAIndividual, config: NAConfiguration)
     result.dt = config.dt
     result.amplitude = config.amplitude
     result.base = config.base
-    result.currentBest = result.population.naClone(0)
 
