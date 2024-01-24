@@ -47,7 +47,7 @@ task runTSPAll, "Runs the TSP example":
     exec "./tsp -p=200 -i=100000 -k=1 &"
     exec "sleep 1"
 
-    exec "./tsp -p=200 -i=100000 -k=1 -reset &"
+    exec "./tsp -p=200 -i=100000 -k=1 --reset &"
     exec "sleep 1"
 
     exec "./tsp -p=200 -i=10000 -k=2 &"
