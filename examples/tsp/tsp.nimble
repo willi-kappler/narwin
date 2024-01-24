@@ -18,7 +18,7 @@ task runTSP, "Runs the TSP example":
     # Start the server:
     #exec "nim c tsp.nim"
     exec "nim c -d:release tsp.nim"
-    exec "./tsp --server -t=8000.0 &"
+    exec "./tsp --server -p=200 -t=8000.0 &"
     exec "sleep 5"
 
     # Start some nodes:
@@ -40,7 +40,7 @@ task runTSP, "Runs the TSP example":
 task runTSPAll, "Runs the TSP example":
     # Start the server:
     exec "nim c -d:release tsp.nim"
-    exec "./tsp --server -t=0.0 &"
+    exec "./tsp --server -p=200 -t=0.0 &"
     exec "sleep 5"
 
     # Start some nodes:
@@ -85,7 +85,7 @@ task runTSPAll, "Runs the TSP example":
 task runTSP1, "Runs the TSP example":
     # Start the server:
     exec "nim c -d:release tsp.nim"
-    exec "./tsp --server -t=0.0 &"
+    exec "./tsp --server -p=200 -t=0.0 &"
     exec "sleep 5"
 
     # Start some nodes:
@@ -103,7 +103,7 @@ task runTSP1, "Runs the TSP example":
 task runTSP3, "Runs the TSP example":
     # Start the server:
     exec "nim c -d:release tsp.nim"
-    exec "./tsp --server -t=0.0 &"
+    exec "./tsp --server -p=200 -t=0.0 &"
     exec "sleep 5"
 
     # Start some nodes:
@@ -133,7 +133,7 @@ task runTSP3, "Runs the TSP example":
 task runTSP4, "Runs the TSP example":
     # Start the server:
     exec "nim c -d:release tsp.nim"
-    exec "./tsp --server -t=0.0 &"
+    exec "./tsp --server -p=200 -t=0.0 &"
     exec "sleep 5"
 
     # Start some nodes:
@@ -145,7 +145,7 @@ task runTSP4, "Runs the TSP example":
 task runTSP5, "Runs the TSP example":
     # Start the server:
     exec "nim c -d:release tsp.nim"
-    exec "./tsp --server -t=0.0 &"
+    exec "./tsp --server -p=200 -t=0.0 &"
     exec "sleep 5"
 
     # Start some nodes:
@@ -163,7 +163,7 @@ task runTSP5, "Runs the TSP example":
 task runTSP6, "Runs the TSP example":
     # Start the server:
     exec "nim c -d:release tsp.nim"
-    exec "./tsp --server -t=0.0 &"
+    exec "./tsp --server -p=200 -t=0.0 &"
     exec "sleep 5"
 
     # Start some nodes:
@@ -181,7 +181,7 @@ task runTSP6, "Runs the TSP example":
 task runTSP7, "Runs the TSP example":
     # Start the server:
     exec "nim c -d:release tsp.nim"
-    exec "./tsp --server -t=0.0 &"
+    exec "./tsp --server -p=200 -t=0.0 &"
     exec "sleep 5"
 
     # Start some nodes:
