@@ -82,7 +82,8 @@ method naClone*(self: OCRIndividual): NAIndividual =
     result = OCRIndividual(
         data: self.data,
         line1: self.line1,
-        line2: self.line2
+        line2: self.line2,
+        operations: self.operations
     )
     result.fitness = self.fitness
 

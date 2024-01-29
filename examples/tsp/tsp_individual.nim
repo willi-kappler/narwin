@@ -222,7 +222,7 @@ method naCalculateFitness*(self: var TSPIndividual) =
     self.fitness = self.naCalculateFitness2()
 
 method naClone*(self: TSPIndividual): NAIndividual =
-    result = TSPIndividual(data: self.data)
+    result = TSPIndividual(data: self.data, operations: self.operations)
     result.fitness = self.fitness
 
 method naToBytes*(self: TSPIndividual): seq[byte] =

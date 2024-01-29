@@ -285,7 +285,11 @@ method naCalculateFitness*(self: var SudokuIndividual) =
     self.fitness = self.calculateFitness2()
 
 method naClone*(self: SudokuIndividual): NAIndividual =
-    result = SudokuIndividual(data1: self.data1, data2: self.data2)
+    result = SudokuIndividual(
+        data1: self.data1,
+        data2: self.data2,
+        operations: self.operations
+    )
     result.fitness = self.fitness
 
 method naToBytes*(self: SudokuIndividual): seq[byte] =

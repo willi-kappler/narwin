@@ -119,7 +119,7 @@ method naCalculateFitness*(self: var QueensIndividual) =
     self.fitness = float64(numOfCollisions)
 
 method naClone*(self: QueensIndividual): NAIndividual =
-    result = QueensIndividual(data: self.data)
+    result = QueensIndividual(data: self.data, operations: self.operations)
     result.fitness = self.fitness
 
 method naToBytes*(self: QueensIndividual): seq[byte] =
