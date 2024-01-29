@@ -24,6 +24,7 @@ import ../../src/narwin
 type
     QueensIndividual* = ref object of NAIndividual
         data: seq[(uint8, uint8)] # (row, column)
+        operations: seq[uint32]
 
 proc randPos(maxPos: int): uint8 =
     uint8(rand(maxPos) + 1)
@@ -47,7 +48,7 @@ proc hasCollision(self: QueensIndividual, index1: uint8, index2: uint8): bool =
 
     return hasCollision(r1, c1, r2, c2)
 
-method naMutate*(self: var QueensIndividual, operations: seq[uint32]) =
+method naMutate*(self: var QueensIndividual) =
     let last = self.data.high
 
     # Select one of the queens randomly:
@@ -56,12 +57,12 @@ method naMutate*(self: var QueensIndividual, operations: seq[uint32]) =
     # Choose mutation operation:
     var operation: uint32
 
-    if operations.len() == 0:
+    if self.operations.len() == 0:
         operation = uint32(rand(1))
-    elif operations.len() == 1:
-        operation = operations[0]
+    elif self.operations.len() == 1:
+        operation = self.operations[0]
     else:
-        operation = sample(operations)
+        operation = sample(self.operations)
 
     case operation
     of 0:
@@ -133,7 +134,7 @@ method naToJSON*(self: QueensIndividual): JsonNode =
 method naFromJSON*(self: QueensIndividual, data: JsonNode): NAIndividual =
     return data.jsonTo(QueensIndividual)
 
-proc newBoard*(): QueensIndividual =
+proc newBoard*(operations: seq[uint32] = @[]): QueensIndividual =
     result = QueensIndividual(data: @[
         (1, 1),
         (1, 1),
@@ -143,5 +144,5 @@ proc newBoard*(): QueensIndividual =
         (1, 1),
         (1, 1),
         (1, 1)
-        ])
+        ], operations: operations)
 

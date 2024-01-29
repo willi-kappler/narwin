@@ -25,7 +25,7 @@ when isMainModule:
 
     let naConfig = naConfigFromCmdLine()
 
-    let queens = newBoard()
+    let queens = newBoard(naConfig.operations)
 
     if naConfig.serverMode:
         let logger = newFileLogger("queens_server.log", fmtStr=verboseFmtStr)

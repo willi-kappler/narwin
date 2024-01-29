@@ -26,6 +26,7 @@ type
     SudokuIndividual* = ref object of NAIndividual
         data1: seq[uint8]
         data2: seq[uint8]
+        operations: seq[uint32]
 
 proc getValue1(self: SudokuIndividual, col, row: uint8): uint8 =
     self.data1[(row * 9) + col]
@@ -209,20 +210,20 @@ proc randomizeRow(self: var SudokuIndividual, row: uint8) =
         if self.getValue1(col, row) == 0:
             self.setValue2(col, row, randomValue())
 
-method naMutate*(self: var SudokuIndividual, operations: seq[uint32]) =
+method naMutate*(self: var SudokuIndividual) =
     let (col, row) = self.randomEmptyPosition1()
 
     const maxOperation = 10
     var operation: uint32
     var probability = 100
 
-    if operations.len() == 0:
+    if self.operations.len() == 0:
         operation = uint32(rand(maxOperation))
-    elif operations.len() == 1:
-        operation = operations[0]
+    elif self.operations.len() == 1:
+        operation = self.operations[0]
         probability = 1
     else:
-        operation = sample(operations)
+        operation = sample(self.operations)
 
     case operation
     of 0:
@@ -299,7 +300,7 @@ method naToJSON*(self: SudokuIndividual): JsonNode =
 method naFromJSON*(self: SudokuIndividual, data: JsonNode): NAIndividual =
     return data.jsonTo(SudokuIndividual)
 
-proc newPuzzle*(): SudokuIndividual =
+proc newPuzzle*(operations: seq[uint32] = @[]): SudokuIndividual =
     let data: seq[uint8] = @[
         0, 3, 0,   0, 0, 0,   0, 0, 0,
         0, 0, 0,   1, 9, 5,   0, 0, 0,
@@ -314,5 +315,5 @@ proc newPuzzle*(): SudokuIndividual =
         0, 0, 0,   0, 0, 0,   0, 7, 0
         ]
 
-    result = SudokuIndividual(data1: data, data2: data)
+    result = SudokuIndividual(data1: data, data2: data, operations: operations)
 

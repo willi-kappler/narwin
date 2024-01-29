@@ -196,6 +196,40 @@ task runTSP7, "Runs the TSP example":
 
     exec "./tsp -p=200 -i=400000 -k=7 --maxreset=40000 -m=10 &"
 
+task runTSPOp, "Runs the TSP example":
+    # Start the server:
+    exec "nim c -d:release tsp.nim"
+    exec "./tsp --server -p=200 -t=0.0 &"
+    exec "sleep 5"
+
+    # Start some nodes:
+    exec "./tsp -p=200 -i=10000 -k=2 --operations=0 &"
+    exec "sleep 1"
+
+    exec "./tsp -p=200 -i=10000 -k=2 --operations=1 &"
+    exec "sleep 1"
+
+    exec "./tsp -p=200 -i=10000 -k=2 --operations=2 &"
+    exec "sleep 1"
+
+    exec "./tsp -p=200 -i=10000 -k=2 --operations=3 &"
+    exec "sleep 1"
+
+    exec "./tsp -p=200 -i=10000 -k=2 --operations=4 &"
+    exec "sleep 1"
+
+    exec "./tsp -p=200 -i=10000 -k=2 --operations=5 &"
+    exec "sleep 1"
+
+    exec "./tsp -p=200 -i=10000 -k=2 --operations=6 &"
+    exec "sleep 1"
+
+    exec "./tsp -p=200 -i=10000 -k=2 --operations=7 &"
+    exec "sleep 1"
+
+    exec "./tsp -p=200 -i=10000 -k=2 --operations=8 &"
+    exec "sleep 1"
+
 task cleanTSP, "Clean up after calculation":
     exec "rm -f tsp"
     exec "rm -f *.log"

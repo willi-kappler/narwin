@@ -30,7 +30,6 @@ type
         numOfIterations: uint32
         numOfMutations: uint32
         targetFitness: float64
-        operations: seq[uint32]
 
 method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[byte] =
     ncDebug("ncProcessData()", 2)
@@ -60,7 +59,7 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
                 tmpIndividual = self.population[index].naClone()
 
                 for _ in 0..<self.numOfMutations:
-                    tmpIndividual.naMutate(self.operations)
+                    tmpIndividual.naMutate()
                     tmpIndividual.naCalculateFitness()
 
                     # Move the best one to the first position:
@@ -91,6 +90,7 @@ proc naInitPopulationNodeDP5*(individual: NAIndividual, config: NAConfiguration)
     ncDebug(fmt("Target fitness: {config.targetFitness}"))
     ncDebug(fmt("Reset population: {config.resetPopulation}"))
     ncDebug(fmt("Accept new best from server: {config.acceptNewBest}"))
+    ncDebug(fmt("Operations: {config.operations}"))
 
     randomize()
 
@@ -104,7 +104,6 @@ proc naInitPopulationNodeDP5*(individual: NAIndividual, config: NAConfiguration)
     result.numOfIterations = config.numOfIterations
     result.numOfMutations = config.numOfMutations
     result.targetFitness = config.targetFitness
-    result.operations = config.operations
 
     if config.resetPopulation:
         result.acceptNewBest = false

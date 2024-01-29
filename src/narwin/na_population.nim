@@ -36,7 +36,6 @@ type
         bestFitness*: float64
         worstIndex*: uint32
         worstFitness*: float64
-        operations*: seq[uint32]
 
 proc findWorstIndividual*(self: var NAPopulation) =
     self.worstFitness = self.population[0].fitness
@@ -100,6 +99,7 @@ proc naInitPopulation*(individual: NAIndividual, config: NAConfiguration, initPo
     ncDebug(fmt("Target fitness: {config.targetFitness}"))
     ncDebug(fmt("Reset population: {config.resetPopulation}"))
     ncDebug(fmt("Accept new best from server: {config.acceptNewBest}"))
+    ncDebug(fmt("Operations: {config.operations}"))
 
     assert config.populationSize > 1
     assert config.numOfIterations > 0
@@ -124,7 +124,6 @@ proc naInitPopulation*(individual: NAIndividual, config: NAConfiguration, initPo
     result.bestFitness = maximumPositiveValue(float64)
     result.worstIndex = 0
     result.worstFitness = 0.0
-    result.operations = config.operations
     result.population = initPopulation
 
     let fileName = config.loadIndividual

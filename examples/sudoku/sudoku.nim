@@ -25,7 +25,7 @@ when isMainModule:
 
     let naConfig = naConfigFromCmdLine()
 
-    let sudoku = newPuzzle()
+    let sudoku = newPuzzle(naConfig.operations)
 
     if naConfig.serverMode:
         let logger = newFileLogger("sudoku_server.log", fmtStr=verboseFmtStr)

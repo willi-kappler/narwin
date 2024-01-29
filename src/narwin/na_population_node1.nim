@@ -38,7 +38,7 @@ method ncProcessData(self: var NAPopulationNodeDP1, inputData: seq[byte]): seq[b
             self.population[j + offset] = self.population[j]
 
             # Now mutate all individuals of the current active population:
-            self.population[j].naMutate(self.population.operations)
+            self.population[j].naMutate()
             # Calculate the new fitness for the mutated individual:
             self.population[j].naCalculateFitness()
 

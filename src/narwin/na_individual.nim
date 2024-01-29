@@ -14,7 +14,7 @@ type
     NAIndividual* = ref object of RootObj
         fitness*: float64
 
-method naMutate*(self: var NAIndividual, operations: seq[uint32] = @[]) {.base.} =
+method naMutate*(self: var NAIndividual) {.base.} =
     quit("You must override this method: naMutate")
 
 method naRandomize*(self: var NAIndividual) {.base.} =

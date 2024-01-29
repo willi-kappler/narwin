@@ -11,7 +11,8 @@
 import std/parseopt
 
 from std/strformat import fmt
-from std/strutils import parseUint, parseFloat, parseBool
+from std/strutils import parseUint, parseFloat, parseBool, split
+from std/sequtils import mapIt
 from os import getAppFilename, splitPath
 
 type
@@ -72,8 +73,9 @@ proc naShowHelpAndQuit*() =
     echo("--amplitude [float64]: Amplitude for population 3 (1.0)")
     echo("--base [float64]: Base for population 3 (1.0)")
     echo("--limitfactor [float64]: Factor for limit change for population 6 (1.01)")
-    echo("--maxreset [uint32]: maxiumum number of iteration with the same fitness befor randomizing the whole population. For population 7 (100)")
-    echo("--maxmutation [uint32]: maxiumum number of mutations to try. For population 7 (100)")
+    echo("--maxreset [uint32]: maximum number of iteration with the same fitness befor randomizing the whole population. For population 7 (100)")
+    echo("--maxmutation [uint32]: maximum number of mutations to try. For population 7 (100)")
+    echo("--operations [uint32, uint32, ...]: list of mutation operations each individual is allowed to do (empty list)")
 
     echo("--loadindividual [string]: loads the given individual into the population (node) or list of best (server)")
 
@@ -145,6 +147,8 @@ proc naConfigFromCmdLine*(): NAConfiguration =
                 result.limitFactor = parseFloat(cmdParser.val)
             elif cmdParser.key == "maxreset":
                 result.maxReset = uint32(parseUint(cmdParser.val))
+            elif cmdParser.key == "operations":
+                result.operations = cmdParser.val.split(',').mapIt(uint32(parseUint(it)))
             else:
                 naShowHelpAndQuit()
         of cmdArgument:

@@ -41,7 +41,7 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
             for j in 0..<self.population.populationSize:
                 # Mutate and check first population:
                 tmpIndividual = self.population.naClone(j)
-                tmpIndividual.naMutate(self.population.operations)
+                tmpIndividual.naMutate()
                 tmpIndividual.naCalculateFitness()
 
                 if tmpIndividual < self.population[j]:
@@ -49,14 +49,14 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
 
                 # Mutate and check second population:
                 tmpIndividual = self.population2[j].naClone()
-                tmpIndividual.naMutate(self.population.operations)
+                tmpIndividual.naMutate()
                 tmpIndividual.naCalculateFitness()
 
                 if tmpIndividual < self.population[j]:
                     self.population[j] = tmpIndividual
 
                 # Mutate and check third population:
-                self.population3[j].naMutate(self.population.operations)
+                self.population3[j].naMutate()
                 self.population3[j].naCalculateFitness()
 
                 if self.population3[j] < self.population[j]:

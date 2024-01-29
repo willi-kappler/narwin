@@ -27,6 +27,7 @@ import ../../src/narwin
 type
     TSPIndividual* = ref object of NAIndividual
         data: seq[(float64, float64)]
+        operations: seq[uint32]
 
 proc naCalculateFitness2(self: var TSPIndividual): float64 =
     var length: float64 = 0.0
@@ -99,7 +100,7 @@ proc findOptimumForPosition(self: var TSPIndividual, index: int) =
     if bestIndex != index:
         swap(self.data[bestIndex], self.data[index])
 
-method naMutate*(self: var TSPIndividual, operations: seq[uint32]) =
+method naMutate*(self: var TSPIndividual) =
     let last = self.data.high
     var i = rand(last)
     var j = rand(last)
@@ -116,13 +117,13 @@ method naMutate*(self: var TSPIndividual, operations: seq[uint32]) =
     var operation: uint32
     var probablility = 100
 
-    if operations.len() == 0:
+    if self.operations.len() == 0:
         operation = uint32(rand(maxOperation))
-    elif operations.len() == 1:
-        operation = operations[0]
+    elif self.operations.len() == 1:
+        operation = self.operations[0]
         probablility = 1
     else:
-        operation = sample(operations)
+        operation = sample(self.operations)
 
     case operation
     of 0:
@@ -236,8 +237,8 @@ method naToJSON*(self: TSPIndividual): JsonNode =
 method naFromJSON*(self: TSPIndividual, data: JsonNode): NAIndividual =
     return data.jsonTo(TSPIndividual)
 
-proc loadTSP*(fileName: string): TSPIndividual =
-    result = TSPIndividual(data: @[])
+proc loadTSP*(fileName: string, operations: seq[uint32] = @[]): TSPIndividual =
+    result = TSPIndividual(data: @[], operations: operations)
 
     let f = open(fileName)
     var line: string

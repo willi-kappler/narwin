@@ -26,10 +26,11 @@ type
         data: bool
         line1: string
         line2: string
+        operations: seq[uint32]
 
 const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 "
 
-method naMutate*(self: var OCRIndividual, operations: seq[uint32]) =
+method naMutate*(self: var OCRIndividual) =
     const maxOperation: int = 7
 
     let l1 = self.line1.high
@@ -97,8 +98,8 @@ method naToJSON*(self: OCRIndividual): JsonNode =
 method naFromJSON*(self: OCRIndividual, data: JsonNode): NAIndividual =
     return data.jsonTo(OCRIndividual)
 
-proc loadImage*(fileName: string): OCRIndividual =
-    result = OCRIndividual(data: true)
+proc loadImage*(fileName: string, operations: seq[uint32] = @[]): OCRIndividual =
+    result = OCRIndividual(data: true, operations: operations)
     result.line1 = ""
     result.line2 = ""
 
