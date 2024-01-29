@@ -2,9 +2,9 @@
 ##
 ## Written by Willi Kappler, License: MIT
 ##
-## This module contains the implementation of the NAIndividual code from narwin for the TSP example.
+## This module contains the implementation of the NAIndividual code from narwin for the OCR example.
 ##
-## This Nim library allows you to write programs using evolutinary algorithms.
+## This Nim library allows you to write programs using evolutionary algorithms.
 ##
 
 
@@ -40,12 +40,12 @@ method naMutate*(self: var OCRIndividual, operations: seq[uint32]) =
 
     case operation
     of 0:
-        # Change on char at line 1
+        # Change one char at line 1
         let i = rand(l1)
         let c = rand(l3)
         self.line1[i] = chars[c]
     of 1:
-        # Change on char at line 2
+        # Change one char at line 2
         let i = rand(l2)
         let c = rand(l3)
         self.line2[i] = chars[c]
