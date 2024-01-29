@@ -221,13 +221,13 @@ task runTSPOp, "Runs the TSP example":
     exec "./tsp -p=200 -i=10000 -k=2 --operations=5 &"
     exec "sleep 1"
 
-    exec "./tsp -p=200 -i=10000 -k=2 --operations=6 &"
+    exec "./tsp -p=200 -i=1000 -k=2 --operations=6 &"
     exec "sleep 1"
 
-    exec "./tsp -p=200 -i=10000 -k=2 --operations=7 &"
+    exec "./tsp -p=200 -i=1000 -k=2 --operations=7 &"
     exec "sleep 1"
 
-    exec "./tsp -p=200 -i=10000 -k=2 --operations=8 &"
+    exec "./tsp -p=200 -i=1000 -k=2 --operations=8 &"
     exec "sleep 1"
 
 task cleanTSP, "Clean up after calculation":
