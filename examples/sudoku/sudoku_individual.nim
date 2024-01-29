@@ -4,7 +4,7 @@
 ##
 ## This module contains the implementation of the NAIndividual code from narwin for the TSP example.
 ##
-## This Nim library allows you to write programs using evolutinary algorithms.
+## This Nim library allows you to write programs using evolutionary algorithms.
 ##
 
 

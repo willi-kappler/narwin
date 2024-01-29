@@ -2,7 +2,7 @@
 ##
 ## Written by Willi Kappler, License: MIT
 ##
-## This Nim library allows you to write programs using evolutinary algorithms.
+## This Nim library allows you to write programs using evolutionary algorithms.
 ##
 ## This file contains the configuration for the library
 ##

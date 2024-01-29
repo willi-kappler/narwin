@@ -4,7 +4,7 @@
 ##
 ## This file contains the Queens example for narwin.
 ##
-## This Nim library allows you to write programs using evolutinary algorithms.
+## This Nim library allows you to write programs using evolutionary algorithms.
 ##
 
 
