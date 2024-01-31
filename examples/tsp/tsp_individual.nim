@@ -24,6 +24,8 @@ import num_crunch
 # Local imports
 import ../../src/narwin
 
+const maxOperation = 8
+
 type
     TSPIndividual* = ref object of NAIndividual
         data: seq[(float64, float64)]
@@ -113,7 +115,6 @@ method naMutate*(self: var TSPIndividual) =
         swap(i, j)
 
     # Choose a random mutation operation
-    const maxOperation = 8
     var operation: uint32
     var probablility = 100
 
@@ -217,6 +218,7 @@ method naMutate*(self: var TSPIndividual) =
 
 method naRandomize*(self: var TSPIndividual) =
     shuffle(self.data)
+    # Maybe choose a random operation ?
 
 method naCalculateFitness*(self: var TSPIndividual) =
     self.fitness = self.naCalculateFitness2()
