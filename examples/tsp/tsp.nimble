@@ -22,16 +22,16 @@ task runTSP, "Runs the TSP example":
     exec "sleep 5"
 
     # Start some nodes:
-    exec "./tsp -p=200 -i=10000 -k=2 &"
+    exec "./tsp -p=200 -i=10000 -k=1 --operations=3 &"
     exec "sleep 1"
 
-    exec "./tsp -p=200 -i=10000 -k=2 -m=20 &"
+    exec "./tsp -p=200 -i=100000 -k=1 --operations=3 &"
     exec "sleep 1"
 
-    exec "./tsp -p=200 -i=10000 -k=2 --reset &"
+    exec "./tsp -p=200 -i=10000 -k=1 --reset --operations=3 &"
     exec "sleep 1"
 
-    exec "./tsp -p=200 -i=100000 -k=2 --reset &"
+    exec "./tsp -p=200 -i=100000 -k=1 --reset --operations=3 &"
 
 
 # Try out each population type individually:
