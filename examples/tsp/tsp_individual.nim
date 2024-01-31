@@ -155,7 +155,7 @@ method naMutate*(self: var TSPIndividual) =
         for k in 0..<d:
             let u = i+k
             let v = j-k
-            if u > v:
+            if u >= v:
                 break
             swap(self.data[u], self.data[v])
     of 4:
