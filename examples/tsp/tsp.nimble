@@ -196,7 +196,7 @@ task runTSP7, "Runs the TSP example":
 
     exec "./tsp -p=200 -i=400000 -k=7 --maxreset=40000 -m=10 &"
 
-task runTSPOp, "Runs the TSP example":
+task runTSPOps, "Runs the TSP example":
     # Start the server:
     exec "nim c -d:release tsp.nim"
     exec "./tsp --server -p=200 -t=0.0 &"
@@ -229,6 +229,51 @@ task runTSPOp, "Runs the TSP example":
 
     exec "./tsp -p=200 -i=1000 -k=2 --operations=8 &"
     exec "sleep 1"
+
+task runTSPOp3, "Runs the TSP example":
+    # Start the server:
+    exec "nim c -d:release tsp.nim"
+    exec "./tsp --server -p=200 -t=0.0 &"
+    exec "sleep 5"
+
+    # Start some nodes:
+    exec "./tsp -p=200 -i=100000 -k=1 --operations=3 &"
+    exec "sleep 1"
+
+    exec "./tsp -p=200 -i=100000 -k=1 --operations=3 --reset &"
+    exec "sleep 1"
+
+    exec "./tsp -p=200 -i=10000 -k=2 --operations=3 &"
+    exec "sleep 1"
+
+    exec "./tsp -p=200 -i=10000 -k=2 --operations=3 --reset &"
+    exec "sleep 1"
+
+    exec "./tsp -p=200 -i=10000 -k=3 --operations=3 --dt=0.01 --amplitude=1000.0 --base=8500.0 &"
+    exec "sleep 1"
+
+    exec "./tsp -p=200 -i=10000 -k=3 --operations=3 --dt=0.001 --amplitude=1000.0 --base=8500.0 &"
+    exec "sleep 1"
+
+    exec "./tsp -p=200 -i=100000 -k=4 --operations=3 &"
+    exec "sleep 1"
+
+    exec "./tsp -p=200 -i=10000 -k=5 --operations=3 &"
+    exec "sleep 1"
+
+    exec "./tsp -p=200 -i=10000 -k=5 --operations=3 --reset &"
+    exec "sleep 1"
+
+    exec "./tsp -p=200 -i=10000 -k=6 --operations=3 --limitfactor=1.01 &"
+    exec "sleep 1"
+
+    exec "./tsp -p=200 -i=10000 -k=6 --operations=3 --limitfactor=1.001 &"
+    exec "sleep 1"
+
+    exec "./tsp -p=200 -i=100000 -k=7 --operations=3 --maxreset=10000 &"
+    exec "sleep 1"
+
+    exec "./tsp -p=200 -i=200000 -k=7 --operations=3 --maxreset=20000 &"
 
 task cleanTSP, "Clean up after calculation":
     exec "rm -f tsp"
