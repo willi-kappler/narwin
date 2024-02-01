@@ -28,44 +28,25 @@ method ncProcessData(self: var NAPopulationNodeDP2, inputData: seq[byte]): seq[b
 
     var tmpIndividual: NAIndividual
 
-    let operation = rand(4)
-    ncDebug(fmt("Operation: {operation}"))
+    # Take the individual from the server or reset everything
+    self.population.naResetOrAcepptBest(inputData)
 
-    case operation
-    of 0:
-        # Do nothing
-        discard
-    of 1:
-        # Take the individual from the server or reset everything
-        self.population.naResetOrAcepptBest(inputData)
-    of 2:
-        # Reset one random individual
-        let i = self.population.naGetRandomIndex()
-        self.population[i].naRandomize()
-        self.population[i].naCalculateFitness()
-    of 3:
-        # Replace the worst individual
-        self.population.findWorstIndividual()
-        var i = self.population.naGetRandomIndex()
+    # Compare two random individuals and choose the best one:
+    let i = self.population.naGetRandomIndex()
+    var j = self.population.naGetRandomIndex()
 
-        while i == self.population.worstIndex:
-            i = self.population.naGetRandomIndex()
+    while i == j:
+        j = self.population.naGetRandomIndex()
 
-        self.population[self.population.worstIndex] = self.population[i]
-    of 4:
-        # Compare two random individuals
-        let i = self.population.naGetRandomIndex()
-        var j = self.population.naGetRandomIndex()
+    if self.population[i] < self.population[j]:
+        self.population[j] = self.population[i]
+    elif self.population[j] < self.population[i]:
+        self.population[i] = self.population[j]
 
-        while i == j:
-            j = self.population.naGetRandomIndex()
-
-        if self.population[i] < self.population[j]:
-            self.population[j] = self.population[i]
-        elif self.population[j] < self.population[i]:
-            self.population[i] = self.population[j]
-    else:
-        raise newException(ValueError, fmt("Unknown operation: {operation}"))
+    # Reset one random individual
+    j = self.population.naGetRandomIndex()
+    self.population[j].naRandomize()
+    self.population[j].naCalculateFitness()
 
     block iterations:
         for i in 0..<self.population.numOfIterations:
