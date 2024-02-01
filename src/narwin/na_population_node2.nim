@@ -9,6 +9,7 @@
 
 # Nim std imports
 from std/strformat import fmt
+from std/random import rand
 
 # External imports
 import num_crunch
@@ -27,7 +28,44 @@ method ncProcessData(self: var NAPopulationNodeDP2, inputData: seq[byte]): seq[b
 
     var tmpIndividual: NAIndividual
 
-    self.population.naResetOrAcepptBest(inputData)
+    let operation = rand(4)
+    ncDebug(fmt("Operation: {operation}"))
+
+    case operation
+    of 0:
+        # Do nothing
+        discard
+    of 1:
+        # Take the individual from the server or reset everything
+        self.population.naResetOrAcepptBest(inputData)
+    of 2:
+        # Reset one random individual
+        let i = self.population.naGetRandomIndex()
+        self.population[i].naRandomize()
+        self.population[i].naCalculateFitness()
+    of 3:
+        # Replace the worst individual
+        self.population.findWorstIndividual()
+        var i = self.population.naGetRandomIndex()
+
+        while i == self.population.worstIndex:
+            i = self.population.naGetRandomIndex()
+
+        self.population[self.population.worstIndex] = self.population[i]
+    of 4:
+        # Compare two random individuals
+        let i = self.population.naGetRandomIndex()
+        var j = self.population.naGetRandomIndex()
+
+        while i == j:
+            j = self.population.naGetRandomIndex()
+
+        if self.population[i] < self.population[j]:
+            self.population[j] = self.population[i]
+        elif self.population[j] < self.population[i]:
+            self.population[i] = self.population[j]
+    else:
+        raise newException(ValueError, fmt("Unknown operation: {operation}"))
 
     block iterations:
         for i in 0..<self.population.numOfIterations:
@@ -52,7 +90,7 @@ method ncProcessData(self: var NAPopulationNodeDP2, inputData: seq[byte]): seq[b
 
 proc naInitPopulationNodeDP2*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP2 =
     ncInfo("naInitPopulationNodeDP2")
-    ncInfo("Mutate a clone and if it's better keep it. The best one is at position 0")
+    ncInfo("Mutate a clone and if it's better keep it.")
 
     let initPopulation = newSeq[NAIndividual](config.populationSize)
     var population = naInitPopulation(individual, config, initPopulation)
