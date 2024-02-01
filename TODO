@@ -5,6 +5,7 @@ TODO:
 - Use compiler options: --styleCheck:usages --styleCheck:error
 - Share optimal solutions between different servers.
 
+- Consistent naming: na* prefix
 
 - Try out different random number generators:
   https://github.com/oprypin/nim-random
