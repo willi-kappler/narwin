@@ -119,7 +119,12 @@ method naMutate*(self: var TSPIndividual) =
     var probablility = 100
 
     if self.operations.len() == 0:
-        operation = uint32(rand(maxOperation))
+        if rand(100) == 0:
+            operation = uint32(rand(maxOperation))
+        else:
+            # Operation 3 (reverse) seems to be the best one
+            # so ensure that it is used more often.
+            operation = 3
     elif self.operations.len() == 1:
         operation = self.operations[0]
         probablility = 1
