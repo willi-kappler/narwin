@@ -58,21 +58,18 @@ method ncProcessData(self: var NAPopulationNodeDP7, inputData: seq[byte]): seq[b
                     tmpIndividual.naMutate()
                     tmpIndividual.naCalculateFitness()
 
-                    # The best one is at position 0:
-                    if tmpIndividual < self.population[0]:
-                        self.population[0] = tmpIndividual
+                    if tmpIndividual < self.population[j]:
+                        self.population[j] = tmpIndividual
                         if tmpIndividual <= self.population.targetFitness:
                             ncDebug(fmt("Early exit at i: {i}"))
                             break iterations
                         elif tmpIndividual < bestIndividual:
                             bestIndividual = tmpIndividual.naClone()
-                    elif tmpIndividual < self.population[j]:
-                        self.population[j] = tmpIndividual
 
     ncDebug(fmt("Best individual: {bestIndividual.fitness}"))
     # Find the best and the worst individual at the end:
     self.population.findBestAndWorstIndividual()
-    ncDebug(fmt("Best fitness: {self.population[0].fitness}, worst fitness: {self.population.worstFitness}"))
+    ncDebug(fmt("Best fitness: {self.population.bestFitness}, worst fitness: {self.population.worstFitness}"))
 
     return bestIndividual.naToBytes()
 
