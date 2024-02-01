@@ -37,6 +37,10 @@ type
         worstIndex*: uint32
         worstFitness*: float64
 
+proc naGetRandomIndex*(self: NAPopulation): uint32 =
+    let last = int(self.populationSize - 1)
+    return uint32(rand(last))
+
 proc findWorstIndividual*(self: var NAPopulation) =
     self.worstFitness = self.population[0].fitness
     self.worstIndex = 0
