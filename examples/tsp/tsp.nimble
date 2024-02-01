@@ -18,21 +18,20 @@ task runTSP, "Runs the TSP example":
     # Start the server:
     #exec "nim c tsp.nim"
     exec "nim c -d:release tsp.nim"
-    exec "./tsp --server -p=200 -t=8000.0 &"
+    exec "./tsp --server -p=10 -t=7900.0 &"
     exec "sleep 5"
 
     # Start some nodes:
-    exec "./tsp -p=200 -i=10000 -k=1 --operations=3 &"
+    exec "./tsp -p=200 -i=20000 -k=1 --reset &"
     exec "sleep 1"
 
-    exec "./tsp -p=200 -i=100000 -k=1 --operations=3 &"
+    exec "./tsp -p=200 -i=20000 -k=1 --reset &"
     exec "sleep 1"
 
-    exec "./tsp -p=200 -i=10000 -k=1 --reset --operations=3 &"
+    exec "./tsp -p=200 -i=20000 -k=1 --reset &"
     exec "sleep 1"
 
-    exec "./tsp -p=200 -i=100000 -k=1 --reset --operations=3 &"
-
+    exec "./tsp -p=200 -i=20000 -k=1 --reset &"
 
 # Try out each population type individually:
 # (the target is set to 0.0 to let it run forever)
