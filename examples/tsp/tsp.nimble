@@ -37,7 +37,7 @@ task runTSPX, "Runs the TSP example":
     # Start the server:
     #exec "nim c tsp.nim"
     exec "nim c -d:release tsp.nim"
-    exec "./tsp --server -p=100 -t=7900.0 &"
+    exec "./tsp --server -p=10 -t=7900.0 &"
     exec "sleep 5"
 
     # Start some nodes:
