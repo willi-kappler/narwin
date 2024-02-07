@@ -32,7 +32,6 @@ type
         acceptNewBest*: bool
         resetPopulation*: bool
         populationKind*: uint8
-        operations*: seq[uint32]
 
         # Population 3:
         dt*: float64
@@ -75,7 +74,6 @@ proc naShowHelpAndQuit*() =
     echo("--limitfactor [float64]: Factor for limit change for population 6 (1.01)")
     echo("--maxreset [uint32]: maximum number of iteration with the same fitness befor randomizing the whole population. For population 7 (100)")
     echo("--maxmutation [uint32]: maximum number of mutations to try. For population 7 (100)")
-    echo("--operations [uint32, uint32, ...]: list of mutation operations each individual is allowed to do (empty list)")
 
     echo("--loadindividual [string]: loads the given individual into the population (node) or list of best (server)")
 
@@ -96,7 +94,6 @@ proc naConfigFromCmdLine*(): NAConfiguration =
     result.acceptNewBest = true
     result.resetPopulation = false
     result.populationKind = 1
-    result.operations = @[]
 
     result.dt = 0.001
     result.amplitude = 1.0
@@ -147,8 +144,6 @@ proc naConfigFromCmdLine*(): NAConfiguration =
                 result.limitFactor = parseFloat(cmdParser.val)
             elif cmdParser.key == "maxreset":
                 result.maxReset = uint32(parseUint(cmdParser.val))
-            elif cmdParser.key == "operations":
-                result.operations = cmdParser.val.split(',').mapIt(uint32(parseUint(it)))
             else:
                 naShowHelpAndQuit()
         of cmdArgument:

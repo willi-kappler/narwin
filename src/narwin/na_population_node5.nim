@@ -90,7 +90,6 @@ proc naInitPopulationNodeDP5*(individual: NAIndividual, config: NAConfiguration)
     ncDebug(fmt("Target fitness: {config.targetFitness}"))
     ncDebug(fmt("Reset population: {config.resetPopulation}"))
     ncDebug(fmt("Accept new best from server: {config.acceptNewBest}"))
-    ncDebug(fmt("Operations: {config.operations}"))
 
     randomize()
 
