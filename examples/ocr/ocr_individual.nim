@@ -23,7 +23,7 @@ import ../../src/narwin
 
 type
     OCRIndividual* = ref object of NAIndividual
-        data: bool
+        data: bool # TODO: data is a pointer to an image in memory
         line1: string
         line2: string
         operations: seq[uint32]
@@ -76,6 +76,8 @@ method naRandomize*(self: var OCRIndividual) =
     let l2 = rand(8) + 2
 
 method naCalculateFitness*(self: var OCRIndividual) =
+    # TODO: Render text to temporary image, then compare it to given image.
+    # The number of errors is how many pixel are different.
     discard
 
 method naClone*(self: OCRIndividual): NAIndividual =
