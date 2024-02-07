@@ -22,15 +22,10 @@ import na_population
 type
     NAPopulationNodeDP2 = ref object of NCNodeDataProcessor
         population: NAPopulation
+        numOfClones: uint32
+        numOfResets: uint32
 
-method ncProcessData(self: var NAPopulationNodeDP2, inputData: seq[byte]): seq[byte] =
-    ncDebug("ncProcessData()", 2)
-
-    var tmpIndividual: NAIndividual
-
-    # Take the individual from the server or reset everything
-    self.population.naResetOrAcepptBest(inputData)
-
+proc cloneBest(self: var NAPopulationNodeDP2) =
     # Compare two random individuals and choose the best one:
     let i = self.population.naGetRandomIndex()
     var j = self.population.naGetRandomIndex()
@@ -43,10 +38,25 @@ method ncProcessData(self: var NAPopulationNodeDP2, inputData: seq[byte]): seq[b
     elif self.population[j] < self.population[i]:
         self.population[i] = self.population[j]
 
+proc resetRandom(self: var NAPopulationNodeDP2) =
     # Reset one random individual
-    j = self.population.naGetRandomIndex()
-    self.population[j].naRandomize()
-    self.population[j].naCalculateFitness()
+    let i = self.population.naGetRandomIndex()
+    self.population[i].naRandomize()
+    self.population[i].naCalculateFitness()
+
+method ncProcessData(self: var NAPopulationNodeDP2, inputData: seq[byte]): seq[byte] =
+    ncDebug("ncProcessData()", 2)
+
+    var tmpIndividual: NAIndividual
+
+    # Take the individual from the server or reset everything
+    self.population.naResetOrAcepptBest(inputData)
+
+    for _ in 0..self.numOfClones:
+        self.cloneBest()
+
+    for _ in 0..self.numOfResets:
+        self.resetRandom()
 
     block iterations:
         for i in 0..<self.population.numOfIterations:
@@ -77,4 +87,7 @@ proc naInitPopulationNodeDP2*(individual: NAIndividual, config: NAConfiguration)
     var population = naInitPopulation(individual, config, initPopulation)
 
     result = NAPopulationNodeDP2(population: population)
+    # TODO: make this configurable:
+    result.numOfClones = result.population.populationSize div 10
+    result.numOfResets = result.population.populationSize div 10
 
