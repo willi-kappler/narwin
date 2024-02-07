@@ -103,7 +103,6 @@ proc naInitPopulation*(individual: NAIndividual, config: NAConfiguration, initPo
     ncDebug(fmt("Target fitness: {config.targetFitness}"))
     ncDebug(fmt("Reset population: {config.resetPopulation}"))
     ncDebug(fmt("Accept new best from server: {config.acceptNewBest}"))
-    ncDebug(fmt("Operations: {config.operations}"))
 
     assert config.populationSize > 1
     assert config.numOfIterations > 0

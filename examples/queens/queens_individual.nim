@@ -24,7 +24,6 @@ import ../../src/narwin
 type
     QueensIndividual* = ref object of NAIndividual
         data: seq[(uint8, uint8)] # (row, column)
-        operations: seq[uint32]
 
 proc randPos(maxPos: int): uint8 =
     uint8(rand(maxPos) + 1)
@@ -55,14 +54,7 @@ method naMutate*(self: var QueensIndividual) =
     let i = rand(last)
 
     # Choose mutation operation:
-    var operation: uint32
-
-    if self.operations.len() == 0:
-        operation = uint32(rand(1))
-    elif self.operations.len() == 1:
-        operation = self.operations[0]
-    else:
-        operation = sample(self.operations)
+    let operation = uint32(rand(1))
 
     case operation
     of 0:
@@ -119,7 +111,7 @@ method naCalculateFitness*(self: var QueensIndividual) =
     self.fitness = float64(numOfCollisions)
 
 method naClone*(self: QueensIndividual): NAIndividual =
-    result = QueensIndividual(data: self.data, operations: self.operations)
+    result = QueensIndividual(data: self.data)
     result.fitness = self.fitness
 
 method naToBytes*(self: QueensIndividual): seq[byte] =
@@ -134,7 +126,7 @@ method naToJSON*(self: QueensIndividual): JsonNode =
 method naFromJSON*(self: QueensIndividual, data: JsonNode): NAIndividual =
     return data.jsonTo(QueensIndividual)
 
-proc newBoard*(operations: seq[uint32] = @[]): QueensIndividual =
+proc newBoard*(): QueensIndividual =
     result = QueensIndividual(data: @[
         (1, 1),
         (1, 1),
@@ -144,5 +136,5 @@ proc newBoard*(operations: seq[uint32] = @[]): QueensIndividual =
         (1, 1),
         (1, 1),
         (1, 1)
-        ], operations: operations)
+        ])
 

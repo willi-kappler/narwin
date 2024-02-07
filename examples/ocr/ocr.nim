@@ -25,7 +25,7 @@ when isMainModule:
 
     let naConfig = naConfigFromCmdLine()
 
-    let ocr = loadImage("img1.png", naConfig.operations)
+    let ocr = loadImage("img1.png")
 
     if naConfig.serverMode:
         let logger = newFileLogger("ocr_server.log", fmtStr=verboseFmtStr)

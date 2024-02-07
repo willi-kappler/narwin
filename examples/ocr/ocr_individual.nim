@@ -26,7 +26,6 @@ type
         data: bool
         line1: string
         line2: string
-        operations: seq[uint32]
 
 const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 "
 
@@ -83,7 +82,6 @@ method naClone*(self: OCRIndividual): NAIndividual =
         data: self.data,
         line1: self.line1,
         line2: self.line2,
-        operations: self.operations
     )
     result.fitness = self.fitness
 
@@ -99,8 +97,8 @@ method naToJSON*(self: OCRIndividual): JsonNode =
 method naFromJSON*(self: OCRIndividual, data: JsonNode): NAIndividual =
     return data.jsonTo(OCRIndividual)
 
-proc loadImage*(fileName: string, operations: seq[uint32] = @[]): OCRIndividual =
-    result = OCRIndividual(data: true, operations: operations)
+proc loadImage*(fileName: string): OCRIndividual =
+    result = OCRIndividual(data: true)
     result.line1 = ""
     result.line2 = ""
 
