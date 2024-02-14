@@ -20,26 +20,17 @@ task runSudoku, "Runs the Sudoku example":
     exec "./sudoku --server &"
     exec "sleep 5"
 
-    # Start seven nodes
-    exec "./sudoku -p=200 -i=100000 -k=1 &"
+    # Start some nodes
+    exec "./sudoku -p=200 -i=10000 -k=1 --reset &"
     exec "sleep 1"
 
-    exec "./sudoku -p=200 -i=100000 -k=1 --reset &"
+    exec "./sudoku -p=200 -i=20000 -k=1 --reset &"
     exec "sleep 1"
 
-    exec "./sudoku -p=200 -i=100000 -k=2 &"
+    exec "./sudoku -p=200 -i=40000 -k=1 --reset &"
     exec "sleep 1"
 
-    exec "./sudoku -p=200 -i=100000 -k=3 --dt=0.01 --amplitude=2.0 --base=2.0 &"
-    exec "sleep 1"
-
-    exec "./sudoku -p=200 -i=100000 -k=4 &"
-    exec "sleep 1"
-
-    exec "./sudoku -p=200 -i=100000 -k=5 &"
-    exec "sleep 1"
-
-    exec "./sudoku -p=200 -i=100000 -k=6 --limitfactor=1.01 &"
+    exec "./sudoku -p=200 -i=80000 -k=1 --reset &"
 
 task runSudoku2, "Runs the Sudoku example":
     #exec "nim c sudoku.nim"
@@ -47,29 +38,17 @@ task runSudoku2, "Runs the Sudoku example":
     exec "./sudoku --server &"
     exec "sleep 5"
 
-    # Start eight nodes
-    exec "./sudoku -p=200 -i=100000 -k=2 &"
+    # Start some nodes
+    exec "./sudoku -p=200 -i=10000 -k=2 &"
     exec "sleep 1"
 
-    exec "./sudoku -p=200 -i=100000 -k=2 --reset &"
+    exec "./sudoku -p=200 -i=20000 -k=2 &"
     exec "sleep 1"
 
-    exec "./sudoku -p=200 -i=100000 -k=3 --dt=0.01 --amplitude=4.0 --base=4.0 &"
+    exec "./sudoku -p=200 -i=40000 -k=2 &"
     exec "sleep 1"
 
-    exec "./sudoku -p=200 -i=100000 -k=3 --dt=0.001 --amplitude=4.0 --base=4.0 &"
-    exec "sleep 1"
-
-    exec "./sudoku -p=200 -i=100000 -k=3 --dt=0.01 --amplitude=8.0 --base=8.0 &"
-    exec "sleep 1"
-
-    exec "./sudoku -p=200 -i=100000 -k=3 --dt=0.001 --amplitude=8.0 --base=8.0 &"
-    exec "sleep 1"
-
-    exec "./sudoku -p=200 -i=100000 -k=6 --limitfactor=1.01 &"
-    exec "sleep 1"
-
-    exec "./sudoku -p=200 -i=100000 -k=6 --limitfactor=1.001 &"
+    exec "./sudoku -p=200 -i=80000 -k=2 &"
 
 task cleanSudoku, "Clean up after calculation":
     exec "rm -f sudoku"
