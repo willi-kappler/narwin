@@ -212,9 +212,8 @@ proc randomizeRow(self: var SudokuIndividual, row: uint8) =
 method naMutate*(self: var SudokuIndividual) =
     let (col, row) = self.randomEmptyPosition1()
 
-    const maxOperation = 10
     var probability = 100
-    let operation = uint32(rand(maxOperation))
+    let operation = 1
 
     case operation
     of 0:
@@ -241,36 +240,19 @@ method naMutate*(self: var SudokuIndividual) =
     of 9:
         self.randomizeCol(col)
         self.randomizeRow(row)
-    of maxOperation:
+    of 10:
         let (col2, row2) = self.randomEmptyPosition1()
         self.swapValues(col, row, col2, row2)
     else:
         raise newException(ValueError, fmt("Unknown mutation operation: {operation}"))
 
 method naRandomize*(self: var SudokuIndividual) =
-    let n = rand(2)
-
-    case n
-    of 0:
-        # Initialize with zeros:
-        self.data2 = self.data1
-    of 1:
-        # Initialize with random values:
-        for i in 0..self.data1.high:
-            if self.data1[i] == 0:
-                self.data2[i] = randomValue()
-            else:
-                self.data2[i] = self.data1[i]
-    of 2:
-        # Initialize with one specific value
-        let value = uint8(rand(8) + 1)
-        for i in 0..self.data1.high:
-            if self.data1[i] == 0:
-                self.data2[i] = value
-            else:
-                self.data2[i] = self.data1[i]
-    else:
-        raise newException(ValueError, fmt("Unknown initialisazion: {n}"))
+    # Initialize with random values:
+    for i in 0..self.data1.high:
+        if self.data1[i] == 0:
+            self.data2[i] = randomValue()
+        else:
+            self.data2[i] = self.data1[i]
 
 method naCalculateFitness*(self: var SudokuIndividual) =
     self.fitness = self.calculateFitness2()
