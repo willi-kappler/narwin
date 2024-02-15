@@ -94,72 +94,63 @@ proc randomValue(): uint8 =
 proc randomIndex(): uint8 =
     uint8(rand(8))
 
+proc randomEmptyPosition1(self: SudokuIndividual): (uint8, uint8) =
+    var col = randomIndex()
+    var row = randomIndex()
+
+    while self.getValue1(col, row) != 0:
+        col = randomIndex()
+        row = randomIndex()
+
+    return (col, row)
+
+proc inCol(self: SudokuIndividual, col: uint8, n: uint8): bool =
+    for row in 0'u8..8:
+        if self.getValue2(col, row) == n:
+            return true
+
+    return false
+
+proc inRow(self: SudokuIndividual, row: uint8, n: uint8): bool =
+    for col in 0'u8..8:
+        if self.getValue2(col, row) == n:
+            return true
+
+    return false
+
+proc inBlock(self: SudokuIndividual, col: uint8, row: uint8, n: uint8): bool =
+    let u: uint8 = (col div 3) * 3
+    let v: uint8 = (row div 3) * 3
+
+    for i in 0'u8..2:
+        for j in 0'u8..2:
+            if self.getValue2(u + i, v + j) == n:
+                return true
+
+    return false
+
 method naMutate*(self: var SudokuIndividual) =
-    let col = randomIndex()
-    let row = randomIndex()
+    let (col, row) = self.randomEmptyPosition1()
+    var allowedNumbers: seq[uint8] = @[]
 
-    var colInUse: set[uint8]
-    var rowInUse: set[uint8]
-    var j: uint8
-    var n: uint8
+    for n in 1'u8..9:
+        if self.inCol(col, n):
+            continue
+        if self.inRow(row, n):
+            continue
+        if self.inBlock(col, row, n):
+            continue
 
-    for i in 0'u8..8:
-        let nc = self.getValue1(col, i)
-        let nr = self.getValue1(i, row)
+        allowedNumbers.add(n)
 
-        if nc > 0:
-            colInUse.incl(nc)
-        if nr > 0:
-            rowInUse.incl(nr)
-
-    var numbers: seq[uint8] = @[1, 2, 3, 4, 5, 6, 7, 8, 9]
-    shuffle(numbers)
-
-    if self.getValue1(col, row) == 0:
-        # Set value in (col, row)
-        for n in numbers:
-            if n in colInUse:
-                continue
-            if n in rowInUse:
-                continue
-            self.setValue2(col, row, n)
-            colInUse.incl(n)
-            rowInUse.incl(n)
-            break
-
-    # Set values in col:
-    shuffle(numbers)
-    j = 0
-    for i in 0'u8..8:
-        if i != row:
-            if self.getValue1(col, i) == 0:
-                n = numbers[j]
-                while n in colInUse:
-                    inc(j)
-                    n = numbers[j]
-                self.setValue2(col, i, n)
-                inc(j)
-
-    # Set values in row:
-    shuffle(numbers)
-    j = 0
-    for i in 0'u8..8:
-        if i != col:
-            if self.getValue1(i, row) == 0:
-                n = numbers[j]
-                while n in rowInUse:
-                    inc(j)
-                    n = numbers[j]
-                self.setValue2(i, row, n)
-                inc(j)
+    if allowedNumbers.len() > 0:
+        let n = sample(allowedNumbers)
+        self.setValue2(col, row, n)
 
 method naRandomize*(self: var SudokuIndividual) =
-    # Initialize with random values:
+    # Initialize with 0:
     for i in 0..self.data1.high:
-        if self.data1[i] == 0:
-            self.data2[i] = randomValue()
-        else:
-            self.data2[i] = self.data1[i]
+        self.data2[i] = self.data1[i]
 
 method naCalculateFitness*(self: var SudokuIndividual) =
     self.fitness = self.calculateFitness2()
