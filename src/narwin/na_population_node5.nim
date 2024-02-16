@@ -82,7 +82,7 @@ method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[b
 
 proc naInitPopulationNodeDP5*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP5 =
     ncInfo("naInitPopulationNodeDP5")
-    ncInfo("Push the best on onto the front of the queue. Remove the last (worst) one.")
+    ncInfo("Push the best one onto the front of the queue. Remove the last (worst) one.")
 
     ncDebug(fmt("Population size: {config.populationSize}"))
     ncDebug(fmt("Number of iterations: {config.numOfIterations}"))
