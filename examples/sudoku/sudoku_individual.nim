@@ -12,9 +12,8 @@
 import std/json
 import std/jsonutils
 
-from std/random import rand, shuffle, sample
+from std/random import rand 
 from std/strformat import fmt
-#from std/sequtils import toSeq
 
 # External imports
 import num_crunch
@@ -104,48 +103,10 @@ proc randomEmptyPosition1(self: SudokuIndividual): (uint8, uint8) =
 
     return (col, row)
 
-proc inCol(self: SudokuIndividual, col: uint8, n: uint8): bool =
-    for row in 0'u8..8:
-        if self.getValue2(col, row) == n:
-            return true
-
-    return false
-
-proc inRow(self: SudokuIndividual, row: uint8, n: uint8): bool =
-    for col in 0'u8..8:
-        if self.getValue2(col, row) == n:
-            return true
-
-    return false
-
-proc inBlock(self: SudokuIndividual, col: uint8, row: uint8, n: uint8): bool =
-    let u: uint8 = (col div 3) * 3
-    let v: uint8 = (row div 3) * 3
-
-    for i in 0'u8..2:
-        for j in 0'u8..2:
-            if self.getValue2(u + i, v + j) == n:
-                return true
-
-    return false
-
 method naMutate*(self: var SudokuIndividual) =
     let (col, row) = self.randomEmptyPosition1()
-    var allowedNumbers: seq[uint8] = @[]
-
-    for n in 1'u8..9:
-        if self.inCol(col, n):
-            continue
-        if self.inRow(row, n):
-            continue
-        if self.inBlock(col, row, n):
-            continue
-
-        allowedNumbers.add(n)
-
-    if allowedNumbers.len() > 0:
-        let n = sample(allowedNumbers)
-        self.setValue2(col, row, n)
+    let n = randomValue()
+    self.setValue2(col, row, n)
 
 method naRandomize*(self: var SudokuIndividual) =
     # Initialize with 0:
