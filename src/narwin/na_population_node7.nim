@@ -21,75 +21,64 @@ import na_population
 type
     NAPopulationNodeDP7 = ref object of NCNodeDataProcessor
         population: NAPopulation
-        maxReset: uint32
-        individualCounter: seq[uint32]
-        individualFitness: seq[float64]
+        limitStart: float64
+        limitIncrement: float64
 
 method ncProcessData(self: var NAPopulationNodeDP7, inputData: seq[byte]): seq[byte] =
     ncDebug("ncProcessData()", 2)
 
     var tmpIndividual: NAIndividual
-    var bestIndividual = self.population.naClone(0)
 
-    for i in 0..<self.population.populationSize:
-        self.individualCounter[i] = 0
-        self.individualFitness[i] = self.population[i].fitness
+    self.population.naResetOrAcepptBest(inputData)
+
+    var fitnessLimit: float64
 
     block iterations:
         for i in 0..<self.population.numOfIterations:
-            for j in 0..<self.population.populationSize:
-                # Check if the current fitness hasn't changes.
-                # If it is still the same reset the individual
-                # after the counter is up to the maximum.
-                if self.population[j].fitness == self.individualFitness[j]:
-                    inc(self.individualCounter[j])
-                    if self.individualCounter[j] > self.maxReset:
-                        self.individualCounter[j] = 0
-                        self.individualFitness[j] = 0.0
-                        self.population[j].naRandomize()
-                        self.population[j].naCalculateFitness()
-                else:
-                    self.individualCounter[j] = 0
-                    self.individualFitness[j] = self.population[j].fitness
+            fitnessLimit = self.limitStart
 
+            for j in 0..<self.population.populationSize:
                 tmpIndividual = self.population.naClone(j)
 
                 for _ in 0..<self.population.numOfMutations:
                     tmpIndividual.naMutate()
                     tmpIndividual.naCalculateFitness()
 
-                    if tmpIndividual < self.population[j]:
+                    if tmpIndividual < fitnessLimit:
                         self.population[j] = tmpIndividual
-                        if tmpIndividual <= self.population.targetFitness:
-                            ncDebug(fmt("Early exit at i: {i}"))
-                            break iterations
-                        elif tmpIndividual < bestIndividual:
-                            bestIndividual = tmpIndividual.naClone()
+                    elif tmpIndividual < self.population[j]:
+                        self.population[j] = tmpIndividual
 
-    ncDebug(fmt("Best individual: {bestIndividual.fitness}"))
+                    if tmpIndividual < self.population[0]:
+                        self.population[0] = tmpIndividual
+
+                        if tmpIndividual <= self.population.targetFitness:
+                            ncDebug(fmt("Early exit at i: {i}, j: {j}"))
+                            break iterations
+
+                fitnessLimit = fitnessLimit + self.limitIncrement
+
     # Find the best and the worst individual at the end:
     self.population.findBestAndWorstIndividual()
-    ncDebug(fmt("Best fitness: {self.population.bestFitness}, worst fitness: {self.population.worstFitness}"))
+    ncDebug(fmt("Best fitness: {self.population[0].fitness}, worst fitness: {self.population.worstFitness}"))
 
-    return bestIndividual.naToBytes()
+    return self.population[0].naToBytes()
 
 proc naInitPopulationNodeDP7*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP7 =
     ncInfo("naInitPopulationNodeDP7")
-    ncInfo("The best individual is at index 0, if stuck with the same fitness for too long, each individual will be reset individually.")
+    ncInfo("The best individual is at index 0, start limit at base and increment for each individual.")
 
-    assert config.maxReset > 10
-    ncDebug(fmt("Max reset: {config.maxReset}"))
+    assert config.base > 0.0
+    ncDebug(fmt("Base: {config.base}"))
+
+    assert config.increment > 0.0
+    ncDebug(fmt("Increment: {config.increment}"))
 
     let initPopulation = newSeq[NAIndividual](config.populationSize)
     var population = naInitPopulation(individual, config, initPopulation)
 
     result = NAPopulationNodeDP7(population: population)
-    result.maxReset = config.maxReset
+    result.limitStart = config.base
+    result.limitIncrement = config.increment
 
-    result.individualCounter = newSeq[uint32](config.populationSize)
-    result.individualFitness = newSeq[float64](config.populationSize)
-
-    for i in 0..<config.populationSize:
-        result.individualCounter[i] = 0
-        result.individualFitness[i] = 0.0
 

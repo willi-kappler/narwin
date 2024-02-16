@@ -56,6 +56,31 @@ task runSudoku2, "Runs the Sudoku example":
 
     exec "./sudoku -p=200 -i=40000 -k=6 --limitfactor=1.02 &"
 
+task runSudoku3, "Runs the Sudoku example":
+    #exec "nim c sudoku.nim"
+    exec "nim c -d:release sudoku.nim"
+    exec "./sudoku --server &"
+    exec "sleep 5"
+
+    # Start some nodes
+    exec "./sudoku -p=200 -i=10000 -k=7 --base=1.00 --increment=0.1 &"
+    exec "sleep 1"
+
+    exec "./sudoku -p=200 -i=20000 -k=7 --base=1.00 --increment=0.1 &"
+    exec "sleep 1"
+
+    exec "./sudoku -p=200 -i=10000 -k=7 --base=1.00 --increment=0.5 &"
+    exec "sleep 1"
+
+    exec "./sudoku -p=200 -i=20000 -k=7 --base=1.00 --increment=0.5 &"
+    exec "sleep 1"
+
+    exec "./sudoku -p=200 -i=10000 -k=7 --base=1.00 --increment=1.0 &"
+    exec "sleep 1"
+
+    exec "./sudoku -p=200 -i=20000 -k=7 --base=1.00 --increment=1.0 &"
+    exec "sleep 1"
+
 task cleanSudoku, "Clean up after calculation":
     exec "rm -f sudoku"
     exec "rm -f *.log"
