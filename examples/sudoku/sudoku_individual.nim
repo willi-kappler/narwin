@@ -107,7 +107,7 @@ proc numInRow(self: SudokuIndividual, row: uint8, n: uint8): bool =
 
     return false
 
-proc numInBlock(self: SudokuIndividual, i: uint8, j: uint8, n: uint8): bool =
+proc numInBlock(self: SudokuIndividual, i, j: uint8, n: uint8): bool =
     for c in 0'u8..2:
         for r in 0'u8..2:
             if self.getValue1(i + c, j + r) == n:
@@ -152,8 +152,8 @@ proc randomRow(self: var SudokuIndividual) =
                 self.setValue2(col, row, n)
 
 proc randomBlock(self: var SudokuIndividual) =
-    let col: uint8 = (randomIndex() div 3) * 3
-    let row: uint8 = (randomIndex() div 3) * 3
+    let col: uint8 = uint8(rand(2)) * 3
+    let row: uint8 = uint8(rand(2)) * 3
     var numbers: seq[uint8] = @[]
 
     for n in 1'u8..9:
@@ -181,27 +181,92 @@ proc randomEmptyPosition1(self: SudokuIndividual): (uint8, uint8) =
 
     return (col, row)
 
+proc decIndex(i: uint8): uint8 =
+    if i == 0:
+        return 8
+    else:
+        return i - 1
+
+proc incIndex(i: uint8): uint8 =
+    if i == 8:
+        return 0
+    else:
+        return i + 1
+
+proc randomValue2(self: SudokuIndividual, col, row: uint8): uint8 =
+    let c1 = decIndex(col)
+    let c2 = incIndex(col)
+    let r1 = decIndex(row)
+    let r2 = incIndex(row)
+
+    let v1 = self.getValue2(col, r1)
+    let v2 = self.getValue2(col, r2)
+    let v3 = self.getValue2(c1, row)
+    let v4 = self.getValue2(c2, row)
+
+    result = randomValue()
+
+    while (result == v1) or (result == v2) or (result == v3) or (result == v4):
+        result = randomValue()
+
 proc randomCell(self: var SudokuIndividual) =
     let (col, row) = self.randomEmptyPosition1()
-    let n = randomValue()
+    let n = self.randomValue2(col, row)
     self.setValue2(col, row, n)
 
-method naMutate*(self: var SudokuIndividual) =
-    let operation = rand(3)
+proc randomTriple(self: var SudokuIndividual) =
+    let u = uint8(rand(2)) * 3
+    let v = uint8(rand(2)) * 3
+
+    let operation = rand(1)
+    let index = uint8(rand(2))
+
+    if operation == 0:
+        for row in 0'u8..2:
+            if self.getValue1(index + u, row + v) == 0:
+                let n = randomValue()
+                self.setValue2(index + u, row + v, n)
+    else:
+        for col in 0'u8..2:
+            if self.getValue1(col + u, index + v) == 0:
+                let n = randomValue()
+                self.setValue2(col + u, index + v, n)
+
+proc mutate1(self: var SudokuIndividual) =
+    let operation = rand(4)
 
     if operation == 0:
         self.randomCell()
     elif operation == 1:
-        self.randomCol()
+        self.randomTriple()
     elif operation == 2:
+        self.randomCol()
+    elif operation == 3:
         self.randomRow()
     else:
         self.randomBlock()
 
-method naRandomize*(self: var SudokuIndividual) =
+proc mutate2(self: var SudokuIndividual) =
+    self.randomTriple()
+
+method naMutate*(self: var SudokuIndividual) =
+    self.mutate1()
+
+proc randomize1(self: var SudokuIndividual) =
     # Initialize with 0:
     for i in 0..self.data1.high:
         self.data2[i] = self.data1[i]
+
+proc randomize2(self: var SudokuIndividual) =
+    # Initialize with random values:
+    for i in 0..self.data1.high:
+            if self.data1[i] == 0:
+                self.data2[i] = randomValue()
+            else:
+                self.data2[i] = self.data1[i]
+
+method naRandomize*(self: var SudokuIndividual) =
+    self.randomize2()
 
 method naCalculateFitness*(self: var SudokuIndividual) =
     self.fitness = self.calculateFitness2()
