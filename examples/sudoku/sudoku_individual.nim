@@ -247,10 +247,13 @@ proc mutate1(self: var SudokuIndividual) =
         self.randomBlock()
 
 proc mutate2(self: var SudokuIndividual) =
-    self.randomTriple()
+    self.randomBlock() # very very good
+    #self.randomTriple() # very good
+    #self.randomCol() # very good
+    #self.randomRow() # OK
 
 method naMutate*(self: var SudokuIndividual) =
-    self.mutate1()
+    self.mutate2()
 
 proc randomize1(self: var SudokuIndividual) =
     # Initialize with 0:
