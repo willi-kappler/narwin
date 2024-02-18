@@ -29,7 +29,7 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
 
     var tmpIndividual: NAIndividual
 
-    self.population.naResetOrAcepptBest(inputData)
+    self.population.naReplaceWorst(inputData)
 
     # The second and third population get only reset once when processing the data:
     for i in 0..<self.population.populationSize:

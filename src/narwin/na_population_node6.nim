@@ -28,7 +28,7 @@ method ncProcessData(self: var NAPopulationNodeDP6, inputData: seq[byte]): seq[b
 
     var tmpIndividual: NAIndividual
 
-    self.population.naResetOrAcepptBest(inputData)
+    self.population.naReplaceWorst(inputData)
 
     var fitnessLimit: float64
 

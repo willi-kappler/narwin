@@ -34,7 +34,7 @@ method ncProcessData(self: var NAPopulationNodeDP3, inputData: seq[byte]): seq[b
     var t: float64 = 0.0
     var currentBest = self.population.naClone(0)
 
-    self.population.naResetOrAcepptBest(inputData)
+    self.population.naReplaceWorst(inputData)
 
     block iterations:
         for i in 0..<self.population.numOfIterations:
