@@ -63,22 +63,22 @@ task runSudoku3, "Runs the Sudoku example":
     exec "sleep 5"
 
     # Start some nodes
-    exec "./sudoku -p=200 -i=10000 -k=7 -m=10 --base=1.00 --increment=1.0 --limitend=10.0 &"
+    exec "./sudoku -p=200 -i=10000 -k=7 -m=1 --base=1.00 --increment=1.0 --limitend=10.0 &"
     exec "sleep 1"
 
-    exec "./sudoku -p=200 -i=10000 -k=7 -m=10 --base=1.00 --increment=1.0 --limitend=11.0 &"
+    exec "./sudoku -p=200 -i=10000 -k=7 -m=1 --base=1.00 --increment=1.0 --limitend=11.0 &"
     exec "sleep 1"
 
-    exec "./sudoku -p=200 -i=10000 -k=7 -m=10 --base=1.00 --increment=1.0 --limitend=12.0 &"
+    exec "./sudoku -p=200 -i=10000 -k=7 -m=1 --base=1.00 --increment=1.0 --limitend=12.0 &"
     exec "sleep 1"
 
-    exec "./sudoku -p=200 -i=10000 -k=7 -m=10 --base=1.00 --increment=1.0 --limitend=13.0 &"
+    exec "./sudoku -p=200 -i=10000 -k=7 -m=1 --base=1.00 --increment=1.0 --limitend=13.0 &"
     exec "sleep 1"
 
-    exec "./sudoku -p=200 -i=10000 -k=7 -m=10 --base=1.00 --increment=1.0 --limitend=14.0 &"
+    exec "./sudoku -p=200 -i=10000 -k=7 -m=1 --base=1.00 --increment=1.0 --limitend=14.0 &"
     exec "sleep 1"
 
-    exec "./sudoku -p=200 -i=10000 -k=7 -m=10 --base=1.00 --increment=1.0 --limitend=15.0 &"
+    exec "./sudoku -p=200 -i=10000 -k=7 -m=1 --base=1.00 --increment=1.0 --limitend=15.0 &"
     exec "sleep 1"
 
 task cleanSudoku, "Clean up after calculation":
