@@ -2,7 +2,7 @@
 ##
 ## Written by Willi Kappler, License: MIT
 ##
-## This module contains the implementation of the NAIndividual code from narwin for the TSP example.
+## This module contains the implementation of the NAIndividual code from narwin for the Sudoku example.
 ##
 ## This Nim library allows you to write programs using evolutionary algorithms.
 ##
@@ -12,8 +12,8 @@
 import std/json
 import std/jsonutils
 
-from std/random import rand 
-from std/strformat import fmt
+from std/random import rand, shuffle
+#from std/strformat import fmt
 
 # External imports
 import num_crunch
@@ -93,6 +93,84 @@ proc randomValue(): uint8 =
 proc randomIndex(): uint8 =
     uint8(rand(8))
 
+proc numInCol(self: SudokuIndividual, col: uint8, n: uint8): bool =
+    for row in 0'u8..8:
+        if self.getValue1(col, row) == n:
+            return true
+
+    return false
+
+proc numInRow(self: SudokuIndividual, row: uint8, n: uint8): bool =
+    for col in 0'u8..8:
+        if self.getValue1(col, row) == n:
+            return true
+
+    return false
+
+proc numInBlock(self: SudokuIndividual, i: uint8, j: uint8, n: uint8): bool =
+    for c in 0'u8..2:
+        for r in 0'u8..2:
+            if self.getValue1(i + c, j + r) == n:
+                return true
+
+    return false
+
+proc randomCol(self: var SudokuIndividual) =
+    let col = randomIndex()
+    var numbers: seq[uint8] = @[]
+
+    for n in 1'u8..9:
+        if self.numInCol(col, n):
+            continue
+        else:
+            numbers.add(n)
+
+    if numbers.len() > 0:
+        shuffle(numbers)
+
+        for row in 0'u8..8:
+            if self.getValue1(col, row) == 0:
+                let n = numbers.pop()
+                self.setValue2(col, row, n)
+
+proc randomRow(self: var SudokuIndividual) =
+    let row = randomIndex()
+    var numbers: seq[uint8] = @[]
+
+    for n in 1'u8..9:
+        if self.numInRow(row, n):
+            continue
+        else:
+            numbers.add(n)
+
+    if numbers.len() > 0:
+        shuffle(numbers)
+
+        for col in 0'u8..8:
+            if self.getValue1(col, row) == 0:
+                let n = numbers.pop()
+                self.setValue2(col, row, n)
+
+proc randomBlock(self: var SudokuIndividual) =
+    let col: uint8 = (randomIndex() div 3) * 3
+    let row: uint8 = (randomIndex() div 3) * 3
+    var numbers: seq[uint8] = @[]
+
+    for n in 1'u8..9:
+        if self.numInBlock(col, row, n):
+            continue
+        else:
+            numbers.add(n)
+
+    if numbers.len() > 0:
+        shuffle(numbers)
+
+        for i in 0'u8..2:
+            for j in 0'u8..2:
+                if self.getValue1(col + i, row + j) == 0:
+                    let n = numbers.pop()
+                    self.setValue2(col + i, row + j, n)
+
 proc randomEmptyPosition1(self: SudokuIndividual): (uint8, uint8) =
     var col = randomIndex()
     var row = randomIndex()
@@ -103,10 +181,22 @@ proc randomEmptyPosition1(self: SudokuIndividual): (uint8, uint8) =
 
     return (col, row)
 
-method naMutate*(self: var SudokuIndividual) =
+proc randomCell(self: var SudokuIndividual) =
     let (col, row) = self.randomEmptyPosition1()
     let n = randomValue()
     self.setValue2(col, row, n)
+
+method naMutate*(self: var SudokuIndividual) =
+    let operation = rand(3)
+
+    if operation == 0:
+        self.randomCell()
+    elif operation == 1:
+        self.randomCol()
+    elif operation == 2:
+        self.randomRow()
+    else:
+        self.randomBlock()
 
 method naRandomize*(self: var SudokuIndividual) =
     # Initialize with 0:
