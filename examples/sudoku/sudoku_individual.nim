@@ -114,14 +114,43 @@ proc randomBlock(self: var SudokuIndividual) =
 
         for i in 0'u8..2:
             for j in 0'u8..2:
-                if self.getValue1(col + i, row + j) == 0:
+                let u = col + i
+                let v = row + j
+                if self.getValue1(u, v) == 0:
                     let n = numbers.pop()
-                    self.setValue2(col + i, row + j, n)
+                    self.setValue2(u, v, n)
+
+proc randomTriple(self: var SudokuIndividual) =
+    let i = uint8(rand(2)) * 3
+    let j = uint8(rand(2)) * 3
+
+    let operation = rand(1)
+    let index = uint8(rand(2))
+
+    if operation == 0:
+        for row in 0'u8..2:
+            let u = index + i
+            let v = row + j
+            if self.getValue1(u, v) == 0:
+                let n = randomValue()
+                self.setValue2(u, v, n)
+    else:
+        for col in 0'u8..2:
+            let u = col + i
+            let v = index + j
+            if self.getValue1(u, v) == 0:
+                let n = randomValue()
+                self.setValue2(u, v, n)
 
 method naMutate*(self: var SudokuIndividual) =
-    self.randomBlock()
+    let operation = rand(1)
 
-proc randomize2(self: var SudokuIndividual) =
+    if operation == 0:
+        self.randomTriple()
+    else:
+        self.randomBlock()
+
+proc randomize1(self: var SudokuIndividual) =
     # Initialize with random values:
     for i in 0..self.data1.high:
             if self.data1[i] == 0:
@@ -130,7 +159,7 @@ proc randomize2(self: var SudokuIndividual) =
                 self.data2[i] = self.data1[i]
 
 method naRandomize*(self: var SudokuIndividual) =
-    self.randomize2()
+    self.randomize1()
 
 method naCalculateFitness*(self: var SudokuIndividual) =
     self.fitness = self.calculateFitness2()
