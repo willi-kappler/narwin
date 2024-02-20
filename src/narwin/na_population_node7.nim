@@ -24,6 +24,7 @@ type
         limitStart: float64
         limitEnd: float64
         limitIncrement: float64
+        limitDecrement: float64
 
 method ncProcessData(self: var NAPopulationNodeDP7, inputData: seq[byte]): seq[byte] =
     ncDebug("ncProcessData()", 2)
@@ -33,6 +34,7 @@ method ncProcessData(self: var NAPopulationNodeDP7, inputData: seq[byte]): seq[b
     self.population.naReplaceWorst(inputData)
 
     var fitnessLimit: float64
+    var currentEnd = self.limitEnd
 
     block iterations:
         for i in 0..<self.population.numOfIterations:
@@ -58,8 +60,12 @@ method ncProcessData(self: var NAPopulationNodeDP7, inputData: seq[byte]): seq[b
                             break iterations
 
                 fitnessLimit = fitnessLimit + self.limitIncrement
-                if fitnessLimit > self.limitEnd:
+                if fitnessLimit > currentEnd:
                     fitnessLimit = self.limitStart
+
+            currentEnd = currentEnd - self.limitDecrement
+            if currentEnd < self.limitStart:
+                currentEnd = self.limitEnd
 
     # Find the best and the worst individual at the end:
     self.population.findBestAndWorstIndividual()
@@ -80,6 +86,9 @@ proc naInitPopulationNodeDP7*(individual: NAIndividual, config: NAConfiguration)
     assert config.increment > 0.0
     ncDebug(fmt("Increment: {config.increment}"))
 
+    assert config.decrement > 0.0
+    ncDebug(fmt("Increment: {config.decrement}"))
+
     let initPopulation = newSeq[NAIndividual](config.populationSize)
     var population = naInitPopulation(individual, config, initPopulation)
 
@@ -87,5 +96,6 @@ proc naInitPopulationNodeDP7*(individual: NAIndividual, config: NAConfiguration)
     result.limitStart = config.base
     result.limitEnd = config.limitEnd
     result.limitIncrement = config.increment
+    result.limitDecrement = config.decrement
 
 

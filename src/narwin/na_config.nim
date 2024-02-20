@@ -43,6 +43,7 @@ type
 
         # Population 7:
         increment*: float64
+        decrement*: float64
         limitEnd*: float64
 
         # Both:
@@ -73,6 +74,7 @@ proc naShowHelpAndQuit*() =
     echo("--base [float64]: Base for population 3 (1.0)")
     echo("--limitfactor [float64]: Factor for limit change for population 6 (1.01)")
     echo("--increment [float64]: Increment the fitness limit for each individual. For population 7 (1.0)")
+    echo("--decrement [float64]: Decrement the fitness limit for each iteration. For population 7 (0.1)")
     echo("--limitend [float64]: Max value for fitness limit for each individual. For population 7 (10.0)")
 
     echo("--loadindividual [string]: loads the given individual into the population (node) or list of best (server)")
@@ -100,6 +102,7 @@ proc naConfigFromCmdLine*(): NAConfiguration =
     result.base = 1.0
     result.limitFactor = 1.01
     result.increment = 1.0
+    result.decrement = 0.1
     result.limitEnd = 10.0
 
     result.loadIndividual = ""
@@ -145,6 +148,8 @@ proc naConfigFromCmdLine*(): NAConfiguration =
                 result.limitFactor = parseFloat(cmdParser.val)
             elif cmdParser.key == "increment":
                 result.increment = parseFloat(cmdParser.val)
+            elif cmdParser.key == "decrement":
+                result.decrement = parseFloat(cmdParser.val)
             elif cmdParser.key == "limitend":
                 result.limitEnd = parseFloat(cmdParser.val)
             else:
