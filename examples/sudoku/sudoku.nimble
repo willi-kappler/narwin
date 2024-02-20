@@ -21,22 +21,22 @@ task runSudoku, "Runs the Sudoku example":
     exec "sleep 5"
 
     # Start some nodes
-    exec "./sudoku -p=200 -i=10000 -k=1 --reset &"
+    exec "./sudoku -p=50 -i=10000 -k=1 --reset &"
     exec "sleep 1"
 
-    exec "./sudoku -p=200 -i=20000 -k=1 --reset &"
+    exec "./sudoku -p=50 -i=10000 -k=1 --reset &"
     exec "sleep 1"
 
-    exec "./sudoku -p=200 -i=30000 -k=1 --reset &"
+    exec "./sudoku -p=50 -i=10000 -k=1 --reset &"
     exec "sleep 1"
 
-    exec "./sudoku -p=200 -i=40000 -k=1 --reset &"
+    exec "./sudoku -p=50 -i=10000 -k=1 --reset &"
     exec "sleep 1"
 
-    exec "./sudoku -p=200 -i=50000 -k=1 --reset &"
+    exec "./sudoku -p=50 -i=10000 -k=1 --reset &"
     exec "sleep 1"
 
-    exec "./sudoku -p=200 -i=60000 -k=1 --reset &"
+    exec "./sudoku -p=50 -i=10000 -k=1 --reset &"
 
     #exec "./sudoku -p=200 -i=10000 -m=1 -k=6 --limitfactor=1.001 &"
     #exec "sleep 1"
