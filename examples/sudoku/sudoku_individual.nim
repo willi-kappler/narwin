@@ -143,12 +143,13 @@ proc randomTriple(self: var SudokuIndividual) =
                 self.setValue2(u, v, n)
 
 method naMutate*(self: var SudokuIndividual) =
-    let operation = rand(1)
-
-    if operation == 0:
-        self.randomTriple()
-    else:
-        self.randomBlock()
+    self.randomBlock()
+    #let operation = rand(1)
+    #
+    #if operation == 0:
+    #    self.randomTriple()
+    #else:
+    #    self.randomBlock()
 
 proc randomize1(self: var SudokuIndividual) =
     # Initialize with random values:
@@ -185,17 +186,17 @@ method naFromJSON*(self: SudokuIndividual, data: JsonNode): NAIndividual =
 
 proc newPuzzle*(): SudokuIndividual =
     let data: seq[uint8] = @[
-        0, 3, 0,   0, 0, 0,   0, 0, 0,
-        0, 0, 0,   1, 9, 5,   0, 0, 0,
-        0, 0, 8,   0, 0, 0,   0, 6, 0,
+        1, 2, 3,   4, 5, 6,   0, 0, 0,
+        0, 0, 0,   0, 0, 0,   0, 0, 0,
+        0, 0, 0,   0, 0, 0,   0, 0, 0,
 
-        8, 0, 0,   0, 6, 0,   0, 0, 0,
-        4, 0, 0,   8, 0, 0,   0, 0, 1,
-        0, 0, 0,   0, 2, 0,   0, 0, 0,
+        0, 0, 0,   0, 0, 0,   0, 0, 0,
+        0, 0, 0,   0, 0, 0,   0, 0, 0,
+        0, 0, 0,   0, 0, 0,   0, 0, 0,
 
-        0, 6, 0,   0, 0, 0,   2, 8, 0,
-        0, 0, 0,   4, 1, 9,   0, 0, 5,
-        0, 0, 0,   0, 0, 0,   0, 7, 0
+        0, 0, 0,   0, 0, 0,   0, 0, 0,
+        0, 0, 0,   0, 0, 0,   0, 0, 0,
+        0, 0, 0,   0, 0, 0,   0, 0, 0
         ]
 
     result = SudokuIndividual(data1: data, data2: data)
