@@ -21,20 +21,52 @@ task runSudoku, "Runs the Sudoku example":
     exec "sleep 5"
 
     # Start some nodes
-    exec "./sudoku -p=200 -i=5000 -k=1 --reset &"
+    exec "./sudoku -p=200 -i=10000 -k=1 --reset &"
     exec "sleep 1"
 
-    exec "./sudoku -p=200 -i=5000 -k=1 --reset &"
+    exec "./sudoku -p=200 -i=20000 -k=1 --reset &"
     exec "sleep 1"
 
-    exec "./sudoku -p=200 -i=10000 -m=1 -k=6 --limitfactor=1.001 &"
+    exec "./sudoku -p=200 -i=30000 -k=1 --reset &"
     exec "sleep 1"
 
-    exec "./sudoku -p=200 -i=10000 -m=1 -k=6 --limitfactor=1.001 &"
+    exec "./sudoku -p=200 -i=40000 -k=1 --reset &"
     exec "sleep 1"
+
+    exec "./sudoku -p=200 -i=50000 -k=1 --reset &"
+    exec "sleep 1"
+
+    exec "./sudoku -p=200 -i=60000 -k=1 --reset &"
+
+    #exec "./sudoku -p=200 -i=10000 -m=1 -k=6 --limitfactor=1.001 &"
+    #exec "sleep 1"
 
     #exec "./sudoku -p=200 -i=10000 -k=7 -m=1 --base=1.00 --increment=1.0 --limitend=10.0 &"
     #exec "sleep 1"
+
+task runSudoku2, "Runs the Sudoku example":
+    #exec "nim c sudoku.nim"
+    exec "nim c -d:release sudoku.nim"
+    exec "./sudoku --server &"
+    exec "sleep 5"
+
+    # Start some nodes
+    exec "./sudoku -p=200 -i=10000 -k=7 --base=1.00 --increment=1.0 --decrement=0.01 --limitend=5.0 &"
+    exec "sleep 1"
+
+    exec "./sudoku -p=200 -i=10000 -k=7 --base=1.00 --increment=1.0 --decrement=0.01 --limitend=10.0 &"
+    exec "sleep 1"
+
+    exec "./sudoku -p=200 -i=10000 -k=7 --base=1.00 --increment=1.0 --decrement=0.01 --limitend=15.0 &"
+    exec "sleep 1"
+
+    exec "./sudoku -p=200 -i=10000 -k=7 --base=1.00 --increment=1.0 --decrement=0.01 --limitend=20.0 &"
+    exec "sleep 1"
+
+    exec "./sudoku -p=200 -i=10000 -k=7 --base=1.00 --increment=1.0 --decrement=0.01 --limitend=25.0 &"
+    exec "sleep 1"
+
+    exec "./sudoku -p=200 -i=10000 -k=7 --base=1.00 --increment=1.0 --decrement=0.01 --limitend=30.0 &"
 
 task cleanSudoku, "Clean up after calculation":
     exec "rm -f sudoku"
