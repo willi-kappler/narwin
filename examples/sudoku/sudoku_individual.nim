@@ -120,8 +120,31 @@ proc randomBlock(self: var SudokuIndividual) =
                     let n = numbers.pop()
                     self.setValue2(u, v, n)
 
+#proc randomTriple(self: var SudokuIndividual) =
+#    let i = uint8(rand(2)) * 3
+#    let j = uint8(rand(2)) * 3
+#
+#    let operation = rand(1)
+#    let index = uint8(rand(2))
+#
+#    if operation == 0:
+#        for row in 0'u8..2:
+#            let u = index + i
+#            let v = row + j
+#            if self.getValue1(u, v) == 0:
+#                let n = randomValue()
+#                self.setValue2(u, v, n)
+#    else:
+#        for col in 0'u8..2:
+#            let u = col + i
+#            let v = index + j
+#            if self.getValue1(u, v) == 0:
+#                let n = randomValue()
+#                self.setValue2(u, v, n)
+
 method naMutate*(self: var SudokuIndividual) =
     self.randomBlock()
+    #self.randomTriple()
 
 proc randomize1(self: var SudokuIndividual) =
     # Initialize with random values:
@@ -158,17 +181,17 @@ method naFromJSON*(self: SudokuIndividual, data: JsonNode): NAIndividual =
 
 proc newPuzzle*(): SudokuIndividual =
     let data: seq[uint8] = @[
-        1, 2, 3,   4, 5, 6,   0, 0, 0,
-        0, 0, 0,   0, 0, 0,   0, 0, 0,
-        0, 0, 0,   0, 0, 0,   0, 0, 0,
+        0, 8, 0,   0, 9, 4,   0, 0, 0,
+        2, 0, 3,   0, 0, 0,   9, 4, 0,
+        0, 0, 0,   0, 0, 2,   1, 0, 3,
 
-        0, 0, 0,   0, 0, 0,   0, 0, 0,
-        0, 0, 0,   0, 0, 0,   0, 0, 0,
-        0, 0, 0,   0, 0, 0,   0, 0, 0,
+        0, 0, 8,   0, 0, 0,   7, 9, 0,
+        9, 2, 0,   0, 0, 0,   0, 5, 6,
+        0, 7, 6,   0, 0, 0,   3, 0, 0,
 
-        0, 0, 0,   0, 0, 0,   0, 0, 0,
-        0, 0, 0,   0, 0, 0,   0, 0, 0,
-        0, 0, 0,   0, 0, 0,   0, 0, 0
+        0, 5, 7,   0, 0, 0,   2, 0, 1,
+        3, 0, 2,   1, 0, 0,   0, 0, 0,
+        0, 0, 0,   2, 6, 0,   0, 3, 0
         ]
 
     result = SudokuIndividual(data1: data, data2: data)
