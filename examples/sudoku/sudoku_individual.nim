@@ -120,31 +120,35 @@ proc randomBlock(self: var SudokuIndividual) =
                     let n = numbers.pop()
                     self.setValue2(u, v, n)
 
-#proc randomTriple(self: var SudokuIndividual) =
-#    let i = uint8(rand(2)) * 3
-#    let j = uint8(rand(2)) * 3
-#
-#    let operation = rand(1)
-#    let index = uint8(rand(2))
-#
-#    if operation == 0:
-#        for row in 0'u8..2:
-#            let u = index + i
-#            let v = row + j
-#            if self.getValue1(u, v) == 0:
-#                let n = randomValue()
-#                self.setValue2(u, v, n)
-#    else:
-#        for col in 0'u8..2:
-#            let u = col + i
-#            let v = index + j
-#            if self.getValue1(u, v) == 0:
-#                let n = randomValue()
-#                self.setValue2(u, v, n)
+proc randomTriple(self: var SudokuIndividual) =
+    let i = uint8(rand(2)) * 3
+    let j = uint8(rand(2)) * 3
+
+    let operation = rand(1)
+    let index = uint8(rand(2))
+
+    if operation == 0:
+        for row in 0'u8..2:
+            let u = index + i
+            let v = row + j
+            if self.getValue1(u, v) == 0:
+                let n = randomValue()
+                self.setValue2(u, v, n)
+    else:
+        for col in 0'u8..2:
+            let u = col + i
+            let v = index + j
+            if self.getValue1(u, v) == 0:
+                let n = randomValue()
+                self.setValue2(u, v, n)
 
 method naMutate*(self: var SudokuIndividual) =
-    self.randomBlock()
-    #self.randomTriple()
+    let op = rand(1)
+
+    if op == 0:
+        self.randomBlock()
+    else:
+        self.randomTriple()
 
 proc randomize1(self: var SudokuIndividual) =
     # Initialize with random values:
