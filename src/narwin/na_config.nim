@@ -42,9 +42,7 @@ type
         limitFactor*: float64
 
         # Population 7:
-        increment*: float64
-        decrement*: float64
-        limitEnd*: float64
+        initMutation*: uint32
 
         # Both:
         loadIndividual*: string
@@ -73,9 +71,7 @@ proc naShowHelpAndQuit*() =
     echo("--amplitude [float64]: Amplitude for population 3 (1.0)")
     echo("--base [float64]: Base for population 3 (1.0)")
     echo("--limitfactor [float64]: Factor for limit change for population 6 (1.01)")
-    echo("--increment [float64]: Increment the fitness limit for each individual. For population 7 (1.0)")
-    echo("--decrement [float64]: Decrement the fitness limit for each iteration. For population 7 (0.1)")
-    echo("--limitend [float64]: Max value for fitness limit for each individual. For population 7 (10.0)")
+    echo("--initmutation [uint324]: Number of mutation before the iteration starts. For population 7 (10)")
 
     echo("--loadindividual [string]: loads the given individual into the population (node) or list of best (server)")
 
@@ -101,9 +97,7 @@ proc naConfigFromCmdLine*(): NAConfiguration =
     result.amplitude = 1.0
     result.base = 1.0
     result.limitFactor = 1.01
-    result.increment = 1.0
-    result.decrement = 0.1
-    result.limitEnd = 10.0
+    result.initMutation = 10
 
     result.loadIndividual = ""
 
@@ -144,14 +138,8 @@ proc naConfigFromCmdLine*(): NAConfiguration =
                 result.amplitude = parseFloat(cmdParser.val)
             elif cmdParser.key == "base":
                 result.base = parseFloat(cmdParser.val)
-            elif cmdParser.key == "limitfactor":
-                result.limitFactor = parseFloat(cmdParser.val)
-            elif cmdParser.key == "increment":
-                result.increment = parseFloat(cmdParser.val)
-            elif cmdParser.key == "decrement":
-                result.decrement = parseFloat(cmdParser.val)
-            elif cmdParser.key == "limitend":
-                result.limitEnd = parseFloat(cmdParser.val)
+            elif cmdParser.key == "initmutation":
+                result.initMutation = uint32(parseUint(cmdParser.val))
             else:
                 naShowHelpAndQuit()
         of cmdArgument:
