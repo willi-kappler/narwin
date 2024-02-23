@@ -41,9 +41,6 @@ type
         # Population 6:
         limitFactor*: float64
 
-        # Population 7:
-        initMutation*: uint32
-
         # Both:
         loadIndividual*: string
 
@@ -71,7 +68,6 @@ proc naShowHelpAndQuit*() =
     echo("--amplitude [float64]: Amplitude for population 3 (1.0)")
     echo("--base [float64]: Base for population 3 (1.0)")
     echo("--limitfactor [float64]: Factor for limit change for population 6 (1.01)")
-    echo("--initmutation [uint324]: Number of mutation before the iteration starts. For population 7 (10)")
 
     echo("--loadindividual [string]: loads the given individual into the population (node) or list of best (server)")
 
@@ -97,7 +93,6 @@ proc naConfigFromCmdLine*(): NAConfiguration =
     result.amplitude = 1.0
     result.base = 1.0
     result.limitFactor = 1.01
-    result.initMutation = 10
 
     result.loadIndividual = ""
 
@@ -138,8 +133,6 @@ proc naConfigFromCmdLine*(): NAConfiguration =
                 result.amplitude = parseFloat(cmdParser.val)
             elif cmdParser.key == "base":
                 result.base = parseFloat(cmdParser.val)
-            elif cmdParser.key == "initmutation":
-                result.initMutation = uint32(parseUint(cmdParser.val))
             else:
                 naShowHelpAndQuit()
         of cmdArgument:
