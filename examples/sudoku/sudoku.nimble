@@ -32,6 +32,24 @@ task runSudoku, "Runs the Sudoku example":
 
     exec "./sudoku -p=100 -i=10000 -k=1 --reset &"
 
+task runSudoku2, "Runs the Sudoku example":
+    #exec "nim c sudoku.nim"
+    exec "nim c -d:release sudoku.nim"
+    exec "./sudoku --server &"
+    exec "sleep 5"
+
+    # Start some nodes
+    exec "./sudoku -p=100 -i=1000 -k=7 --reset &"
+    exec "sleep 1"
+
+    exec "./sudoku -p=100 -i=1000 -k=7 --reset &"
+    exec "sleep 1"
+
+    exec "./sudoku -p=100 -i=1000 -k=7 --reset &"
+    exec "sleep 1"
+
+    exec "./sudoku -p=100 -i=1000 -k=7 --reset &"
+
 task cleanSudoku, "Clean up after calculation":
     exec "rm -f sudoku"
     exec "rm -f *.log"
