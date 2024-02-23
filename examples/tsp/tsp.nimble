@@ -22,18 +22,18 @@ task runTSP, "Runs the TSP example":
     exec "sleep 5"
 
     # Start some nodes:
-    exec "./tsp -p=200 -i=20000 -k=1 --reset &"
+    exec "./tsp -p=100 -i=20000 -k=1 --reset &"
     exec "sleep 1"
 
-    exec "./tsp -p=200 -i=20000 -k=1 --reset &"
+    exec "./tsp -p=100 -i=20000 -k=1 --reset &"
     exec "sleep 1"
 
-    exec "./tsp -p=200 -i=20000 -k=1 --reset &"
+    exec "./tsp -p=100 -i=20000 -k=1 --reset &"
     exec "sleep 1"
 
-    exec "./tsp -p=200 -i=20000 -k=1 --reset &"
+    exec "./tsp -p=100 -i=20000 -k=1 --reset &"
 
-task runTSPX, "Runs the TSP example":
+task runTSP2, "Runs the TSP example":
     # Start the server:
     #exec "nim c tsp.nim"
     exec "nim c -d:release tsp.nim"
@@ -41,16 +41,16 @@ task runTSPX, "Runs the TSP example":
     exec "sleep 5"
 
     # Start some nodes:
-    exec "./tsp -p=200 -i=10000 -k=2 &"
+    exec "./tsp -p=100 -i=20000 -k=1 &"
     exec "sleep 1"
 
-    exec "./tsp -p=200 -i=20000 -k=2 &"
+    exec "./tsp -p=100 -i=20000 -k=7 &"
     exec "sleep 1"
 
-    exec "./tsp -p=200 -i=30000 -k=2 &"
+    exec "./tsp -p=100 -i=20000 -k=1 --reset &"
     exec "sleep 1"
 
-    exec "./tsp -p=200 -i=40000 -k=2 &"
+    exec "./tsp -p=100 -i=20000 -k=7 --reset &"
 
 task cleanTSP, "Clean up after calculation":
     exec "rm -f tsp"
