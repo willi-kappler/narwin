@@ -9,7 +9,6 @@
 
 # Nim std imports
 from std/strformat import fmt
-from std/algorithm import sort
 
 # External imports
 import num_crunch
@@ -22,60 +21,59 @@ import na_population
 type
     NAPopulationNodeDP7 = ref object of NCNodeDataProcessor
         population: NAPopulation
+        limitFactor: float64
 
 method ncProcessData(self: var NAPopulationNodeDP7, inputData: seq[byte]): seq[byte] =
     ncDebug("ncProcessData()", 2)
 
-    self.population.naResetOrAcepptBest(inputData)
+    var tmpIndividual: NAIndividual
 
-    let last = self.population.populationSize
-    let offset1 = last
-    let offset2 = offset1 + last
-    let offset3 = offset2 + last
-    let offset4 = offset3 + last
+    self.population.naReplaceWorst(inputData)
 
-    for i in 0..<self.population.numOfIterations:
-        for j in 0..<last:
-            self.population[j + offset1] = self.population[j]
-            self.population[j + offset2] = self.population[j]
-            self.population[j + offset3] = self.population[j]
-            self.population[j + offset4] = self.population[j]
+    var fitnessLimit: float64
 
-            self.population[j + offset1].naMutate()
+    block iterations:
+        for i in 0..<self.population.numOfIterations:
+            fitnessLimit = self.population[0].fitness
 
-            self.population[j + offset2].naMutate()
-            self.population[j + offset2].naMutate()
+            for j in 0..<self.population.populationSize:
+                tmpIndividual = self.population.naClone(j)
 
-            self.population[j + offset3].naMutate()
-            self.population[j + offset3].naMutate()
-            self.population[j + offset3].naMutate()
+                for _ in 0..<self.population.numOfMutations:
+                    tmpIndividual.naMutate()
+                    tmpIndividual.naCalculateFitness()
 
-            self.population[j + offset4].naMutate()
-            self.population[j + offset4].naMutate()
-            self.population[j + offset4].naMutate()
-            self.population[j + offset4].naMutate()
+                    if tmpIndividual < fitnessLimit:
+                        self.population[j] = tmpIndividual
+                    elif tmpIndividual < self.population[j]:
+                        self.population[j] = tmpIndividual
 
-            self.population[j + offset1].naCalculateFitness()
-            self.population[j + offset2].naCalculateFitness()
-            self.population[j + offset3].naCalculateFitness()
-            self.population[j + offset4].naCalculateFitness()
+                    if tmpIndividual < self.population[0]:
+                        self.population[0] = tmpIndividual
 
-        self.population.naSort()
+                        if tmpIndividual <= self.population.targetFitness:
+                            ncDebug(fmt("Early exit at i: {i}, j: {j}"))
+                            break iterations
 
-        if self.population[0] <= self.population.targetFitness:
-            ncDebug(fmt("Early exit at i: {i}"))
-            break
+                fitnessLimit = fitnessLimit * self.limitFactor
 
-    ncDebug(fmt("Best fitness: {self.population[0].fitness}, worst fitness: {self.population[last - 1].fitness}"))
+    # Find the best and the worst individual at the end:
+    self.population.findBestAndWorstIndividual()
+    ncDebug(fmt("Best fitness: {self.population[0].fitness}, worst fitness: {self.population.worstFitness}"))
 
     return self.population[0].naToBytes()
 
 proc naInitPopulationNodeDP7*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP7 =
     ncInfo("naInitPopulationNodeDP7")
-    ncInfo("The best individual is at index 0, mutate multiple times and sort population by fitness.")
+    ncInfo("Increase the limit factor by index, best individual is at index 0.")
 
-    let initPopulation = newSeq[NAIndividual](5 * config.populationSize)
+    assert config.limitFactor > 1.0
+    ncDebug(fmt("Limit factor: {config.limitFactor}"))
+
+    let initPopulation = newSeq[NAIndividual](config.populationSize)
     var population = naInitPopulation(individual, config, initPopulation)
 
     result = NAPopulationNodeDP7(population: population)
+    result.limitFactor = config.limitFactor
+
 

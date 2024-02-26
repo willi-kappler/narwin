@@ -8,10 +8,7 @@
 ##
 
 # Nim std imports
-import std/deques
-
 from std/strformat import fmt
-from std/random import randomize, rand
 
 # External imports
 import num_crunch
@@ -19,101 +16,73 @@ import num_crunch
 # Local imports
 import na_config
 import na_individual
+import na_population
 
 type
     NAPopulationNodeDP5 = ref object of NCNodeDataProcessor
-        population: Deque[NAIndividual]
-        reset: bool
-        acceptNewBest: bool
-        resetPopulation: bool
-        populationSize: uint32
-        numOfIterations: uint32
-        numOfMutations: uint32
-        targetFitness: float64
+        population: NAPopulation
+        population2: seq[NAIndividual]
+        population3: seq[NAIndividual]
 
 method ncProcessData(self: var NAPopulationNodeDP5, inputData: seq[byte]): seq[byte] =
     ncDebug("ncProcessData()", 2)
 
     var tmpIndividual: NAIndividual
 
-    if self.resetPopulation:
-        ncDebug("Reset the whole population to a random state.")
-        for i in 0..<self.populationSize:
-            self.population[i].naRandomize()
-            self.population[i].naCalculateFitness()
-    elif self.acceptNewBest:
-        tmpIndividual = self.population[0].naClone()
-        tmpIndividual.naFromBytes(inputData)
-        if tmpIndividual < self.population[0]:
-            self.population.addFirst(tmpIndividual.naClone())
-            ncDebug(fmt("Accept individual from server with fitness: {tmpIndividual.fitness}"))
-            ncDebug(fmt("Previous fitness: {self.population[1].fitness}"))
-            # Remove last (worst) individual:
-            self.population.shrink(fromLast = 1)
+    self.population.naReplaceWorst(inputData)
+
+    # The second and third population get only reset once when processing the data:
+    for i in 0..<self.population.populationSize:
+        self.population2[i] = self.population[i].naClone()
+        self.population3[i] = self.population[i].naClone()
 
     block iterations:
-        for i in 0..<self.numOfIterations:
-            for _ in 0..<self.populationSize:
-                let index = rand(int(self.populationSize) - 1)
+        for i in 0..<self.population.numOfIterations:
+            for j in 0..<self.population.populationSize:
+                # Mutate and check first population:
+                tmpIndividual = self.population.naClone(j)
+                tmpIndividual.naMutate()
+                tmpIndividual.naCalculateFitness()
 
-                tmpIndividual = self.population[index].naClone()
+                if tmpIndividual < self.population[j]:
+                    self.population[j] = tmpIndividual
 
-                for _ in 0..<self.numOfMutations:
-                    tmpIndividual.naMutate()
-                    tmpIndividual.naCalculateFitness()
+                # Mutate and check second population:
+                tmpIndividual = self.population2[j].naClone()
+                tmpIndividual.naMutate()
+                tmpIndividual.naCalculateFitness()
 
-                    # Move the best one to the first position:
-                    if tmpIndividual < self.population[0]:
-                        self.population.addFirst(tmpIndividual.naClone())
+                if tmpIndividual < self.population[j]:
+                    self.population[j] = tmpIndividual
 
-                        #ncDebug(fmt("pop[0]: {self.population[0].fitness}, pop[1]: {self.population[1].fitness}"))
+                # Mutate and check third population:
+                self.population3[j].naMutate()
+                self.population3[j].naCalculateFitness()
 
-                        if tmpIndividual <= self.targetFitness:
-                            ncDebug(fmt("Early exit at i: {i}"))
-                            break iterations
+                if self.population3[j] < self.population[j]:
+                    self.population[j] = self.population3[j]
 
-                        # Remove last (worst) individual:
-                        self.population.shrink(fromLast = 1)
+                if self.population[j] <= self.population.targetFitness:
+                    ncDebug(fmt("Early exit at i: {i}"))
+                    break iterations
 
-    ncDebug(fmt("Best fitness: {self.population[0].fitness}, worst fitness: {self.population[^1].fitness}"))
+    # Find the best and the worst individual at the end:
+    self.population.findBestAndWorstIndividual()
+    ncDebug(fmt("Best fitness: {self.population.bestFitness}, worst fitness: {self.population.worstFitness}"))
 
-    return self.population[0].naToBytes()
-
+    return self.population[self.population.bestIndex].naToBytes()
 
 proc naInitPopulationNodeDP5*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP5 =
     ncInfo("naInitPopulationNodeDP5")
-    ncInfo("Push the best one onto the front of the queue. Remove the last (worst) one.")
+    ncInfo("Use three populations, the first one mutates a clone and keeps the best one.")
+    ncInfo("The second one resets at each iteration.")
+    ncInfo("The third one resets at the beginning of the function call before the iteration begins.")
 
-    ncDebug(fmt("Population size: {config.populationSize}"))
-    ncDebug(fmt("Number of iterations: {config.numOfIterations}"))
-    ncDebug(fmt("Number of mutations: {config.numOfMutations}"))
-    ncDebug(fmt("Target fitness: {config.targetFitness}"))
-    ncDebug(fmt("Reset population: {config.resetPopulation}"))
-    ncDebug(fmt("Accept new best from server: {config.acceptNewBest}"))
+    let initPopulation = newSeq[NAIndividual](config.populationSize)
+    var population = naInitPopulation(individual, config, initPopulation)
 
-    randomize()
+    result = NAPopulationNodeDP5(population: population)
 
-    assert config.populationSize > 1
-    assert config.numOfIterations > 0
-    assert config.numOfMutations > 0
-
-    result = NAPopulationNodeDP5()
-
-    result.populationSize = config.populationSize
-    result.numOfIterations = config.numOfIterations
-    result.numOfMutations = config.numOfMutations
-    result.targetFitness = config.targetFitness
-
-    if config.resetPopulation:
-        result.acceptNewBest = false
-    else:
-        result.acceptNewBest = config.acceptNewBest
-
-    result.resetPopulation = config.resetPopulation
-
-    result.population = initDeque[NAIndividual](int(config.populationSize))
-
-    for _ in 0..<config.populationSize:
-        result.population.addLast(individual.naNewRandomIndividual())
-
+    result.population2 = newSeq[NAIndividual](config.populationSize)
+    result.population3 = newSeq[NAIndividual](config.populationSize)
 

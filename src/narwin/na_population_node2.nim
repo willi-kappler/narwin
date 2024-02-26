@@ -9,7 +9,7 @@
 
 # Nim std imports
 from std/strformat import fmt
-from std/random import rand
+from std/algorithm import sort
 
 # External imports
 import num_crunch
@@ -26,36 +26,56 @@ type
 method ncProcessData(self: var NAPopulationNodeDP2, inputData: seq[byte]): seq[byte] =
     ncDebug("ncProcessData()", 2)
 
-    var tmpIndividual: NAIndividual
+    self.population.naResetOrAcepptBest(inputData)
 
-    self.population.naReplaceWorst(inputData)
+    let last = self.population.populationSize
+    let offset1 = last
+    let offset2 = offset1 + last
+    let offset3 = offset2 + last
+    let offset4 = offset3 + last
 
-    block iterations:
-        for i in 0..<self.population.numOfIterations:
-            for j in 0..<self.population.populationSize:
-                tmpIndividual = self.population.naClone(j)
+    for i in 0..<self.population.numOfIterations:
+        for j in 0..<last:
+            self.population[j + offset1] = self.population[j]
+            self.population[j + offset2] = self.population[j]
+            self.population[j + offset3] = self.population[j]
+            self.population[j + offset4] = self.population[j]
 
-                for _ in 0..<self.population.numOfMutations:
-                    tmpIndividual.naMutate()
-                    tmpIndividual.naCalculateFitness()
+            self.population[j + offset1].naMutate()
 
-                    if tmpIndividual < self.population[j]:
-                        self.population[j] = tmpIndividual
-                        if tmpIndividual <= self.population.targetFitness:
-                            ncDebug(fmt("Early exit at i: {i}"))
-                            break iterations
+            self.population[j + offset2].naMutate()
+            self.population[j + offset2].naMutate()
 
-    # Find the best and the worst individual at the end:
-    self.population.findBestAndWorstIndividual()
-    ncDebug(fmt("Best fitness: {self.population.bestFitness}, worst fitness: {self.population.worstFitness}"))
+            self.population[j + offset3].naMutate()
+            self.population[j + offset3].naMutate()
+            self.population[j + offset3].naMutate()
 
-    return self.population[self.population.bestIndex].naToBytes()
+            self.population[j + offset4].naMutate()
+            self.population[j + offset4].naMutate()
+            self.population[j + offset4].naMutate()
+            self.population[j + offset4].naMutate()
+
+            self.population[j + offset1].naCalculateFitness()
+            self.population[j + offset2].naCalculateFitness()
+            self.population[j + offset3].naCalculateFitness()
+            self.population[j + offset4].naCalculateFitness()
+
+        self.population.naSort()
+
+        if self.population[0] <= self.population.targetFitness:
+            ncDebug(fmt("Early exit at i: {i}"))
+            break
+
+    ncDebug(fmt("Best fitness: {self.population[0].fitness}, worst fitness: {self.population[last - 1].fitness}"))
+
+    return self.population[0].naToBytes()
 
 proc naInitPopulationNodeDP2*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP2 =
     ncInfo("naInitPopulationNodeDP2")
-    ncInfo("Mutate a clone and if it's better keep it.")
+    ncInfo("The best individual is at index 0, mutate multiple times and sort population by fitness.")
+    ncInfo("The worst individuals are overwritten.")
 
-    let initPopulation = newSeq[NAIndividual](config.populationSize)
+    let initPopulation = newSeq[NAIndividual](5 * config.populationSize)
     var population = naInitPopulation(individual, config, initPopulation)
 
     result = NAPopulationNodeDP2(population: population)
