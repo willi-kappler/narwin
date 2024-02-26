@@ -37,27 +37,25 @@ method ncProcessData(self: var NAPopulationNodeDP2, inputData: seq[byte]): seq[b
     for i in 0..<self.population.numOfIterations:
         for j in 0..<last:
             self.population[j + offset1] = self.population[j]
-            self.population[j + offset2] = self.population[j]
-            self.population[j + offset3] = self.population[j]
-            self.population[j + offset4] = self.population[j]
-
             self.population[j + offset1].naMutate()
-
-            self.population[j + offset2].naMutate()
-            self.population[j + offset2].naMutate()
-
-            self.population[j + offset3].naMutate()
-            self.population[j + offset3].naMutate()
-            self.population[j + offset3].naMutate()
-
-            self.population[j + offset4].naMutate()
-            self.population[j + offset4].naMutate()
-            self.population[j + offset4].naMutate()
-            self.population[j + offset4].naMutate()
-
             self.population[j + offset1].naCalculateFitness()
+
+            self.population[j + offset2] = self.population[j]
+            self.population[j + offset2].naMutate()
+            self.population[j + offset2].naMutate()
             self.population[j + offset2].naCalculateFitness()
+
+            self.population[j + offset3] = self.population[j]
+            self.population[j + offset3].naMutate()
+            self.population[j + offset3].naMutate()
+            self.population[j + offset3].naMutate()
             self.population[j + offset3].naCalculateFitness()
+
+            self.population[j + offset4] = self.population[j]
+            self.population[j + offset4].naMutate()
+            self.population[j + offset4].naMutate()
+            self.population[j + offset4].naMutate()
+            self.population[j + offset4].naMutate()
             self.population[j + offset4].naCalculateFitness()
 
         self.population.naSort()
