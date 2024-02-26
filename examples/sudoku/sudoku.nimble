@@ -42,13 +42,13 @@ task runSudoku2, "Runs the Sudoku example":
     exec "./sudoku -p=100 -i=1000 -k=2 --reset &"
     exec "sleep 1"
 
-    exec "./sudoku -p=100 -i=1000 -k=2 --reset &"
+    exec "./sudoku -p=100 -i=2000 -k=2 --reset &"
     exec "sleep 1"
 
-    exec "./sudoku -p=100 -i=1000 -k=2 --reset &"
+    exec "./sudoku -p=100 -i=4000 -k=2 --reset &"
     exec "sleep 1"
 
-    exec "./sudoku -p=100 -i=1000 -k=2 --reset &"
+    exec "./sudoku -p=100 -i=8000 -k=2 --reset &"
 
 task cleanSudoku, "Clean up after calculation":
     exec "rm -f sudoku"
