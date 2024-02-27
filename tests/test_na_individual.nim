@@ -125,6 +125,21 @@ proc test6_json() =
     #assert(indi3.data == "Test6")
     assert(indi3.fitness == 5.0)
 
+proc test7_random_individual() =
+    discard
+
+proc test8_load_data() =
+    discard
+
+proc test9_sm() =
+    discard
+
+proc test10_sm() =
+    discard
+
+proc test11_sm_eq() =
+    discard
+
 when isMainModule:
     test1_mutate()
     test2_mutate()
