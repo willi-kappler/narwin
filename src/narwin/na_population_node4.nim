@@ -63,7 +63,7 @@ method ncProcessData(self: var NAPopulationNodeDP4, inputData: seq[byte]): seq[b
 
     ncDebug(fmt("Current best: {currentBest.fitness}"))
     # Find the best and the worst individual at the end:
-    self.population.findBestAndWorstIndividual()
+    self.population.naFindBestAndWorstIndividual()
     ncDebug(fmt("Best fitness: {self.population.bestFitness}, worst fitness: {self.population.worstFitness}"))
 
     return currentBest.naToBytes()

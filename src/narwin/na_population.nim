@@ -41,7 +41,7 @@ proc naGetRandomIndex*(self: NAPopulation): uint32 =
     let last = int(self.populationSize - 1)
     return uint32(rand(last))
 
-proc findWorstIndividual*(self: var NAPopulation) =
+proc naFindWorstIndividual*(self: var NAPopulation) =
     self.worstFitness = self.population[0].fitness
     self.worstIndex = 0
 
@@ -51,7 +51,7 @@ proc findWorstIndividual*(self: var NAPopulation) =
             self.worstFitness = currentFitness
             self.worstIndex = i
 
-proc findBestAndWorstIndividual*(self: var NAPopulation) =
+proc naFindBestAndWorstIndividual*(self: var NAPopulation) =
     self.bestFitness = self.population[0].fitness
     self.bestIndex = 0
     self.worstFitness = self.population[0].fitness
@@ -84,11 +84,11 @@ proc naResetOrAcepptBest*(self: var NAPopulation, inputData: seq[byte]) =
         ncDebug(fmt("Accept individual from server with fitness: {self.population[0].fitness}"))
 
 proc naReplaceWorst*(self: var NAPopulation, inputData: seq[byte]) =
-    self.findWorstIndividual()
+    self.naFindWorstIndividual()
     self.population[self.worstIndex].naFromBytes(inputData)
     ncDebug(fmt("Accept individual from server with fitness: {self.population[self.worstIndex].fitness}"))
 
-    self.findWorstIndividual()
+    self.naFindWorstIndividual()
     self.population[self.worstIndex].naRandomize()
     self.population[self.worstIndex].naCalculateFitness()
 
