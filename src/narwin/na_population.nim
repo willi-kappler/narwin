@@ -98,6 +98,9 @@ proc naClone*(self: NAPopulation, index: uint32): NAIndividual =
 proc `[]`*(self: var NAPopulation, index: uint32): var NAIndividual =
     self.population[index]
 
+proc `[]`*(self: NAPopulation, index: uint32): NAIndividual =
+    self.population[index]
+
 proc `[]=`*(self: var NAPopulation, index: uint32, individual: NAIndividual) =
     self.population[index] = individual.naClone()
 
