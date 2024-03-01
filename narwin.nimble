@@ -12,7 +12,9 @@ requires "num_crunch >= 0.1.0"
 
 # Tasks
 task testAll, "Run all test cases in tests/":
-    exec "testament --print --verbose c /"
+    #exec "testament --print --verbose c /"
+    exec "testament c /"
+    # to run only one test file: testament p "tests/test_na_population.nim"
 
 task checkAll, "run 'nim check' on all source files":
     cd "src/"
