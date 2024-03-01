@@ -125,7 +125,7 @@ proc test6_json() =
     let indi3 = indi2.naFromJSON(jsonValue)
     assertValues(indi3, "Test6", 5.0)
 
-proc test7_random_individual() =
+proc test7_randomIndividual() =
     let indi1 = TestIndividual(data: "Test7")
     var indi2: NAIndividual = indi1
     indi2.naCalculateFitness()
@@ -135,7 +135,7 @@ proc test7_random_individual() =
     assertValues(indi2, "Test7", 5.0)
     assertValues(indi3, "Randomize1", 10.0)
 
-proc test8_load_data() =
+proc test8_loadData() =
     let indi1 = TestIndividual(data: "Test8")
     var indi2: NAIndividual = indi1
     let indi3 = indi2.naLoadData("tests/test_data.json")
@@ -183,8 +183,8 @@ when isMainModule:
     test4_clone()
     test5_bytes()
     test6_json()
-    test7_random_individual()
-    test8_load_data()
+    test7_randomIndividual()
+    test8_loadData()
     test9_sm()
     test10_sm()
     test11_sm_eq()
