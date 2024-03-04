@@ -101,6 +101,17 @@ proc test1_init() =
 
     assert uint32(population.population.len()) == config1.populationSize
 
+    assert population.populationSize == config1.populationSize
+    assert population.numOfIterations == config1.numOfIterations
+    assert population.numOfMutations == config1.numOfMutations
+    assert population.acceptNewBest == config1.acceptNewBest
+    assert population.resetPopulation == config1.resetPopulation
+    assert population.targetFitness == config1.targetFitness
+    assert population.bestIndex == 0
+    assert population.bestFitness == maximumPositiveValue(float64)
+    assert population.worstIndex == 0
+    assert population.worstFitness == 0.0
+
 proc test2_failSize() =
     var config1 = makeConfig()
     config1.populationSize = 0
