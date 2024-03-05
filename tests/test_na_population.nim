@@ -115,7 +115,7 @@ proc test1_init() =
 proc test2_failSize() =
     var config1 = makeConfig()
     config1.populationSize = 0
-    var individual1 = TestIndividual(data: "Test1")
+    var individual1 = TestIndividual(data: "Test2")
     individual1.fitness = 5
     let initPopulation = newSeq[NAIndividual](config1.populationSize)
 
@@ -125,7 +125,7 @@ proc test2_failSize() =
 proc test3_failIteration() =
     var config1 = makeConfig()
     config1.numOfIterations = 0
-    var individual1 = TestIndividual(data: "Test1")
+    var individual1 = TestIndividual(data: "Test3")
     individual1.fitness = 5
     let initPopulation = newSeq[NAIndividual](config1.populationSize)
 
@@ -135,7 +135,7 @@ proc test3_failIteration() =
 proc test4_failMutation() =
     var config1 = makeConfig()
     config1.numOfMutations = 0
-    var individual1 = TestIndividual(data: "Test1")
+    var individual1 = TestIndividual(data: "Test4")
     individual1.fitness = 5
     let initPopulation = newSeq[NAIndividual](config1.populationSize)
 
@@ -144,7 +144,7 @@ proc test4_failMutation() =
 
 proc test5_randomIndex() =
     let config1 = makeConfig()
-    var individual1 = TestIndividual(data: "Test1")
+    var individual1 = TestIndividual(data: "Test5")
     individual1.fitness = 5
     let initPopulation = newSeq[NAIndividual](config1.populationSize)
     let population = naInitPopulation(individual1, config1, initPopulation)
@@ -156,7 +156,7 @@ proc test5_randomIndex() =
 
 proc test6_findIndividual() =
     let config1 = makeConfig()
-    var individual1 = TestIndividual(data: "Test1")
+    var individual1 = TestIndividual(data: "Test6")
     individual1.fitness = 5
     let initPopulation = newSeq[NAIndividual](config1.populationSize)
     var population = naInitPopulation(individual1, config1, initPopulation)
@@ -193,7 +193,7 @@ proc test6_findIndividual() =
 
 proc test7_resetPopulation() =
     let config1 = makeConfig()
-    var individual1 = TestIndividual(data: "Test1")
+    var individual1 = TestIndividual(data: "Test7")
     individual1.fitness = 5
     let initPopulation = newSeq[NAIndividual](config1.populationSize)
     fakeStrings.i = 0
@@ -226,6 +226,15 @@ proc test7_resetPopulation() =
     assert population.bestFitness == maximumPositiveValue(float64)
     assert population.worstIndex == 0
     assert population.worstFitness == 0.0
+
+proc test8_() =
+    let config1 = makeConfig()
+    var individual1 = TestIndividual(data: "Test8")
+    individual1.fitness = 5
+    let initPopulation = newSeq[NAIndividual](config1.populationSize)
+    fakeStrings.i = 0
+    var population = naInitPopulation(individual1, config1, initPopulation)
+
 
 when isMainModule:
     test1_init()
