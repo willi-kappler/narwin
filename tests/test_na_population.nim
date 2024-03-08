@@ -227,9 +227,49 @@ proc test7_resetPopulation() =
     assert population.worstIndex == 0
     assert population.worstFitness == 0.0
 
-proc test8_() =
+proc test8_resetOrAccept() =
     let config1 = makeConfig()
     var individual1 = TestIndividual(data: "Test8")
+    individual1.fitness = 5
+    let initPopulation = newSeq[NAIndividual](config1.populationSize)
+    fakeStrings.i = 0
+    var population = naInitPopulation(individual1, config1, initPopulation)
+
+proc test9_replaceWorst() =
+    let config1 = makeConfig()
+    var individual1 = TestIndividual(data: "Test9")
+    individual1.fitness = 5
+    let initPopulation = newSeq[NAIndividual](config1.populationSize)
+    fakeStrings.i = 0
+    var population = naInitPopulation(individual1, config1, initPopulation)
+
+proc test10_clone() =
+    let config1 = makeConfig()
+    var individual1 = TestIndividual(data: "Test10")
+    individual1.fitness = 5
+    let initPopulation = newSeq[NAIndividual](config1.populationSize)
+    fakeStrings.i = 0
+    var population = naInitPopulation(individual1, config1, initPopulation)
+
+proc test11_index1() =
+    let config1 = makeConfig()
+    var individual1 = TestIndividual(data: "Test11")
+    individual1.fitness = 5
+    let initPopulation = newSeq[NAIndividual](config1.populationSize)
+    fakeStrings.i = 0
+    var population = naInitPopulation(individual1, config1, initPopulation)
+
+proc test12_index2() =
+    let config1 = makeConfig()
+    var individual1 = TestIndividual(data: "Test12")
+    individual1.fitness = 5
+    let initPopulation = newSeq[NAIndividual](config1.populationSize)
+    fakeStrings.i = 0
+    var population = naInitPopulation(individual1, config1, initPopulation)
+
+proc test13_index3() =
+    let config1 = makeConfig()
+    var individual1 = TestIndividual(data: "Test13")
     individual1.fitness = 5
     let initPopulation = newSeq[NAIndividual](config1.populationSize)
     fakeStrings.i = 0
