@@ -331,7 +331,7 @@ proc test10_clone() =
     assert population.worstIndex == 0
     assert population.worstFitness == 0.0
 
-proc test11_index1() =
+proc test11_index() =
     let config1 = makeConfig()
     var individual1 = TestIndividual(data: "Test11")
     individual1.fitness = 5.0
@@ -339,22 +339,32 @@ proc test11_index1() =
     fakeStrings.i = 0
     var population = naInitPopulation(individual1, config1, initPopulation)
 
-proc test12_index2() =
-    let config1 = makeConfig()
-    var individual1 = TestIndividual(data: "Test12")
-    individual1.fitness = 5.0
-    let initPopulation = newSeq[NAIndividual](config1.populationSize)
-    fakeStrings.i = 0
-    var population = naInitPopulation(individual1, config1, initPopulation)
+    assertValues(population[0'u32], "v1", 2.0)
+    assertValues(population[1'u32], "v22", 3.0)
+    assertValues(population[2'u32], "v333", 4.0)
+    assertValues(population[3'u32], "Test11", 6.0)
+    assertValues(population[4'u32], "v999999999", 10.0)
 
-proc test13_index3() =
-    let config1 = makeConfig()
-    var individual1 = TestIndividual(data: "Test13")
-    individual1.fitness = 5.0
-    let initPopulation = newSeq[NAIndividual](config1.populationSize)
-    fakeStrings.i = 0
-    var population = naInitPopulation(individual1, config1, initPopulation)
+    population[0'u32].fitness = 9.72
+    assertValues(population[0'u32], "v1", 9.72)
 
+    individual1.data = "Aziza"
+    individual1.fitness = 97.2
+
+    population[1'u32] = individual1
+    assertValues(population[1'u32], "Aziza", 97.2)
+
+    assert uint32(population.population.len()) == config1.populationSize
+    assert population.populationSize == config1.populationSize
+    assert population.numOfIterations == config1.numOfIterations
+    assert population.numOfMutations == config1.numOfMutations
+    assert population.acceptNewBest == config1.acceptNewBest
+    assert population.resetPopulation == config1.resetPopulation
+    assert population.targetFitness == config1.targetFitness
+    assert population.bestIndex == 0
+    assert population.bestFitness == maximumPositiveValue(float64)
+    assert population.worstIndex == 0
+    assert population.worstFitness == 0.0
 
 when isMainModule:
     test1_init()
@@ -367,5 +377,5 @@ when isMainModule:
     test8_resetOrAccept()
     test9_replaceWorst()
     test10_clone()
-
+    test11_index()
 
