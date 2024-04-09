@@ -299,12 +299,37 @@ proc test9_replaceWorst() =
 proc test10_clone() =
     let config1 = makeConfig()
     var individual1 = TestIndividual(data: "Test10")
-    individual1.fitness = 5.0
+    individual1.fitness = 6.0
     let initPopulation = newSeq[NAIndividual](config1.populationSize)
     fakeStrings.i = 0
     var population = naInitPopulation(individual1, config1, initPopulation)
 
+    let indi0 = population.naClone(0)
+    assertValues(indi0, "v1", 2.0)
 
+    let indi1 = population.naClone(1)
+    assertValues(indi1, "v22", 3.0)
+
+    let indi2 = population.naClone(2)
+    assertValues(indi2, "v333", 4.0)
+
+    let indi3 = population.naClone(3)
+    assertValues(indi3, "Test10", 6.0)
+
+    let indi4 = population.naClone(4)
+    assertValues(indi4, "v999999999", 10.0)
+
+    assert uint32(population.population.len()) == config1.populationSize
+    assert population.populationSize == config1.populationSize
+    assert population.numOfIterations == config1.numOfIterations
+    assert population.numOfMutations == config1.numOfMutations
+    assert population.acceptNewBest == config1.acceptNewBest
+    assert population.resetPopulation == config1.resetPopulation
+    assert population.targetFitness == config1.targetFitness
+    assert population.bestIndex == 0
+    assert population.bestFitness == maximumPositiveValue(float64)
+    assert population.worstIndex == 0
+    assert population.worstFitness == 0.0
 
 proc test11_index1() =
     let config1 = makeConfig()
@@ -341,5 +366,6 @@ when isMainModule:
     test7_resetPopulation()
     test8_resetOrAccept()
     test9_replaceWorst()
+    test10_clone()
 
 
