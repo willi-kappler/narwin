@@ -29,7 +29,8 @@ var fakeStrings* = FakeRandom(i: 0, values: @[
         "v55555",
         "v88888888",
         "vvvvvvvvvvv",
-        "v4444"
+        "v4444",
+        "v"
     ])
 
 proc nextRandomValue(): string =
@@ -69,6 +70,11 @@ proc assertValues*(individual: NAIndividual, data: string, fitness: float64) =
     let msg = fmt("\n----------\nJSON not equal:\nleft: {j1}\nright: {j2}\n----------\n")
 
     assert(j1 == j2, msg)
+
+proc assertValues*(binaryIndividual: seq[byte], data: string, fitness: float64) =
+    var individual: NAIndividual = TestIndividual()
+    individual.naFromBytes(binaryIndividual)
+    assertValues(individual, data, fitness)
 
 proc makeConfig*: NAConfiguration =
     result.serverMode = false
