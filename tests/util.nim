@@ -3,6 +3,7 @@
 import std/json
 import std/jsonutils
 from std/strformat import fmt
+from std/random import rand
 
 # External imports
 import num_crunch
@@ -14,6 +15,9 @@ import narwin/na_individual
 type
     TestIndividual1* = ref object of NAIndividual
         data*: string
+
+    TestIndividual2* = ref object of NAIndividual
+        data*: seq[uint8]
 
     FakeRandom = object
         i*: uint32
@@ -39,6 +43,7 @@ proc nextRandomValue(): string =
     if fakeStrings.i > uint32(fakeStrings.values.high):
         fakeStrings.i = 0
 
+# TestIndividual1:
 method naMutate*(self: var TestIndividual1) =
     self.data = nextRandomValue()
 
@@ -64,6 +69,41 @@ method naToJSON*(self: TestIndividual1): JsonNode =
 method naFromJSON*(self: TestIndividual1, data: JsonNode): NAIndividual =
     return data.jsonTo(TestIndividual1)
 
+# TestIndividual2:
+method naMutate*(self: var TestIndividual2) =
+    let i = rand(self.data.len - 1)
+    self.data[i] = uint8(rand(1))
+
+method naRandomize*(self: var TestIndividual2) =
+    for i in 0..<self.data.len:
+        self.data[i] = uint8(rand(1))
+
+method naCalculateFitness*(self: var TestIndividual2) =
+    var c = 0
+
+    for i in 0..<self.data.len:
+        if self.data[i] == 0:
+            inc(c)
+
+    self.fitness = float64(c)
+
+method naClone*(self: TestIndividual2): NAIndividual =
+    result = TestIndividual2(data: self.data)
+    result.fitness = self.fitness
+
+method naToBytes*(self: TestIndividual2): seq[byte] =
+    ncToBytes(self)
+
+method naFromBytes*(self: var TestIndividual2, data: seq[byte]) =
+    self = ncFromBytes(data, TestIndividual2)
+
+method naToJSON*(self: TestIndividual2): JsonNode =
+    self.toJson()
+
+method naFromJSON*(self: TestIndividual2, data: JsonNode): NAIndividual =
+    return data.jsonTo(TestIndividual2)
+
+# Test helper functions
 proc assertValues*(individual: NAIndividual, data: string, fitness: float64) =
     let j1 = individual.naToJSON()
     let j2 = %* {"data": data, "fitness": fitness}
@@ -72,6 +112,18 @@ proc assertValues*(individual: NAIndividual, data: string, fitness: float64) =
     assert(j1 == j2, msg)
 
 proc assertValues*(binaryIndividual: seq[byte], data: string, fitness: float64) =
+    var individual: NAIndividual = TestIndividual1()
+    individual.naFromBytes(binaryIndividual)
+    assertValues(individual, data, fitness)
+
+proc assertValues*(individual: NAIndividual, data: seq[uint8], fitness: float64) =
+    let j1 = individual.naToJSON()
+    let j2 = %* {"data": data, "fitness": fitness}
+    let msg = fmt("\n----------\nJSON not equal:\nleft: {j1}\nright: {j2}\n----------\n")
+
+    assert(j1 == j2, msg)
+
+proc assertValues*(binaryIndividual: seq[byte], data: seq[uint8], fitness: float64) =
     var individual: NAIndividual = TestIndividual1()
     individual.naFromBytes(binaryIndividual)
     assertValues(individual, data, fitness)
