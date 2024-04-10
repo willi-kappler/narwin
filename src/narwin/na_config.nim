@@ -12,7 +12,6 @@ import std/parseopt
 
 from std/strformat import fmt
 from std/strutils import parseUint, parseFloat, parseBool, split
-from std/sequtils import mapIt
 from os import getAppFilename, splitPath
 
 type
