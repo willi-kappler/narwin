@@ -12,58 +12,6 @@ import narwin/na_individual
 import narwin/na_population
 import util
 
-type
-    TestIndividual = ref object of NAIndividual
-        data: string
-
-    FakeRandom = object
-        i: uint32
-        values: seq[string]
-
-var fakeStrings = FakeRandom(i: 0, values: @[
-        "v22",
-        "v1",
-        "v999999999",
-        "v333",
-        "v666666",
-        "v7777777",
-        "v55555",
-        "v88888888",
-        "vvvvvvvvvvv",
-        "v4444"
-    ])
-
-proc nextRandomValue(): string =
-    result = fakeStrings.values[fakeStrings.i]
-    inc(fakeStrings.i)
-    if fakeStrings.i > uint32(fakeStrings.values.high):
-        fakeStrings.i = 0
-
-method naMutate*(self: var TestIndividual) =
-    self.data = nextRandomValue()
-
-method naRandomize*(self: var TestIndividual) =
-    self.data = nextRandomValue()
-
-method naCalculateFitness*(self: var TestIndividual) =
-    self.fitness = float64(self.data.len())
-
-method naClone*(self: TestIndividual): NAIndividual =
-    result = TestIndividual(data: self.data)
-    result.fitness = self.fitness
-
-method naToBytes*(self: TestIndividual): seq[byte] =
-    ncToBytes(self)
-
-method naFromBytes*(self: var TestIndividual, data: seq[byte]) =
-    self = ncFromBytes(data, TestIndividual)
-
-method naToJSON*(self: TestIndividual): JsonNode =
-    self.toJson()
-
-method naFromJSON*(self: TestIndividual, data: JsonNode): NAIndividual =
-    return data.jsonTo(TestIndividual)
-
 proc makeConfig: NAConfiguration =
     result.serverMode = false
     result.targetFitness = 0.0
