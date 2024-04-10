@@ -12,7 +12,7 @@ import narwin/na_config
 import narwin/na_individual
 
 type
-    TestIndividual* = ref object of NAIndividual
+    TestIndividual1* = ref object of NAIndividual
         data*: string
 
     FakeRandom = object
@@ -39,30 +39,30 @@ proc nextRandomValue(): string =
     if fakeStrings.i > uint32(fakeStrings.values.high):
         fakeStrings.i = 0
 
-method naMutate*(self: var TestIndividual) =
+method naMutate*(self: var TestIndividual1) =
     self.data = nextRandomValue()
 
-method naRandomize*(self: var TestIndividual) =
+method naRandomize*(self: var TestIndividual1) =
     self.data = nextRandomValue()
 
-method naCalculateFitness*(self: var TestIndividual) =
+method naCalculateFitness*(self: var TestIndividual1) =
     self.fitness = float64(self.data.len())
 
-method naClone*(self: TestIndividual): NAIndividual =
-    result = TestIndividual(data: self.data)
+method naClone*(self: TestIndividual1): NAIndividual =
+    result = TestIndividual1(data: self.data)
     result.fitness = self.fitness
 
-method naToBytes*(self: TestIndividual): seq[byte] =
+method naToBytes*(self: TestIndividual1): seq[byte] =
     ncToBytes(self)
 
-method naFromBytes*(self: var TestIndividual, data: seq[byte]) =
-    self = ncFromBytes(data, TestIndividual)
+method naFromBytes*(self: var TestIndividual1, data: seq[byte]) =
+    self = ncFromBytes(data, TestIndividual1)
 
-method naToJSON*(self: TestIndividual): JsonNode =
+method naToJSON*(self: TestIndividual1): JsonNode =
     self.toJson()
 
-method naFromJSON*(self: TestIndividual, data: JsonNode): NAIndividual =
-    return data.jsonTo(TestIndividual)
+method naFromJSON*(self: TestIndividual1, data: JsonNode): NAIndividual =
+    return data.jsonTo(TestIndividual1)
 
 proc assertValues*(individual: NAIndividual, data: string, fitness: float64) =
     let j1 = individual.naToJSON()
@@ -72,7 +72,7 @@ proc assertValues*(individual: NAIndividual, data: string, fitness: float64) =
     assert(j1 == j2, msg)
 
 proc assertValues*(binaryIndividual: seq[byte], data: string, fitness: float64) =
-    var individual: NAIndividual = TestIndividual()
+    var individual: NAIndividual = TestIndividual1()
     individual.naFromBytes(binaryIndividual)
     assertValues(individual, data, fitness)
 

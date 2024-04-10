@@ -13,7 +13,7 @@ proc test1() =
     var config1 = makeConfig()
     config1.resetPopulation = true
     config1.numOfIterations = 1
-    var individual1 = TestIndividual(data: "Test1")
+    var individual1 = TestIndividual1(data: "Test1")
     individual1.fitness = 5.0
     let binaryIndividual1 = individual1.naToBytes()
 

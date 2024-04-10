@@ -11,36 +11,36 @@ import narwin/na_individual
 import util
 
 type
-    TestIndividual = ref object of NAIndividual
+    TestIndividual1 = ref object of NAIndividual
         data: string
 
-method naMutate*(self: var TestIndividual) =
+method naMutate*(self: var TestIndividual1) =
     self.data = "Mutate1"
 
-method naRandomize*(self: var TestIndividual) =
+method naRandomize*(self: var TestIndividual1) =
     self.data = "Randomize1"
 
-method naCalculateFitness*(self: var TestIndividual) =
+method naCalculateFitness*(self: var TestIndividual1) =
     self.fitness = float64(self.data.len())
 
-method naClone*(self: TestIndividual): NAIndividual =
-    result = TestIndividual(data: self.data)
+method naClone*(self: TestIndividual1): NAIndividual =
+    result = TestIndividual1(data: self.data)
     result.fitness = self.fitness
 
-method naToBytes*(self: TestIndividual): seq[byte] =
+method naToBytes*(self: TestIndividual1): seq[byte] =
     ncToBytes(self)
 
-method naFromBytes*(self: var TestIndividual, data: seq[byte]) =
-    self = ncFromBytes(data, TestIndividual)
+method naFromBytes*(self: var TestIndividual1, data: seq[byte]) =
+    self = ncFromBytes(data, TestIndividual1)
 
-method naToJSON*(self: TestIndividual): JsonNode =
+method naToJSON*(self: TestIndividual1): JsonNode =
     self.toJson()
 
-method naFromJSON*(self: TestIndividual, data: JsonNode): NAIndividual =
-    return data.jsonTo(TestIndividual)
+method naFromJSON*(self: TestIndividual1, data: JsonNode): NAIndividual =
+    return data.jsonTo(TestIndividual1)
 
 proc test1_mutate() =
-    var indi1 = TestIndividual(data: "Test1")
+    var indi1 = TestIndividual1(data: "Test1")
     assert(indi1.data == "Test1")
     assert(indi1.fitness == 0.0)
 
@@ -51,7 +51,7 @@ proc test1_mutate() =
     assertValues(indi2, "Mutate1", 0.0)
 
 proc test2_mutate() =
-    var indi1 = TestIndividual(data: "Test2")
+    var indi1 = TestIndividual1(data: "Test2")
     var indi2: NAIndividual = indi1
     indi2.naCalculateFitness()
     assert(indi1.data == "Test2")
@@ -69,7 +69,7 @@ proc test2_mutate() =
     assertValues(indi2, "Mutate1", 7.0)
 
 proc test3_randomize() =
-    let indi1 = TestIndividual(data: "Test3")
+    let indi1 = TestIndividual1(data: "Test3")
 
     var indi2: NAIndividual = indi1
     indi2.naRandomize()
@@ -81,7 +81,7 @@ proc test3_randomize() =
     assertValues(indi2, "Randomize1", 10.0)
 
 proc test4_clone() =
-    var indi1 = TestIndividual(data: "Test4")
+    var indi1 = TestIndividual1(data: "Test4")
     var indi2: NAIndividual = indi1
     indi2.naCalculateFitness()
 
@@ -96,7 +96,7 @@ proc test4_clone() =
     assertValues(indi3, "Test4", 5.0)
 
 proc test5_bytes() =
-    var indi1 = TestIndividual(data: "Test5")
+    var indi1 = TestIndividual1(data: "Test5")
     var indi2: NAIndividual = indi1
     indi2.naCalculateFitness()
 
@@ -111,7 +111,7 @@ proc test5_bytes() =
     assertValues(indi2, "Test5", 5.0)
 
 proc test6_json() =
-    let indi1 = TestIndividual(data: "Test6")
+    let indi1 = TestIndividual1(data: "Test6")
     var indi2: NAIndividual = indi1
     indi2.naCalculateFitness()
 
@@ -126,7 +126,7 @@ proc test6_json() =
     assertValues(indi3, "Test6", 5.0)
 
 proc test7_randomIndividual() =
-    let indi1 = TestIndividual(data: "Test7")
+    let indi1 = TestIndividual1(data: "Test7")
     var indi2: NAIndividual = indi1
     indi2.naCalculateFitness()
 
@@ -136,18 +136,18 @@ proc test7_randomIndividual() =
     assertValues(indi3, "Randomize1", 10.0)
 
 proc test8_loadData() =
-    let indi1 = TestIndividual(data: "Test8")
+    let indi1 = TestIndividual1(data: "Test8")
     var indi2: NAIndividual = indi1
     let indi3 = indi2.naLoadData("tests/test_data.json")
     assertValues(indi2, "Test8", 0.0)
     assertValues(indi3, "Some test data", 14.0)
 
 proc test9_sm() =
-    let indi1 = TestIndividual(data: "Test9")
+    let indi1 = TestIndividual1(data: "Test9")
     var indi2: NAIndividual = indi1
     indi2.naCalculateFitness()
 
-    let indi3 = TestIndividual(data: "Test9 Bigger")
+    let indi3 = TestIndividual1(data: "Test9 Bigger")
     var indi4: NAIndividual = indi3
     indi4.naCalculateFitness()
 
@@ -160,7 +160,7 @@ proc test9_sm() =
     assert(indi2 < indi4)
 
 proc test10_sm() =
-    var indi1 = TestIndividual(data: "Test10")
+    var indi1 = TestIndividual1(data: "Test10")
     var indi2: NAIndividual = indi1
     indi2.naCalculateFitness()
     assertValues(indi2, "Test10", 6.0)
@@ -168,7 +168,7 @@ proc test10_sm() =
     assert(indi2 < 7.0)
 
 proc test11_sm_eq() =
-    var indi1 = TestIndividual(data: "Test11")
+    var indi1 = TestIndividual1(data: "Test11")
     var indi2: NAIndividual = indi1
     indi2.naCalculateFitness()
     assertValues(indi2, "Test11", 6.0)
