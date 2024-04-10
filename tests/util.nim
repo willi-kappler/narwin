@@ -8,6 +8,7 @@ from std/strformat import fmt
 import num_crunch
 
 # Local imports
+import narwin/na_config
 import narwin/na_individual
 
 type
@@ -68,4 +69,26 @@ proc assertValues*(individual: NAIndividual, data: string, fitness: float64) =
     let msg = fmt("\n----------\nJSON not equal:\nleft: {j1}\nright: {j2}\n----------\n")
 
     assert(j1 == j2, msg)
+
+proc makeConfig*: NAConfiguration =
+    result.serverMode = false
+    result.targetFitness = 0.0
+    result.resultFilename = ""
+    result.saveNewFitness = true
+    result.sameFitness = false
+    result.shareOnyBest = false
+
+    result.populationSize = 5
+    result.numOfIterations = 10
+    result.numOfMutations = 2
+    result.acceptNewBest = true
+    result.resetPopulation = false
+    result.populationKind = 1
+
+    result.dt = 0.001
+    result.amplitude = 1.0
+    result.base = 1.0
+    result.limitFactor = 1.01
+
+    result.loadIndividual = ""
 

@@ -7,32 +7,9 @@ from std/fenv import maximumPositiveValue
 import num_crunch
 
 # Local imports
-import narwin/na_config
 import narwin/na_individual
 import narwin/na_population
 import util
-
-proc makeConfig: NAConfiguration =
-    result.serverMode = false
-    result.targetFitness = 0.0
-    result.resultFilename = ""
-    result.saveNewFitness = true
-    result.sameFitness = false
-    result.shareOnyBest = false
-
-    result.populationSize = 5
-    result.numOfIterations = 10
-    result.numOfMutations = 2
-    result.acceptNewBest = true
-    result.resetPopulation = false
-    result.populationKind = 1
-
-    result.dt = 0.001
-    result.amplitude = 1.0
-    result.base = 1.0
-    result.limitFactor = 1.01
-
-    result.loadIndividual = ""
 
 proc test1_init() =
     let config1 = makeConfig()
