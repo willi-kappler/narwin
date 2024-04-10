@@ -11,7 +11,7 @@ import narwin/na_individual
 import util
 
 type
-    TestIndividual* = ref object of NAIndividual
+    TestIndividual = ref object of NAIndividual
         data: string
 
 method naMutate*(self: var TestIndividual) =

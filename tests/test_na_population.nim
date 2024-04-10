@@ -13,7 +13,7 @@ import narwin/na_population
 import util
 
 type
-    TestIndividual* = ref object of NAIndividual
+    TestIndividual = ref object of NAIndividual
         data: string
 
     FakeRandom = object
