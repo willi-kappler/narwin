@@ -124,7 +124,7 @@ proc assertValues*(individual: NAIndividual, data: seq[uint8], fitness: float64)
     assert(j1 == j2, msg)
 
 proc assertValues*(binaryIndividual: seq[byte], data: seq[uint8], fitness: float64) =
-    var individual: NAIndividual = TestIndividual1()
+    var individual: NAIndividual = TestIndividual2()
     individual.naFromBytes(binaryIndividual)
     assertValues(individual, data, fitness)
 
