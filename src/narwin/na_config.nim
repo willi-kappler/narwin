@@ -16,6 +16,7 @@ from os import getAppFilename, splitPath
 
 type
     NAConfiguration* = object
+        ## Configuration options for Narwin.
         # Server:
         serverMode*: bool
         targetFitness*: float64
@@ -44,6 +45,7 @@ type
         loadIndividual*: string
 
 proc naShowHelpAndQuit*() =
+    ## Just shows a help message with command line options and quit.
     let path = getAppFilename()
     let name = splitPath(path)[1]
 
@@ -73,6 +75,7 @@ proc naShowHelpAndQuit*() =
     quit()
 
 proc naConfigFromCmdLine*(): NAConfiguration =
+    ## Extract the command line options and put them into the configuration.
     # Default values:
     result.serverMode = false
     result.targetFitness = 0.0
