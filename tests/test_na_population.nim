@@ -1,3 +1,12 @@
+## This module is part of narwin: https://github.com/willi-kappler/narwin
+##
+## Written by Willi Kappler, License: MIT
+##
+## This Nim library allows you to write programs using evolutionary algorithms.
+##
+## This file contains the test cases for NAPopulation.
+##
+
 # Nim std imports
 import std/json
 import std/jsonutils

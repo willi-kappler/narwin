@@ -1,5 +1,11 @@
-
-
+## This module is part of narwin: https://github.com/willi-kappler/narwin
+##
+## Written by Willi Kappler, License: MIT
+##
+## This Nim library allows you to write programs using evolutionary algorithms.
+##
+## This file contains the test cases for population kind 5 (NAPopulationNodeDP5)
+##
 
 # Nim std imports
 from std/random import randomize
