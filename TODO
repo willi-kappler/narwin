@@ -1,7 +1,6 @@
 TODO:
 
-- Refactor code to make it testable.
-- Then write test cases.
+- Write documentation!
 - Use compiler options: --styleCheck:usages --styleCheck:error
 - Share optimal solutions between different servers.
 
@@ -26,13 +25,15 @@ TODO:
 
 Done:
 
-- Add a first implementation.
-- Add a first example.
-- Add na_population, refactor na_population_node 1 to 3.
-- Add option for random amount of mutation: let m = rand(self.numOfMutations - 1) + 1.
-- Allow to use just one set of mutation operation for one population.
-- Add option to always send the best global individual to each population
-- Allow to load saved individuals at startup.
-- Refactor: individual1.fitness < individual2.fitness to individual1 < individual2
+# Add a first implementation.
+# Add a first example.
+# Add na_population, refactor na_population_node 1 to 3.
+# Add option for random amount of mutation: let m = rand(self.numOfMutations - 1) + 1.
+# Allow to use just one set of mutation operation for one population.
+# Add option to always send the best global individual to each population
+# Allow to load saved individuals at startup.
+# Refactor: individual1.fitness < individual2.fitness to individual1 < individual2
+# Refactor code to make it testable.
+# Then write test cases.
 
 
