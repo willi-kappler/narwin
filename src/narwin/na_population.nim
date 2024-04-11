@@ -2,9 +2,11 @@
 ##
 ## Written by Willi Kappler, License: MIT
 ##
-## This module contains the implementation of the node code from num_crunch.
-##
 ## This Nim library allows you to write programs using evolutionary algorithms.
+##
+## This module contains the implementation of the node code from num_crunch.
+## The NAPopulation structure is used in the various population node implementations:
+## NAPopulationNodeDP1, NAPopulationNodeDP2, ...
 ##
 
 # Nim std imports
@@ -22,6 +24,7 @@ import na_individual
 
 type
     NAPopulation* = object
+        ## This structure contains common data that is shared between the dataprocessing populations.
         population*: seq[NAIndividual]
         populationSize*: uint32
         numOfIterations*: uint32
@@ -36,10 +39,12 @@ type
         worstFitness*: float64
 
 proc naGetRandomIndex*(self: NAPopulation): uint32 =
+    ## Returns a valid random index for the population.
     let last = int(self.populationSize - 1)
     return uint32(rand(last))
 
 proc naFindWorstIndividual*(self: var NAPopulation) =
+    ## Find the individual with the worst fitness and stores the index and the fitness.
     self.worstFitness = self.population[0].fitness
     self.worstIndex = 0
 
@@ -50,6 +55,8 @@ proc naFindWorstIndividual*(self: var NAPopulation) =
             self.worstIndex = i
 
 proc naFindBestAndWorstIndividual*(self: var NAPopulation) =
+    ## Find the individual with the best fitness and find the individual with the worst fitness.
+    ## Stores both indices and fitnesses.
     self.bestFitness = self.population[0].fitness
     self.bestIndex = 0
     self.worstFitness = self.population[0].fitness
@@ -65,15 +72,19 @@ proc naFindBestAndWorstIndividual*(self: var NAPopulation) =
             self.worstIndex = i
 
 proc naSort*(self: var NAPopulation) =
+    ## Sort the whole population by fitness.
     self.population.sort do (a: NAIndividual, b: NAIndividual) -> int:
         return cmp(a.fitness, b.fitness)
 
 proc naResetPopulation*(self: var NAPopulation) =
+    ## Resets the whole population by totally randomizing all individuals.
     for i in 0..<self.populationSize:
         self.population[i].naRandomize()
         self.population[i].naCalculateFitness()
 
 proc naResetOrAcepptBest*(self: var NAPopulation, inputData: seq[byte]) =
+    ## Ether resets the whole population or accepts the new best individual from the server.
+    ## The new best individual is stored at index 0.
     if self.resetPopulation:
         ncDebug("Reset the whole population to random values")
         self.naResetPopulation()
@@ -82,6 +93,7 @@ proc naResetOrAcepptBest*(self: var NAPopulation, inputData: seq[byte]) =
         ncDebug(fmt("Accept individual from server with fitness: {self.population[0].fitness}"))
 
 proc naReplaceWorst*(self: var NAPopulation, inputData: seq[byte]) =
+    ## Finds the worst individual and replaceses it with the given one.
     self.naFindWorstIndividual()
     self.population[self.worstIndex].naFromBytes(inputData)
     ncDebug(fmt("Accept individual from server with fitness: {self.population[self.worstIndex].fitness}"))
@@ -91,22 +103,28 @@ proc naReplaceWorst*(self: var NAPopulation, inputData: seq[byte]) =
     self.population[self.worstIndex].naCalculateFitness()
 
 proc naClone*(self: NAPopulation, index: uint32): NAIndividual =
+    ## Clones the individual at the given index.
     self.population[index].naClone()
 
 proc `[]`*(self: var NAPopulation, index: uint32): var NAIndividual =
+    ## Mutable index into the population.
     self.population[index]
 
 proc `[]`*(self: NAPopulation, index: uint32): NAIndividual =
+    ## Non-mutable index into the population.
     self.population[index]
 
 proc `[]=`*(self: var NAPopulation, index: uint32, individual: NAIndividual) =
+    ## Replace the individual at the given index with the given individual.
     self.population[index] = individual.naClone()
 
 proc naLoadIntoPosition*(self: var NAPopulation, fileName: string, index: int) =
+    ## Loads an individual from the given file and replaceses the individual at the given index with it.
     let individual = self.population[0].naLoadData(fileName)
     self.population[index] = individual.naclone()
 
 proc naInitPopulation*(individual: NAIndividual, config: NAConfiguration, initPopulation: seq[NAIndividual]): NAPopulation =
+    ## Constructor for a new population with the given config.
     ncDebug(fmt("Population size: {config.populationSize}"))
     ncDebug(fmt("Number of iterations: {config.numOfIterations}"))
     ncDebug(fmt("Number of mutations: {config.numOfMutations}"))
