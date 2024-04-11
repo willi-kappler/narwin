@@ -10,7 +10,7 @@ Evolutionary algorithms with Nim [Nim](https://nim-lang.org/ "The Nim programmin
 
 (Keywords: evolution, genetic, scientific computing)
 
-Version: 0.1 (2024.01.xx)
+Version: 0.1 (2024.04.xx)
 
 The narwin library allows you to write programs with evolutionary algorithms easily.
 
@@ -19,7 +19,7 @@ It uses [num_crunch](https://github.com/willi-kappler/num_crunch) underneath so 
 
 
 ## FAQ
-- Why is it called narwin ? It's a wordplay Nim: (programming language) + Darwin (evolution) = narwin
+- Why is it called narwin ? It's a wordplay: Nim: (programming language) + Darwin (evolution) = narwin
 
 
 ## License
