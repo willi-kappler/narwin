@@ -4,7 +4,7 @@
 ##
 ## This Nim library allows you to write programs using evolutionary algorithms.
 ##
-## This file contains the configuration for the library
+## This file contains the configuration for the library.
 ##
 
 # Nim std imports

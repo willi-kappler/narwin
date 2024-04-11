@@ -2,9 +2,9 @@
 ##
 ## Written by Willi Kappler, License: MIT
 ##
-## This module contains the implementation of the node code from num_crunch.
-##
 ## This Nim library allows you to write programs using evolutionary algorithms.
+##
+## This module contains the implementation of the node code from num_crunch.
 ##
 
 # Nim std imports

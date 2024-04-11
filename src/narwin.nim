@@ -2,9 +2,9 @@
 ##
 ## Written by Willi Kappler, License: MIT
 ##
-## This module just reexports items from other modules.
-##
 ## This Nim library allows you to write programs using evolutionary algorithms.
+##
+## This module just reexports items from other modules.
 ##
 
 # Nim std imports

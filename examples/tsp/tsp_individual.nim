@@ -2,9 +2,9 @@
 ##
 ## Written by Willi Kappler, License: MIT
 ##
-## This module contains the implementation of the NAIndividual code from narwin for the TSP example.
-##
 ## This Nim library allows you to write programs using evolutionary algorithms.
+##
+## This module contains the implementation of the NAIndividual code from narwin for the TSP example.
 ##
 
 

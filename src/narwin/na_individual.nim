@@ -2,9 +2,9 @@
 ##
 ## Written by Willi Kappler, License: MIT
 ##
-## This module contains the base data structure for an individual.
-##
 ## This Nim library allows you to write programs using evolutionary algorithms.
+##
+## This module contains the base data structure for an individual.
 ##
 
 # Nim std imports
