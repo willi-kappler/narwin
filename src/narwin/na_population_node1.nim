@@ -20,9 +20,15 @@ import na_population
 
 type
     NAPopulationNodeDP1 = ref object of NCNodeDataProcessor
+        ## Strategy:
+        ## 1. duplicate the whole population.
+        ## 2. mutate the original populaton (not the duplicates).
+        ## 3. sort the new population by fitness (original and duplicates).
+        ## 4. the second half of the bad population will be overwritten.
         population: NAPopulation
 
 method ncProcessData(self: var NAPopulationNodeDP1, inputData: seq[byte]): seq[byte] =
+    ## This function is called when the client receives the message "newData" from the server.
     ncDebug("ncProcessData()", 2)
 
     let offset = self.population.populationSize
@@ -56,6 +62,7 @@ method ncProcessData(self: var NAPopulationNodeDP1, inputData: seq[byte]): seq[b
     return self.population[0].naToBytes()
 
 proc naInitPopulationNodeDP1*(individual: NAIndividual, config: NAConfiguration): NAPopulationNodeDP1 =
+    ## This is the constructor / initializer for the population node of kind 1.
     ncInfo("naInitPopulationNodeDP1")
     ncInfo("Clone population and mutate individuals in place. Then sort population by fitness.")
     ncInfo("The worst individuals are overwritten.")
